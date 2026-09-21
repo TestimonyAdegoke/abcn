@@ -300,21 +300,7 @@ export default function Home() {
       {/* Priority Event Spotlight with Transparent Scrolling Logo Marquee */}
       <FeaturedEventSpotlight />
 
-      {/* Benchmark Urgency Strip */}
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 24px" }}>
-        <div className="urgency-strip reveal">
-          <div className="urgency-icon">✈️</div>
-          <div className="urgency-text">
-            <strong>FIALI 2026 Cohort Applications Are Open</strong>
-            <span>
-              Executive Growth Lab &amp; Summit in Frankfurt am Main · Strictly limited to 10-15 selected founders with AI toolkits and €500 × 2 Startup Innovation Grants.
-            </span>
-          </div>
-          <a href="/events/fiali-frankfurt-2026#apply" className="urgency-btn">
-            Apply for Cohort →
-          </a>
-        </div>
-      </div>
+
 
       {/* Redesigned & Restructured About Showcase */}
       <section id="about" className="about-restructured">
@@ -545,62 +531,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* The Female Founders & Innovators Mandate */}
-      <section id="why" className="why-section">
-        <div className="why-header">
-          <div className="hero-eyebrow-dots">
-            <span className="dot dot-green" />
-            <span className="dot dot-blue" />
-            <span className="dot dot-gold" />
-            <span className="dot dot-red" />
-            <span>04 · THE FEMALE FOUNDERS &amp; INNOVATORS MANDATE</span>
-          </div>
-          <h2>
-            Empowering Afro-European Women<br />
-            <em>to Lead, Build &amp; Scale.</em>
-          </h2>
-          <p style={{ color: "#a4b9cb", fontSize: "0.95rem", maxWidth: "680px", marginTop: "12px", lineHeight: "1.62" }}>
-            A dedicated ecosystem breaking the venture capital gap, expanding executive boardrooms, and unlocking bilateral European-African market pathways for women innovators.
-          </p>
-        </div>
 
-        <div className="why-grid">
-          <div className="why-card">
-            <div className="why-num">01</div>
-            <h4>Early-Stage Grants &amp; Capital</h4>
-            <p>
-              Direct eligibility for the FIALI €500 × 2 Startup Innovation Grants, pitch showcases, and introductions to angel syndicates actively backing women founders.
-            </p>
-          </div>
-
-          <div className="why-card">
-            <div className="why-num">02</div>
-            <h4>Executive Sisterhood</h4>
-            <p>
-              A high-trust, confidential network of female directors, corporate executives, and founders sharing proprietary deal flow, board access, and tactical guidance.
-            </p>
-          </div>
-
-          <div className="why-card">
-            <div className="why-num">03</div>
-            <h4>AI &amp; Digital Toolkits</h4>
-            <p>
-              Practical masterclasses in AI automation, customer intelligence workflows, and modern software toolkits designed to help female founders scale with lean teams.
-            </p>
-          </div>
-
-          <div className="why-card">
-            <div className="why-num">04</div>
-            <h4>Bilateral Market Corridors</h4>
-            <p>
-              Direct conduits connecting female entrepreneurs in Germany and Europe with African commercial ecosystems, municipal leaders, and trade delegations.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Flagship Initiative Spotlight: FIALI 2026 for Female Innovators */}
-      <FeaturedEventSpotlight />
 
       {/* Redesigned Manifesto Section */}
       <section id="manifesto" className="manifesto">

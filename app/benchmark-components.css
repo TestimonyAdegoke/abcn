@@ -65,40 +65,6 @@
   color: #ffffff;
 }
 
-.nav-lang-switcher {
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2px 4px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  gap: 2px;
-}
-
-.nav-lang-btn {
-  background: none;
-  border: none;
-  color: #9ea3b4;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  line-height: 1;
-}
-
-.nav-lang-btn:hover {
-  color: #ffffff;
-}
-
-.nav-lang-btn.active {
-  background: #E09000;
-  color: #070b11;
-  font-weight: 800;
-  box-shadow: 0 1px 4px rgba(224, 144, 0, 0.3);
-}
 
 /* --- 2. GDPR Modal (Vanilla CSS) --- */
 .gdpr-backdrop {
