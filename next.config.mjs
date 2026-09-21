@@ -8,6 +8,7 @@ const onGitHubPages = process.env.GITHUB_PAGES === "true";
 
 const nextConfig = {
   reactStrictMode: true,
+  devIndicators: false,
   outputFileTracingRoot: __dirname,
   ...(onGitHubPages
     ? {
