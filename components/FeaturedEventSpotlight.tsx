@@ -27,6 +27,16 @@ export default function FeaturedEventSpotlight() {
     return () => { live = false; };
   }, []);
 
+  const isFiali = event.slug === FIALI_FALLBACK.slug;
+  const factItems = isFiali
+    ? [
+        ["10–15", "female founders"],
+        ["02 stages", "growth lab + summit"],
+        ["AI + growth", "practical founder tools"],
+        ["Frankfurt", "ecosystem access"],
+      ]
+    : (event.highlights || []).slice(0, 4).map((item, index) => [String(index + 1).padStart(2, "0"), item]);
+
   return (
     <section className={styles.wrap} id="featured-event" aria-label="Featured event">
       <div className={styles.topline}>
@@ -35,31 +45,36 @@ export default function FeaturedEventSpotlight() {
       </div>
       <div className={styles.grid}>
         <h2 className={styles.title}>
-          Female Innovation<br />
-          <em>Afropean Leadership</em><br />
-          Initiative
+          {isFiali ? (
+            <>Female Innovation<br /><em>Afropean Leadership</em><br />Initiative</>
+          ) : (
+            event.title
+          )}
         </h2>
         <div className={styles.copy}>
           <p>{event.short_description}</p>
           <div className={styles.actions}>
-            <Link className={styles.primary} href={"/events/" + event.slug}>Explore FIALI →</Link>
+            <Link className={styles.primary} href={"/events/" + event.slug}>{isFiali ? "Explore FIALI" : "Explore event"} →</Link>
             <Link className={styles.secondary} href="/events">All events</Link>
           </div>
         </div>
       </div>
-      <div className={styles.partnerBand}>
-        <div className={styles.eventMark}>
-          <span>FIALI</span>
-          <small>Female Innovation · Afropean Leadership</small>
+      {isFiali && (
+        <div className={styles.partnerBand}>
+          <div className={styles.eventMark}>
+            <span>FIALI</span>
+            <small>Female Innovation · Afropean Leadership</small>
+          </div>
+          <img src="/assets/fiali/partners-strip.jpg" alt="FIALI programme partner logos" />
         </div>
-        <img src="/assets/fiali/partners-strip.jpg" alt="FIALI programme partner logos" />
-      </div>
-      <div className={styles.facts}>
-        <div className={styles.fact}><strong>10–15</strong><span>female founders</span></div>
-        <div className={styles.fact}><strong>02 stages</strong><span>growth lab + summit</span></div>
-        <div className={styles.fact}><strong>AI + growth</strong><span>practical founder tools</span></div>
-        <div className={styles.fact}><strong>Frankfurt</strong><span>ecosystem access</span></div>
-      </div>
+      )}
+      {factItems.length > 0 && (
+        <div className={styles.facts}>
+          {factItems.map(([value, label]) => (
+            <div className={styles.fact} key={value + label}><strong>{value}</strong><span>{label}</span></div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
