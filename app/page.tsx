@@ -36,12 +36,11 @@ const lenses = [
   },
 ];
 
-// Authentic company photography extracted directly from official ABCN source material
 const images = {
   hero: "/assets/abcn/innovators-summit.jpg",
   business: "/assets/abcn/collaborators.png",
   culture: "/assets/abcn/ecosystem-network.png",
-  community: "/assets/abcn/harmonie-essome.png",
+  community: "/assets/abcn/community-connection.jpg",
 };
 
 function Arrow({ down = false }: { down?: boolean }) {
@@ -469,9 +468,9 @@ export default function Home() {
           </div>
         </article>
         <article className="story">
-          <img src={images.community} alt="Harmonie Essome - Founder of ABCN" />
+          <img src={images.community} alt="Authentic community connection and sisterhood" />
           <div className="story-shade" />
-          <span className="credit">Harmonie Essome · ABCN Leadership</span>
+          <span className="credit">ABCN · Sisterhood &amp; Community</span>
           <div className="story-copy">
             <span>COMMUNITY</span>
             <h3>Connection that feels human.</h3>
