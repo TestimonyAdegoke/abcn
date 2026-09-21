@@ -18,6 +18,11 @@ export type EventGrant = {
   description?: string;
 };
 
+export type EventContentCard = {
+  title: string;
+  description: string;
+};
+
 export type EventRecord = {
   id?: string;
   slug: string;
@@ -51,6 +56,11 @@ export type EventRecord = {
   partners: EventPartner[];
   grants: EventGrant;
   gallery: string[];
+  application_open?: boolean;
+  application_deadline?: string | null;
+  application_cta?: string | null;
+  focus_areas: EventContentCard[];
+  benefits: EventContentCard[];
 };
 
 export const FIALI_FALLBACK: EventRecord = {
@@ -141,6 +151,23 @@ export const FIALI_FALLBACK: EventRecord = {
       "Two grants of €500 each support early-stage founders developing digital or technical solutions, including prototyping, product development, branding, market entry, initial marketing and sales, and eligible incorporation expenses.",
   },
   gallery: [],
+  application_open: true,
+  application_deadline: "Applications reviewed on a rolling basis · limited cohort of 10–15 founders",
+  application_cta: "Apply for FIALI",
+  focus_areas: [
+    { title: "Business Model Development", description: "Sharpen the model, value proposition and commercial logic behind the venture." },
+    { title: "Leadership & Positioning", description: "Strengthen founder positioning, leadership presence and strategic narrative." },
+    { title: "AI & Digitalization", description: "Turn AI and digital tools into practical leverage for execution and growth." },
+    { title: "Go-to-Market Strategy", description: "Build a clearer route to customers, partnerships and market traction." },
+  ],
+  benefits: [
+    { title: "A 90-day growth plan", description: "Leave the Growth Lab with a practical individual roadmap for the next stage of your business." },
+    { title: "Expert founder support", description: "Work through business, positioning, digitalization and growth questions with specialist input." },
+    { title: "Frankfurt ecosystem access", description: "Build direct connections with corporates, investors, business angels and strategic partners." },
+    { title: "Founder visibility", description: "Pitch, present and position your venture in front of people who can open relevant doors." },
+    { title: "AI that is useful now", description: "Explore concrete ways to apply AI and digital tools to your operating model and growth." },
+    { title: "Innovation grant opportunity", description: "Eligible early-stage founders can be considered for one of two €500 Startup Innovation Grants." },
+  ],
 };
 
 export function normaliseEvent(row: Partial<EventRecord>): EventRecord {
@@ -161,5 +188,10 @@ export function normaliseEvent(row: Partial<EventRecord>): EventRecord {
     partners: Array.isArray(row.partners) ? row.partners : [],
     grants: row.grants && typeof row.grants === "object" ? row.grants : {},
     gallery: Array.isArray(row.gallery) ? row.gallery : [],
+    application_open: Boolean(row.application_open),
+    application_deadline: row.application_deadline || null,
+    application_cta: row.application_cta || "Apply now",
+    focus_areas: Array.isArray(row.focus_areas) ? row.focus_areas : [],
+    benefits: Array.isArray(row.benefits) ? row.benefits : [],
   };
 }
