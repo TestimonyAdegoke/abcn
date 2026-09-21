@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import HeroScene from "@/components/HeroScene";
 import FeaturedEventSpotlight from "@/components/FeaturedEventSpotlight";
+import NavExtras from "@/components/NavExtras";
 
 const instagram = "https://www.instagram.com/afropeanbusinessnetwork/";
 const founderInstagram = "https://www.instagram.com/harmonieessome/";
@@ -137,9 +138,13 @@ export default function Home() {
           <a href="/about" onClick={() => setMenu(false)}>About</a>
           <a href="#network" onClick={() => setMenu(false)}>Network</a>
           <a href="/events" onClick={() => setMenu(false)}>Events</a>
+          <a href="#why" onClick={() => setMenu(false)}>Why ABCN</a>
+          <a href="#corridors" onClick={() => setMenu(false)}>Corridors</a>
           <a href="#founder" onClick={() => setMenu(false)}>Founder</a>
           <a href="#join" onClick={() => setMenu(false)}>Join</a>
         </nav>
+
+        <NavExtras />
 
         <a className="nav-cta" href={instagram} target="_blank" rel="noreferrer">
           Enter the network <Arrow />
@@ -173,9 +178,14 @@ export default function Home() {
             </a>
           </div>
 
-          <p className="eyebrow hero-anim-item">
-            <span /> BUSINESS · CULTURE · COMMUNITY
-          </p>
+          {/* Benchmark Eyebrow with Brand Colored Dots */}
+          <div className="hero-eyebrow-dots hero-anim-item">
+            <span className="dot dot-green" />
+            <span className="dot dot-blue" />
+            <span className="dot dot-gold" />
+            <span className="dot dot-red" />
+            <span>Afropean Network &amp; Leadership · 2026 Initiatives</span>
+          </div>
 
           <h1 className="hero-anim-item">
             African roots.
@@ -189,6 +199,29 @@ export default function Home() {
             culture and belonging.
           </p>
 
+          {/* Benchmark Hero KPIs Bar */}
+          <div className="hero-kpis-strip hero-anim-item">
+            <div className="kpi-item">
+              <strong>7.6K+</strong>
+              <span>Public Network</span>
+            </div>
+            <div className="kpi-div" />
+            <div className="kpi-item">
+              <strong>10-15</strong>
+              <span>Cohort Size</span>
+            </div>
+            <div className="kpi-div" />
+            <div className="kpi-item">
+              <strong>2</strong>
+              <span>Continents</span>
+            </div>
+            <div className="kpi-div" />
+            <div className="kpi-item">
+              <strong>€1,000</strong>
+              <span>Grants Pool</span>
+            </div>
+          </div>
+
           <div className="hero-actions hero-anim-item">
             <a href={instagram} target="_blank" rel="noreferrer" className="button primary">
               Join the conversation <Arrow />
@@ -196,6 +229,18 @@ export default function Home() {
             <a href="/about" className="text-link">
               Discover ABCN dossier <Arrow />
             </a>
+          </div>
+
+          {/* Benchmark Strategic Alliance Strip */}
+          <div className="hero-partners-strip hero-anim-item">
+            <span className="partner-tag">In Strategic Alliance:</span>
+            <div className="partner-pill-row">
+              <span className="partner-pill">Mountain Hub</span>
+              <span className="partner-pill">SoftXcloud GmbH</span>
+              <span className="partner-pill">CITS 2026</span>
+              <span className="partner-pill">Kompass Frankfurt</span>
+              <span className="partner-pill">BWIT DACH</span>
+            </div>
           </div>
         </div>
 
@@ -222,6 +267,22 @@ export default function Home() {
 
       {/* Priority Event Spotlight with Transparent Scrolling Logo Marquee */}
       <FeaturedEventSpotlight />
+
+      {/* Benchmark Urgency Strip */}
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 24px" }}>
+        <div className="urgency-strip reveal">
+          <div className="urgency-icon">✈️</div>
+          <div className="urgency-text">
+            <strong>FIALI 2026 Cohort Applications Are Open</strong>
+            <span>
+              Executive Growth Lab &amp; Summit in Frankfurt am Main · Strictly limited to 10-15 selected founders with AI toolkits and €500 × 2 Startup Innovation Grants.
+            </span>
+          </div>
+          <a href="/events/fiali-frankfurt-2026#apply" className="urgency-btn">
+            Apply for Cohort →
+          </a>
+        </div>
+      </div>
 
       {/* Redesigned & Restructured About Showcase */}
       <section id="about" className="about-restructured">
@@ -452,6 +513,178 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Benchmark-Inspired Why Section: 6-Card Numbered Value Grid */}
+      <section id="why" className="why-section">
+        <div className="why-header">
+          <div className="hero-eyebrow-dots">
+            <span className="dot dot-green" />
+            <span className="dot dot-blue" />
+            <span className="dot dot-gold" />
+            <span className="dot dot-red" />
+            <span>04 · VALUE CREATION &amp; INFRASTRUCTURE</span>
+          </div>
+          <h2>
+            What you gain from<br />
+            <em>this living ecosystem.</em>
+          </h2>
+          <p style={{ color: "#8da4b8", fontSize: "0.92rem", maxWidth: "680px", marginTop: "10px", lineHeight: "1.6" }}>
+            A structured platform where diaspora ambition meets corporate velocity, investment readiness, and cross-border scalability.
+          </p>
+        </div>
+
+        <div className="why-grid">
+          <div className="why-card">
+            <div className="why-num">01</div>
+            <h4>Dual-Continent Fluency</h4>
+            <p>
+              Operate with native credibility across European executive boardrooms and high-growth African commercial markets without code-switching or dilution.
+            </p>
+          </div>
+
+          <div className="why-card">
+            <div className="why-num">02</div>
+            <h4>Direct Market Access</h4>
+            <p>
+              Verified regulatory pathways, local market intelligence, and institutional introductions across Germany, France, and Central Africa.
+            </p>
+          </div>
+
+          <div className="why-card">
+            <div className="why-num">03</div>
+            <h4>Seed Capital &amp; Innovation Grants</h4>
+            <p>
+              Direct eligibility for the FIALI €500 × 2 Startup Innovation Grants, with bespoke introductions to angel syndicates and diaspora venture funds.
+            </p>
+          </div>
+
+          <div className="why-card">
+            <div className="why-num">04</div>
+            <h4>Practical AI Toolkits</h4>
+            <p>
+              Master actionable AI automation workflows, customer intelligence models, and operational toolkits built for rapid execution.
+            </p>
+          </div>
+
+          <div className="why-card">
+            <div className="why-num">05</div>
+            <h4>Cross-Border Policy &amp; Advisory</h4>
+            <p>
+              Direct advisory conduits linking diaspora entrepreneurs with municipal innovation leaders, trade bodies, and pan-African summit delegations.
+            </p>
+          </div>
+
+          <div className="why-card">
+            <div className="why-num">06</div>
+            <h4>High-Trust Sisterhood</h4>
+            <p>
+              A curated cohort of founders, executives, and creative directors who share deal flow, institutional access, and tactical guidance.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Benchmark-Inspired Cross-Border Innovation Corridors */}
+      <section id="corridors" className="corridors-section">
+        <div className="why-header">
+          <div className="hero-eyebrow-dots">
+            <span className="dot dot-green" />
+            <span className="dot dot-blue" />
+            <span className="dot dot-gold" />
+            <span className="dot dot-red" />
+            <span>05 · BILATERAL CORRIDORS · EUROPE ↔ AFRICA</span>
+          </div>
+          <h2>
+            Four Connected Hubs.<br />
+            <em>One Unified Corridor.</em>
+          </h2>
+          <p style={{ color: "#8da4b8", fontSize: "0.92rem", maxWidth: "680px", marginTop: "10px", lineHeight: "1.6" }}>
+            Connecting the Rhine-Main financial hub with key diaspora capitals and the Cameroon International Tech Summit (CITS 2026).
+          </p>
+        </div>
+
+        <div className="corridors-grid">
+          {/* Hub 01: Frankfurt */}
+          <div className="corridor-card">
+            <div className="corridor-img-wrap">
+              <img src="/assets/fiali/female-founders-summit.jpg" alt="Frankfurt am Main" />
+              <div className="corridor-num-badge">01 · DE</div>
+            </div>
+            <div className="corridor-body">
+              <span className="corridor-date">Headquarters &amp; Flagship</span>
+              <h3 className="corridor-city">Frankfurt am Main</h3>
+              <p className="corridor-desc">
+                Financial capital of continental Europe and home to ABCN&rsquo;s flagship FIALI 2026 Female Innovators Initiative.
+              </p>
+              <div className="corridor-tags">
+                <span className="corridor-tag">FIALI 2026</span>
+                <span className="corridor-tag">Rhine-Main</span>
+                <span className="corridor-tag">Ecosystem</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Hub 02: Paris */}
+          <div className="corridor-card">
+            <div className="corridor-img-wrap">
+              <img src="/assets/abcn/collaborators.png" alt="Paris, France" />
+              <div className="corridor-num-badge">02 · FR</div>
+            </div>
+            <div className="corridor-body">
+              <span className="corridor-date">Francophone Capital</span>
+              <h3 className="corridor-city">Paris</h3>
+              <p className="corridor-desc">
+                Creative heartbeat and major diaspora capital bridging pan-European fashion, media, culinary arts, and venture capital.
+              </p>
+              <div className="corridor-tags">
+                <span className="corridor-tag">Creative Economy</span>
+                <span className="corridor-tag">Culture</span>
+                <span className="corridor-tag">Venture</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Hub 03: Douala */}
+          <div className="corridor-card">
+            <div className="corridor-img-wrap">
+              <img src="/assets/abcn/ecosystem-network.png" alt="Douala, Cameroon" />
+              <div className="corridor-num-badge">03 · CM</div>
+            </div>
+            <div className="corridor-body">
+              <span className="corridor-date">Commercial Engine</span>
+              <h3 className="corridor-city">Douala</h3>
+              <p className="corridor-desc">
+                Central Africa&rsquo;s bustling private sector metropolis. Strategic B2B meetings, supply chain logistics, and direct commerce.
+              </p>
+              <div className="corridor-tags">
+                <span className="corridor-tag">Enterprise</span>
+                <span className="corridor-tag">Trade</span>
+                <span className="corridor-tag">Private Sector</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Hub 04: Yaoundé (Star Card - CITS 2026) */}
+          <div className="corridor-card corridor-card--star">
+            <div className="corridor-img-wrap">
+              <img src="/assets/fiali/female-founder-vision.jpg" alt="Yaoundé CITS Summit" />
+              <div className="corridor-num-badge corridor-star-badge">04 ★ CITS</div>
+            </div>
+            <div className="corridor-body">
+              <span className="corridor-date" style={{ color: "#ffb833" }}>15-17 Oct · Tech Summit</span>
+              <h3 className="corridor-city">Yaoundé</h3>
+              <p className="corridor-desc">
+                Culmination at the Cameroon International Tech Summit (Palais des Congrès &amp; Mountain Hub Incubator). High-level trade delegation &amp; deal rooms.
+              </p>
+              <div className="corridor-tags">
+                <span className="corridor-tag" style={{ background: "rgba(224,144,0,0.15)", color: "#ffc966", borderColor: "rgba(224,144,0,0.3)" }}>CITS 2026</span>
+                <span className="corridor-tag">Mountain Hub</span>
+                <span className="corridor-tag">Tech Summit</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Redesigned Manifesto Section */}
       <section id="manifesto" className="manifesto">
         <div className="manifesto-top-row">
@@ -512,7 +745,7 @@ export default function Home() {
         <div className="join-glow" />
 
         <div className="join-copy">
-          <span className="join-kicker">05 · ENTER THE LIVING BRIDGE · FRANKFURT 2026</span>
+          <span className="join-kicker">06 · ENTER THE LIVING BRIDGE · FRANKFURT 2026</span>
           <h2>
             The next introduction could<br />
             <em>change the room.</em>
@@ -575,18 +808,36 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Benchmark-Enhanced Footer with Compliance Triggers */}
       <footer>
         <div className="footer-brand">ABCN</div>
-        <p>Afropean Business &amp; Culture Network</p>
+        <p>Afropean Business &amp; Culture Network · Frankfurt am Main</p>
         <div className="footer-links">
           <a href="/about">About</a>
           <a href="#network">Network</a>
           <a href="/events">Events</a>
+          <a href="#why">Why ABCN</a>
+          <a href="#corridors">Corridors</a>
           <a href="#founder">Founder</a>
           <a href={instagram} target="_blank" rel="noreferrer">Instagram</a>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-gdpr"))}
+            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit" }}
+          >
+            Privacy Policy &amp; GDPR
+          </button>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-cookies"))}
+            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit" }}
+          >
+            Cookie Settings
+          </button>
         </div>
-        <span className="footer-meta">AFRICAN ROOTS · EUROPEAN HORIZONS</span>
+        <span className="footer-meta">
+          AFRICAN ROOTS · EUROPEAN HORIZONS · GDPR/DSGVO COMPLIANT · AES-256-GCM ENCRYPTED
+        </span>
       </footer>
     </main>
   );

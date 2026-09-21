@@ -1480,3 +1480,368 @@ footer p {
   .event-announcement{grid-template-columns:auto 1fr;gap:9px;padding:8px 14px}
   .event-announcement i{grid-column:1/-1}
 }
+
+/* ==========================================================================
+   BENCHMARK-INSPIRED COMPONENTS (gcbfd-forum2026.com)
+   ========================================================================== */
+
+/* 1. Hero Eyebrow with Brand Dots */
+.hero-eyebrow-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #c9d5df;
+  margin-bottom: 12px;
+  width: fit-content;
+}
+.hero-eyebrow-dots .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-green { background: #007A3D; box-shadow: 0 0 8px rgba(0, 122, 61, 0.6); }
+.dot-blue  { background: #02318B; box-shadow: 0 0 8px rgba(2, 49, 139, 0.6); }
+.dot-gold  { background: #E09000; box-shadow: 0 0 8px rgba(224, 144, 0, 0.6); }
+.dot-red   { background: #CE1126; box-shadow: 0 0 8px rgba(206, 17, 38, 0.6); }
+
+/* 2. Hero KPIs Bar (Benchmark Inspired) */
+.hero-kpis-strip {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 24px;
+  margin-bottom: 18px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  width: fit-content;
+}
+.kpi-item {
+  display: flex;
+  flex-direction: column;
+}
+.kpi-item strong {
+  font-size: 1.15rem;
+  font-weight: 850;
+  color: #ffffff;
+  line-height: 1.1;
+  font-family: var(--font-serif, Georgia, serif);
+}
+.kpi-item span {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #8da4b8;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.kpi-div {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* 3. Hero Partners / In Cooperation Strip */
+.hero-partners-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.hero-partners-strip .partner-tag {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #7b94a8;
+  font-weight: 700;
+}
+.partner-pill-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.partner-pill {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.62rem;
+  color: #d1dde6;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* 4. Urgency Strip (Modeled directly after benchmark) */
+.urgency-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(224, 144, 0, 0.12) 0%, rgba(7, 11, 17, 0.95) 100%);
+  border: 1px solid rgba(224, 144, 0, 0.35);
+  box-shadow: 0 12px 30px -10px rgba(224, 144, 0, 0.15);
+  margin: 36px 0;
+  position: relative;
+  overflow: hidden;
+}
+.urgency-strip::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #E09000;
+}
+.urgency-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.urgency-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-grow: 1;
+}
+.urgency-text strong {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+}
+.urgency-text span {
+  font-size: 0.74rem;
+  color: #a4b9cb;
+}
+.urgency-btn {
+  padding: 8px 18px;
+  border-radius: 9999px;
+  background: #E09000;
+  color: #000000;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(224, 144, 0, 0.3);
+  flex-shrink: 0;
+}
+.urgency-btn:hover {
+  background: #ffb833;
+  transform: translateY(-1px);
+}
+@media(max-width: 768px) {
+  .urgency-strip {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .urgency-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* 5. What You Gain / Why Section (Benchmark 6-Grid) */
+.why-section {
+  padding: 80px 0 60px;
+  position: relative;
+}
+.why-header {
+  margin-bottom: 40px;
+}
+.why-header h2 {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.15;
+  margin-top: 10px;
+}
+.why-header h2 em {
+  font-style: italic;
+  color: var(--gold);
+}
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media(max-width: 900px) {
+  .why-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media(max-width: 600px) {
+  .why-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.why-card {
+  padding: 28px 24px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.28s ease;
+  position: relative;
+  overflow: hidden;
+}
+.why-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(224, 144, 0, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.5);
+}
+.why-num {
+  font-size: 1.3rem;
+  font-weight: 900;
+  font-family: var(--font-serif, Georgia, serif);
+  color: #E09000;
+  opacity: 0.85;
+  margin-bottom: 12px;
+}
+.why-card h4 {
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: #ffffff;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.why-card p {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #8fa5b8;
+}
+
+/* 6. Route / Innovation Corridors (Benchmark Inspired) */
+.corridors-section {
+  padding: 80px 0 60px;
+  position: relative;
+}
+.corridors-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 36px;
+}
+@media(max-width: 1024px) {
+  .corridors-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media(max-width: 640px) {
+  .corridors-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.corridor-card {
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  transition: all 0.28s ease;
+  display: flex;
+  flex-direction: column;
+}
+.corridor-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.6);
+}
+.corridor-card--star {
+  border-color: rgba(224, 144, 0, 0.4);
+  background: linear-gradient(180deg, rgba(224, 144, 0, 0.08) 0%, rgba(7, 11, 17, 0.95) 100%);
+}
+.corridor-img-wrap {
+  position: relative;
+  height: 140px;
+  width: 100%;
+  overflow: hidden;
+}
+.corridor-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.corridor-card:hover .corridor-img-wrap img {
+  transform: scale(1.05);
+}
+.corridor-num-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(7, 11, 17, 0.85);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 850;
+  font-family: var(--font-serif, Georgia, serif);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.corridor-star-badge {
+  background: #E09000;
+  color: #000000;
+  border-color: #ffb833;
+}
+.corridor-body {
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.corridor-date {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #E09000;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.corridor-city {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+.corridor-desc {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #8da4b8;
+  margin-bottom: 14px;
+  flex-grow: 1;
+}
+.corridor-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.corridor-tag {
+  font-size: 0.6rem;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #b7c7d4;
+  font-weight: 600;
+}
+

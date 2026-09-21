@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import EventApplicationForm from "@/components/EventApplicationForm";
+import MultiStepApplication from "@/components/MultiStepApplication";
+import NavExtras from "@/components/NavExtras";
 import LogoMarquee from "@/components/LogoMarquee";
 import { neon } from "@/lib/neon";
 import { EventRecord, FIALI_FALLBACK, normaliseEvent } from "@/lib/events";
@@ -115,6 +117,7 @@ export default function EventDetailPage() {
             </a>
           )}
         </nav>
+        <NavExtras />
       </header>
 
       {/* Hero Section with Crisp Typography & Stylish Accents */}
@@ -609,24 +612,85 @@ export default function EventDetailPage() {
               </div>
             )}
           </div>
-          <EventApplicationForm
-            eventId={event.id}
-            eventSlug={event.slug}
-            eventTitle={event.title}
-            applicationDeadline={event.application_deadline}
-          />
+          <div style={{ flex: 1, minWidth: "320px" }}>
+            <MultiStepApplication />
+          </div>
         </section>
       )}
+
+      {/* Sister Summit & Tech Delegation Spotlight (gcbfd-forum2026.com) */}
+      <section className="sister-delegation-banner" style={{ maxWidth: "1280px", margin: "40px auto", padding: "0 24px" }}>
+        <div style={{
+          background: "linear-gradient(135deg, rgba(75, 29, 142, 0.25) 0%, rgba(7, 11, 17, 0.95) 100%)",
+          border: "1px solid rgba(123, 78, 200, 0.35)",
+          borderRadius: "24px",
+          padding: "28px 32px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "20px"
+        }}>
+          <div>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "4px 12px", borderRadius: "9999px", background: "rgba(255,255,255,0.08)", fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#e2b978", marginBottom: "8px" }}>
+              🇨🇲 SISTER INITIATIVE · CITS 2026
+            </div>
+            <h3 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#fff", margin: "4px 0" }}>
+              German Tech Innovation Delegation to Cameroon
+            </h3>
+            <p style={{ fontSize: "0.85rem", color: "#a4b9cb", maxWidth: "650px", lineHeight: "1.5" }}>
+              Connecting German-speaking IT professionals with Cameroon&rsquo;s tech ecosystem across Douala, Bafoussam, Bangangté, and the Yaoundé Summit · 11-18 October 2026.
+            </p>
+          </div>
+          <a
+            href="https://gcbfd-forum2026.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              padding: "12px 24px",
+              borderRadius: "9999px",
+              background: "#4B1D8E",
+              color: "#ffffff",
+              fontSize: "0.78rem",
+              fontWeight: 800,
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              textDecoration: "none",
+              boxShadow: "0 8px 20px rgba(75, 29, 142, 0.4)",
+              border: "1px solid rgba(255,255,255,0.2)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px"
+            }}
+          >
+            Explore Delegation ↗
+          </a>
+        </div>
+      </section>
 
       {/* Footer with Logo Marquee Reprise & Network Links */}
       <footer className="events-footer benchmark-footer">
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           <strong>ABCN</strong>
-          <span>Afropean Business & Culture Network · Frankfurt 2026</span>
+          <span>Afropean Business &amp; Culture Network · Frankfurt 2026</span>
         </div>
-        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "20px", alignItems: "center", flexWrap: "wrap" }}>
           <Link href="/about">About ABCN</Link>
           <Link href="/events">All ABCN events →</Link>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-gdpr"))}
+            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit", fontSize: "0.78rem" }}
+          >
+            Privacy Policy &amp; GDPR
+          </button>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-cookies"))}
+            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit", fontSize: "0.78rem" }}
+          >
+            Cookie Settings
+          </button>
         </div>
       </footer>
     </main>

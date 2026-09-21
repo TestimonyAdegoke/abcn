@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import LogoMarquee from "@/components/LogoMarquee";
+import NavExtras from "@/components/NavExtras";
 import "./about.css";
 
 const instagram = "https://www.instagram.com/afropeanbusinessnetwork/";
@@ -102,14 +103,17 @@ export default function AboutPage() {
           <Link href="/#network">Network</Link>
         </nav>
 
-        <a
-          href={instagram}
-          target="_blank"
-          rel="noreferrer"
-          className="about-nav-cta"
-        >
-          Join network →
-        </a>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <NavExtras />
+          <a
+            href={instagram}
+            target="_blank"
+            rel="noreferrer"
+            className="about-nav-cta"
+          >
+            Join network →
+          </a>
+        </div>
       </header>
 
       {/* Hero Section with Official ABCN Definition */}
@@ -656,13 +660,27 @@ export default function AboutPage() {
           </span>
           <span>· Afropean Business &amp; Culture Network</span>
         </div>
-        <div style={{ display: "flex", gap: "24px" }}>
+        <div style={{ display: "flex", gap: "20px", alignItems: "center", flexWrap: "wrap" }}>
           <Link href="/" style={{ color: "#fff" }}>Home</Link>
           <Link href="/about" style={{ color: "#e2b978" }}>About</Link>
           <Link href="/events" style={{ color: "#fff" }}>Events</Link>
           <a href={instagram} target="_blank" rel="noreferrer" style={{ color: "#fff" }}>
             Instagram
           </a>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-gdpr"))}
+            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit", fontSize: "0.75rem" }}
+          >
+            Privacy Policy &amp; GDPR
+          </button>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-cookies"))}
+            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit", fontSize: "0.75rem" }}
+          >
+            Cookie Settings
+          </button>
         </div>
       </footer>
     </main>

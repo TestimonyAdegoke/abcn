@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Newsreader } from "next/font/google";
 import "./globals.css";
+import GdprModal from "@/components/GdprModal";
+import CookieBanner from "@/components/CookieBanner";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -35,7 +37,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${plusJakartaSans.variable} ${newsreader.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <GdprModal />
+        <CookieBanner />
+      </body>
     </html>
   );
 }
