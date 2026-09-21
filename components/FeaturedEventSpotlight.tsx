@@ -47,6 +47,13 @@ export default function FeaturedEventSpotlight() {
           </div>
         </div>
       </div>
+      <div className={styles.partnerBand}>
+        <div className={styles.eventMark}>
+          <span>FIALI</span>
+          <small>Female Innovation · Afropean Leadership</small>
+        </div>
+        <img src="/assets/fiali/partners-strip.jpg" alt="FIALI programme partner logos" />
+      </div>
       <div className={styles.facts}>
         <div className={styles.fact}><strong>10–15</strong><span>female founders</span></div>
         <div className={styles.fact}><strong>02 stages</strong><span>growth lab + summit</span></div>
