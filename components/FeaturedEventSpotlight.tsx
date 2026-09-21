@@ -54,9 +54,14 @@ export default function FeaturedEventSpotlight() {
         <div className={styles.copy}>
           <p>{event.short_description}</p>
           <div className={styles.actions}>
-            <Link className={styles.primary} href={"/events/" + event.slug}>{isFiali ? "Explore FIALI" : "Explore event"} →</Link>
-            <Link className={styles.secondary} href="/events">All events</Link>
+            {event.application_open ? (
+              <Link className={styles.primary} href={"/events/" + event.slug + "#apply"}>{event.application_cta || "Apply now"} →</Link>
+            ) : (
+              <Link className={styles.primary} href={"/events/" + event.slug}>{isFiali ? "Explore FIALI" : "Explore event"} →</Link>
+            )}
+            <Link className={styles.secondary} href={"/events/" + event.slug}>Programme details</Link>
           </div>
+          {event.application_deadline && <div className={styles.urgency}>{event.application_deadline}</div>}
         </div>
       </div>
       {isFiali && (
