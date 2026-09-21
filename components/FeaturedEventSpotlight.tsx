@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { neon } from "@/lib/neon";
 import { EventRecord, FIALI_FALLBACK, normaliseEvent } from "@/lib/events";
+import LogoMarquee from "@/components/LogoMarquee";
 import styles from "./FeaturedEventSpotlight.module.css";
 
 export default function FeaturedEventSpotlight() {
@@ -30,10 +31,10 @@ export default function FeaturedEventSpotlight() {
   const isFiali = event.slug === FIALI_FALLBACK.slug;
   const factItems = isFiali
     ? [
-        ["10–15", "female founders"],
-        ["02 stages", "growth lab + summit"],
-        ["AI + growth", "practical founder tools"],
-        ["Frankfurt", "ecosystem access"],
+        ["10-15", "Female Founders Cohort"],
+        ["02 Stages", "Growth Lab + Summit"],
+        ["AI & Digital", "Practical Founder Tools"],
+        ["Frankfurt", "Ecosystem & Capital Access"],
       ]
     : (event.highlights || []).slice(0, 4).map((item, index) => [String(index + 1).padStart(2, "0"), item]);
 
@@ -65,12 +66,14 @@ export default function FeaturedEventSpotlight() {
         </div>
       </div>
       {isFiali && (
-        <div className={styles.partnerBand}>
-          <div className={styles.eventMark}>
-            <span>FIALI</span>
-            <small>Female Innovation · Afropean Leadership</small>
-          </div>
-          <img src="/assets/fiali/partners-strip.jpg" alt="FIALI programme partner logos" />
+        <div style={{ marginTop: "44px", position: "relative", zIndex: 2 }}>
+          <LogoMarquee
+            logos={event.partners}
+            theme="dark"
+            speed="normal"
+            label="FIALI Partner Ecosystem"
+            tagline="Frankfurt 2026"
+          />
         </div>
       )}
       {factItems.length > 0 && (

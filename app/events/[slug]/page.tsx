@@ -4,8 +4,53 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import EventApplicationForm from "@/components/EventApplicationForm";
+import LogoMarquee from "@/components/LogoMarquee";
 import { neon } from "@/lib/neon";
 import { EventRecord, FIALI_FALLBACK, normaliseEvent } from "@/lib/events";
+
+const FRANKFURT_VALUES = [
+  {
+    num: "01",
+    title: "Female Entrepreneurship",
+    description:
+      "Empowers diverse female leadership and drives sustainable business growth across Frankfurt and the wider Rhine-Main metropolitan region.",
+  },
+  {
+    num: "02",
+    title: "Global Ecosystem Advantage",
+    description:
+      "Leverages founders' international networks and intercultural skills to position Frankfurt as an open, globally connected startup destination.",
+  },
+  {
+    num: "03",
+    title: "Innovation & AI Competency",
+    description:
+      "Delivers hands-on digital skills and practical AI expertise so founders can innovate, automate and scale their operating models.",
+  },
+  {
+    num: "04",
+    title: "Visibility & Matchmaking",
+    description:
+      "Showcases founders directly to corporates, institutional partners, investors and business angels through curated networking rooms.",
+  },
+];
+
+const GRANT_EXPENSES = [
+  "Prototyping & MVP build",
+  "Product development",
+  "Brand & identity design",
+  "Go-to-market testing",
+  "Initial marketing & sales",
+  "Essential incorporation expenses",
+];
+
+const ELIGIBILITY_CRITERIA = [
+  "Already incorporated or on the verge of doing so",
+  "Pursuing an innovative or scalable business model",
+  "Showing strong interest in digitalization and AI integration",
+  "Exhibiting high growth potential and international perspective",
+  "Aiming to build, launch or scale the business within Frankfurt / Rhine-Main",
+];
 
 export default function EventDetailPage() {
   const params = useParams<{ slug: string }>();
@@ -13,21 +58,45 @@ export default function EventDetailPage() {
   const [event, setEvent] = useState<EventRecord>(
     slug === FIALI_FALLBACK.slug ? FIALI_FALLBACK : { ...FIALI_FALLBACK, slug, title: "ABCN Event" }
   );
+  const [activeStage, setActiveStage] = useState<number | "all">("all");
+  const [checkedCriteria, setCheckedCriteria] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     let live = true;
-    neon.from("events").select("*").eq("slug", slug).eq("status", "published").limit(1)
-      .then(({ data }) => {
-        if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>));
-      }, () => {});
-    return () => { live = false; };
+    neon
+      .from("events")
+      .select("*")
+      .eq("slug", slug)
+      .eq("status", "published")
+      .limit(1)
+      .then(
+        ({ data }) => {
+          if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>));
+        },
+        () => {}
+      );
+    return () => {
+      live = false;
+    };
   }, [slug]);
 
   const isFiali = event.slug === FIALI_FALLBACK.slug;
   const hasApplications = Boolean(event.application_open);
 
+  const toggleCriteria = (index: number) => {
+    setCheckedCriteria((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
+  const checkedCount = Object.values(checkedCriteria).filter(Boolean).length;
+
+  const displayedStages =
+    activeStage === "all"
+      ? event.stages
+      : event.stages.filter((_, idx) => idx === activeStage);
+
   return (
     <main className="event-detail">
+      {/* Sticky Top Navigation */}
       <header className="events-nav event-nav-benchmark">
         <Link className="events-brand" href="/">
           ABCN <small>Afropean Business & Culture Network</small>
@@ -36,34 +105,74 @@ export default function EventDetailPage() {
           <a href="#about">About</a>
           <a href="#journey">Journey</a>
           <a href="#why-join">Why join</a>
-          {hasApplications && <a className="nav-apply" href="#apply">{event.application_cta || "Apply"}</a>}
+          {isFiali && <a href="#ecosystem">Ecosystem</a>}
+          {isFiali && <a href="#gallery">Gallery</a>}
+          {event.grants?.title && <a href="#grants">Grants</a>}
+          <a href="#eligibility">Eligibility</a>
+          {hasApplications && (
+            <a className="nav-apply" href="#apply">
+              {event.application_cta || "Apply"}
+            </a>
+          )}
         </nav>
       </header>
 
+      {/* Hero Section with Crisp Typography & Stylish Accents */}
       <section className="benchmark-hero">
         <div className="benchmark-hero-copy">
           <div className="benchmark-brand-row">
-            {isFiali && <img src="/assets/fiali/logos/abcn.png" alt="ABCN" />}
-            <span>{event.eyebrow || "ABCN event"}</span>
+            {isFiali && (
+              <img
+                src="/assets/fiali/logos/abcn.png"
+                alt="ABCN Logo"
+                style={{ height: "42px", width: "auto" }}
+              />
+            )}
+            <span>{event.eyebrow || "ABCN Event"}</span>
           </div>
-          <p className="hero-date-line">{event.date_label || "Frankfurt · 2026"}</p>
-          <h1>{event.title}</h1>
+          <p className="hero-date-line">{event.date_label || "Frankfurt · 2026 · Dates to be announced"}</p>
+          <h1>
+            {isFiali ? (
+              <>
+                Female Innovation<br />
+                <em>Afropean Leadership</em><br />
+                Initiative
+              </>
+            ) : (
+              event.title
+            )}
+          </h1>
           <p className="benchmark-lead">{event.short_description}</p>
           <div className="benchmark-actions">
             {hasApplications ? (
-              <a className="benchmark-primary" href="#apply">{event.application_cta || "Apply now"} →</a>
+              <a className="benchmark-primary" href="#apply">
+                {event.application_cta || "Apply now"} →
+              </a>
             ) : event.registration_url ? (
-              <a className="benchmark-primary" href={event.registration_url} target="_blank" rel="noreferrer">Register now →</a>
+              <a className="benchmark-primary" href={event.registration_url} target="_blank" rel="noreferrer">
+                Register now →
+              </a>
             ) : (
               <span className="benchmark-primary disabled">Registration details coming soon</span>
             )}
-            <a className="benchmark-secondary" href="#about">Discover the programme ↓</a>
+            <a className="benchmark-secondary" href="#about">
+              Discover the programme ↓
+            </a>
           </div>
 
           <div className="benchmark-stats">
-            <div><strong>10–15</strong><span>founders</span></div>
-            <div><strong>02</strong><span>programme stages</span></div>
-            <div><strong>90 days</strong><span>growth planning</span></div>
+            <div>
+              <strong>10-15</strong>
+              <span>founders cohort</span>
+            </div>
+            <div>
+              <strong>02</strong>
+              <span>programme stages</span>
+            </div>
+            <div>
+              <strong>90 days</strong>
+              <span>growth roadmap</span>
+            </div>
           </div>
         </div>
         <div
@@ -77,32 +186,65 @@ export default function EventDetailPage() {
         </div>
       </section>
 
+      {/* Infinite Scrolling Logo Marquee for Verified Partner Ecosystem */}
       {isFiali && (
-        <section className="cooperation-band">
-          <div>
-            <span>Built with community</span>
-            <strong>Partner ecosystem</strong>
-          </div>
-          <img src="/assets/fiali/partners-strip.jpg" alt="FIALI programme partner logos" />
-        </section>
+        <LogoMarquee
+          logos={event.partners}
+          theme="light"
+          speed="normal"
+          label="FIALI Partner Ecosystem & Collaborators"
+          tagline="Frankfurt 2026"
+        />
       )}
 
+      {/* About Section */}
       <section id="about" className="benchmark-section benchmark-about">
         <div className="benchmark-section-intro">
           <span className="benchmark-kicker">About FIALI</span>
-          <h2>Build stronger.<br/><em>Scale with context.</em></h2>
+          <h2>
+            Build stronger.<br />
+            <em>Scale with context.</em>
+          </h2>
         </div>
         <div className="benchmark-about-copy">
           <p className="large">{event.description}</p>
           {event.long_description && <p>{event.long_description}</p>}
+          {isFiali && (
+            <div className="about-leadership-frame">
+              <div className="leadership-photo-card">
+                <img
+                  src="/assets/abcn/harmonie-essome.png"
+                  alt="Harmonie Essome - Programme Lead & Tech CEO"
+                />
+                <div className="leadership-caption">
+                  <span>Programme Lead</span>
+                  <strong>Harmonie Essome</strong>
+                </div>
+              </div>
+              <div className="leadership-photo-card">
+                <img
+                  src="/assets/fiali/female-founder-vision.jpg"
+                  alt="Female Founder Vision & Strategy Session"
+                />
+                <div className="leadership-caption">
+                  <span>Cohort Mission</span>
+                  <strong>Afropean Female Leadership</strong>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
+      {/* Four Focus Pillars Bento Grid */}
       {event.focus_areas.length > 0 && (
         <section className="focus-section">
           <div className="focus-heading">
-            <span className="benchmark-kicker">Focus areas</span>
-            <h2>Four areas.<br/>One stronger venture.</h2>
+            <span className="benchmark-kicker">Core curriculum</span>
+            <h2>
+              Four pillars.<br />
+              <em>One stronger venture.</em>
+            </h2>
           </div>
           <div className="focus-grid">
             {event.focus_areas.map((area, index) => (
@@ -116,40 +258,199 @@ export default function EventDetailPage() {
         </section>
       )}
 
+      {/* Interactive Two-Stage Growth Journey Section */}
       {event.stages.length > 0 && (
         <section id="journey" className="journey-section">
           <div className="journey-header">
             <span className="benchmark-kicker light">The journey</span>
-            <h2>Your FIALI<br/><em>growth journey.</em></h2>
+            <h2>
+              Your FIALI<br />
+              <em>growth journey.</em>
+            </h2>
             <p>
-              A carefully designed two-stage programme: first strengthen the venture,
-              then put it in the room with the people and institutions that can help it move.
+              A carefully sequenced two-stage programme: first sharpen the business fundamentals and AI execution in an intensive lab, then put your venture in the room with Frankfurt’s investors, corporates and ecosystem leaders.
             </p>
           </div>
+
+          {/* Interactive Stage Filter Tabs */}
+          <div className="stage-tabs" role="tablist" aria-label="Programme stages switcher">
+            <button
+              className={`stage-tab ${activeStage === "all" ? "active" : ""}`}
+              onClick={() => setActiveStage("all")}
+              type="button"
+            >
+              Full Journey (Stages 1 & 2)
+            </button>
+            <button
+              className={`stage-tab ${activeStage === 0 ? "active" : ""}`}
+              onClick={() => setActiveStage(0)}
+              type="button"
+            >
+              Stage 1: Growth Lab
+            </button>
+            <button
+              className={`stage-tab ${activeStage === 1 ? "active" : ""}`}
+              onClick={() => setActiveStage(1)}
+              type="button"
+            >
+              Stage 2: Networking Summit
+            </button>
+          </div>
+
           <div className="journey-grid">
-            {event.stages.map((stage, index) => (
+            {displayedStages.map((stage, index) => (
               <article className="journey-card" key={stage.title}>
-                <div className="journey-topline">
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <strong>{stage.stage}</strong>
+                <div>
+                  {isFiali && (
+                    <div className="stage-image-preview">
+                      <img
+                        src={stage.stage.includes("1") ? "/assets/fiali/growth-lab-session.jpg" : "/assets/fiali/female-founders-summit.jpg"}
+                        alt={stage.title}
+                      />
+                      <span className="stage-image-overlay">
+                        {stage.stage.includes("1") ? "Growth Lab AI Workshop" : "Networking Summit & Pitches"}
+                      </span>
+                    </div>
+                  )}
+                  <div className="journey-topline">
+                    <span>{String(activeStage === "all" ? index + 1 : Number(activeStage) + 1).padStart(2, "0")}</span>
+                    <strong>{stage.stage}</strong>
+                  </div>
+                  <h3>{stage.title}</h3>
+                  <div className="journey-tagline">
+                    {stage.stage.includes("1")
+                      ? "Intensive 1-Day Workshop · External AI Specialist · 90-Day Growth Plan"
+                      : "Corporate & Investor Access · Pitch Sessions · Matchmaking"}
+                  </div>
+                  <p style={{ marginTop: "18px" }}>{stage.description}</p>
                 </div>
-                <h3>{stage.title}</h3>
-                <p>{stage.description}</p>
-                <div className="journey-tags">
-                  {stage.items.map((item) => <span key={item}>{item}</span>)}
+                <div>
+                  <div className="journey-tags">
+                    {stage.items.map((item) => (
+                      <span key={item}>{item}</span>
+                    ))}
+                  </div>
+                  <div className="journey-arrow">→</div>
                 </div>
-                <div className="journey-arrow">→</div>
               </article>
             ))}
           </div>
         </section>
       )}
 
+      {/* Value Addition for Frankfurt Section */}
+      {isFiali && (
+        <section id="ecosystem" className="values-section">
+          <div className="values-heading">
+            <div>
+              <span className="benchmark-kicker">Ecosystem impact</span>
+              <h2>
+                Value addition for<br />
+                <em>the Frankfurt ecosystem.</em>
+              </h2>
+            </div>
+            <p style={{ maxWidth: "460px", color: "rgba(16,37,31,.7)", lineHeight: "1.65", margin: 0 }}>
+              FIALI strengthens Frankfurt as a premier international hub for diverse, high-growth entrepreneurship, connecting the diaspora with Germany’s financial capital.
+            </p>
+          </div>
+          <div className="values-grid">
+            {FRANKFURT_VALUES.map((item) => (
+              <article key={item.title} className="value-card">
+                <span className="num">{item.num} · PILLAR</span>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Dedicated FIALI Cohort in Motion Photo Gallery */}
+      {isFiali && (
+        <section id="gallery" className="fiali-gallery-section">
+          <div className="gallery-head">
+            <div>
+              <span className="benchmark-kicker">COHORT IN MOTION · AUTHENTIC MOMENTS</span>
+              <h2>
+                Empowering international<br />
+                <em>female founders in Frankfurt.</em>
+              </h2>
+            </div>
+            <p>
+              Moments from the FIALI initiative, ABCN founder growth labs, and international summits bridging diaspora enterprise with Frankfurt’s innovation economy.
+            </p>
+          </div>
+
+          <div className="fiali-gallery-grid">
+            <div className="fiali-gallery-card featured">
+              <img
+                src="/assets/fiali/female-founders-summit.jpg"
+                alt="Female Founders Networking Summit in Frankfurt"
+              />
+              <div className="fiali-gallery-info">
+                <span>STAGE 2 SUMMIT &amp; MATCHMAKING</span>
+                <strong>Founder Pitches &amp; Corporate Alliances</strong>
+              </div>
+            </div>
+
+            <div className="fiali-gallery-card">
+              <img
+                src="/assets/fiali/growth-lab-session.jpg"
+                alt="Female Innovation Growth Lab Session"
+              />
+              <div className="fiali-gallery-info">
+                <span>STAGE 1 GROWTH LAB</span>
+                <strong>Hands-on AI &amp; Business Models</strong>
+              </div>
+            </div>
+
+            <div className="fiali-gallery-card">
+              <img
+                src="/assets/fiali/female-founder-workshop.jpg"
+                alt="Digitalization & Prototype Scaling"
+              />
+              <div className="fiali-gallery-info">
+                <span>DIGITALIZATION &amp; TOOLS</span>
+                <strong>Prototyping &amp; Market Scaling</strong>
+              </div>
+            </div>
+
+            <div className="fiali-gallery-card">
+              <img
+                src="/assets/fiali/female-founder-vision.jpg"
+                alt="Vision & Market Positioning Session"
+              />
+              <div className="fiali-gallery-info">
+                <span>STRATEGIC POSITIONING</span>
+                <strong>Founder Narrative &amp; Leadership</strong>
+              </div>
+            </div>
+
+            <div className="fiali-gallery-card">
+              <img
+                src="/assets/abcn/collaborators.png"
+                alt="Frankfurt Founder Peer Collaboration"
+              />
+              <div className="fiali-gallery-info">
+                <span>COMMUNITY &amp; PEERS</span>
+                <strong>Frankfurt Founder Collaboration</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Why Join Benefits Section */}
       {event.benefits.length > 0 && (
         <section id="why-join" className="benefits-section">
           <div className="benefits-heading">
-            <span className="benchmark-kicker">Why join?</span>
-            <h2>What you gain from<br/><em>the programme.</em></h2>
+            <span className="benchmark-kicker">Tangible outcomes</span>
+            <h2>
+              What you gain from<br />
+              <em>the programme.</em>
+            </h2>
           </div>
           <div className="benefits-grid">
             {event.benefits.map((benefit, index) => (
@@ -163,67 +464,150 @@ export default function EventDetailPage() {
         </section>
       )}
 
+      {/* Startup Innovation Grant Feature Card */}
       {event.grants?.title && (
-        <section className="grant-section">
+        <section id="grants" className="grant-section">
           <div className="grant-benchmark-card">
             <div>
-              <span className="benchmark-kicker light">Founder support</span>
-              <strong className="grant-number">{event.grants.count || 2} × {event.grants.amount_each || "€500"}</strong>
+              <span className="benchmark-kicker light">Founder support fund</span>
+              <strong className="grant-number">
+                {event.grants.count || 2} × {event.grants.amount_each || "€500"}
+              </strong>
             </div>
             <div>
               <h2>{event.grants.title}</h2>
               <p>{event.grants.description}</p>
+              <div className="grant-expenses">
+                {GRANT_EXPENSES.map((exp) => (
+                  <span key={exp}>{exp}</span>
+                ))}
+              </div>
             </div>
           </div>
         </section>
       )}
 
+      {/* Eligibility Requirements & Interactive Self-Assessment */}
       {event.eligibility.length > 0 && (
-        <section className="eligibility-section">
+        <section id="eligibility" className="eligibility-section">
           <div>
-            <span className="benchmark-kicker">Who should apply</span>
-            <h2>Built for founders<br/>with room to scale.</h2>
+            <span className="benchmark-kicker">Cohort criteria</span>
+            <h2>
+              Built for founders<br />
+              <em>with room to scale.</em>
+            </h2>
             <p>
               {isFiali
-                ? "FIALI focuses on international female founders in Frankfurt and the Rhine-Main region, particularly within the diverse Afropean and immigrant community."
+                ? "FIALI is designed for ambitious international female founders in Frankfurt and the Rhine-Main region, particularly with an Afropean or immigrant diaspora background, scalable commercial models, and active interest in digitalization and AI."
                 : event.short_description}
             </p>
+
+            {/* Interactive Self-Assessment Checklist */}
+            <div className="eligibility-assessment">
+              <div className="assessment-meter">
+                <strong>Cohort Fit Self-Assessment</strong>
+                <span>
+                  {checkedCount} of {ELIGIBILITY_CRITERIA.length} criteria met
+                </span>
+              </div>
+              <div className="assessment-items">
+                {ELIGIBILITY_CRITERIA.map((criterion, idx) => {
+                  const isChecked = Boolean(checkedCriteria[idx]);
+                  return (
+                    <div
+                      key={criterion}
+                      className={`assessment-item ${isChecked ? "checked" : ""}`}
+                      onClick={() => toggleCriteria(idx)}
+                      role="checkbox"
+                      aria-checked={isChecked}
+                      tabIndex={0}
+                    >
+                      <div className="assessment-checkbox">{isChecked ? "✓" : ""}</div>
+                      <label>{criterion}</label>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="assessment-cta">
+                <p>
+                  {checkedCount >= 4
+                    ? "✨ You match the ideal founder profile for this cohort! We encourage you to apply."
+                    : checkedCount > 0
+                    ? "Review the points above. Applications are assessed holistically on growth potential."
+                    : "Select the criteria above that describe your venture to test your cohort fit."}
+                </p>
+                <a href="#apply">Go to application ↓</a>
+              </div>
+            </div>
           </div>
+
           <div className="eligibility-list">
             {event.eligibility.map((item, index) => (
-              <div key={item}><span>{String(index + 1).padStart(2, "0")}</span><strong>{item}</strong></div>
+              <div key={item}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{item}</strong>
+              </div>
             ))}
           </div>
         </section>
       )}
 
+      {/* Cohort Scarcity Band */}
       {hasApplications && (
         <section className="scarcity-band">
           <div>
             <span>Limited cohort</span>
-            <h2>10–15 founders.<br/>One focused room.</h2>
+            <h2>
+              10-15 founders.<br />
+              <em>One focused room.</em>
+            </h2>
           </div>
           <div>
-            <p>{event.application_deadline || "Applications are reviewed before places are confirmed."}</p>
+            <p>{event.application_deadline || "Applications are reviewed on a rolling basis. Cohort size is strictly limited."}</p>
             <a href="#apply">{event.application_cta || "Apply now"} →</a>
           </div>
         </section>
       )}
 
+      {/* Application Form Section */}
       {hasApplications && (
         <section id="apply" className="application-section">
           <div className="application-intro">
             <span className="benchmark-kicker">Express your interest</span>
-            <h2>Join the FIALI<br/><em>founder cohort.</em></h2>
+            <h2>
+              Join the FIALI<br />
+              <em>founder cohort.</em>
+            </h2>
             <p>
-              Tell us about you, what you are building and where you want to go next.
-              Places are intentionally limited so the programme can remain practical and high-touch.
+              Tell us about yourself, what you are building and where you want to go next. Places are intentionally limited to 10-15 founders so every participant receives high-touch guidance and direct ecosystem access.
             </p>
             <div className="application-facts">
-              <div><strong>Frankfurt</strong><span>Programme location</span></div>
-              <div><strong>10–15</strong><span>Founder cohort</span></div>
-              <div><strong>2 stages</strong><span>Lab + summit</span></div>
+              <div>
+                <strong>Frankfurt</strong>
+                <span>Rhine-Main location</span>
+              </div>
+              <div>
+                <strong>10-15</strong>
+                <span>Founders cohort</span>
+              </div>
+              <div>
+                <strong>2 stages</strong>
+                <span>Growth lab + summit</span>
+              </div>
             </div>
+            {isFiali && (
+              <div style={{ marginTop: "28px", display: "flex", alignItems: "center", gap: "16px", background: "rgba(15, 76, 56, 0.08)", padding: "16px 20px", borderRadius: "14px", border: "1px solid rgba(15, 76, 56, 0.15)" }}>
+                <img
+                  src="/assets/abcn/harmonie-essome.png"
+                  alt="Harmonie Essome"
+                  style={{ width: "52px", height: "52px", borderRadius: "50%", objectFit: "cover", objectPosition: "top", border: "2px solid #58ac8c" }}
+                />
+                <div>
+                  <strong style={{ display: "block", fontSize: "0.88rem", color: "#10251f" }}>Harmonie Essome</strong>
+                  <span style={{ fontSize: "0.72rem", color: "rgba(16, 37, 31, 0.72)" }}>Lead, FIALI Frankfurt 2026 · Founder &amp; CEO, SoftXcloud GmbH</span>
+                </div>
+              </div>
+            )}
           </div>
           <EventApplicationForm
             eventId={event.id}
@@ -234,10 +618,16 @@ export default function EventDetailPage() {
         </section>
       )}
 
+      {/* Footer with Logo Marquee Reprise & Network Links */}
       <footer className="events-footer benchmark-footer">
-        <strong>ABCN</strong>
-        <span>Afropean Business & Culture Network · Frankfurt 2026</span>
-        <Link href="/events">All events →</Link>
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <strong>ABCN</strong>
+          <span>Afropean Business & Culture Network · Frankfurt 2026</span>
+        </div>
+        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+          <Link href="/about">About ABCN</Link>
+          <Link href="/events">All ABCN events →</Link>
+        </div>
       </footer>
     </main>
   );

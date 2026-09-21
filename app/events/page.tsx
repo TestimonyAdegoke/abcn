@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import LogoMarquee from "@/components/LogoMarquee";
 import { neon } from "@/lib/neon";
 import { EventRecord, FIALI_FALLBACK, normaliseEvent } from "@/lib/events";
 
@@ -23,6 +24,7 @@ export default function EventsPage() {
         <Link className="events-brand" href="/">ABCN <small>Afropean Business & Culture Network</small></Link>
         <nav className="events-navlinks">
           <Link href="/">Home</Link>
+          <Link href="/about">About</Link>
           <Link href="/events">Events</Link>
           <Link href="/#join">Join network</Link>
         </nav>
@@ -56,6 +58,13 @@ export default function EventsPage() {
           ))}
         </div>
       </section>
+
+      <LogoMarquee
+        theme="light"
+        speed="slow"
+        label="Ecosystem & Institutional Partners"
+        tagline="Cross-Border Innovation"
+      />
 
       <footer className="events-footer">
         <strong>ABCN</strong>

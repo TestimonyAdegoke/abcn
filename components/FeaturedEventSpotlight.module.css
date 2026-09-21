@@ -75,14 +75,29 @@
 .facts {
   position: relative; z-index: 2;
   display: grid; grid-template-columns: repeat(4, 1fr);
-  margin-top: 64px;
-  border-top: 1px solid rgba(255,255,255,.2);
-  border-bottom: 1px solid rgba(255,255,255,.2);
+  margin-top: 56px;
+  border-top: 1px solid rgba(255,255,255,.14);
+  border-bottom: 1px solid rgba(255,255,255,.14);
+  padding: 8px 0;
 }
-.fact { padding: 19px 24px 20px 0; }
-.fact + .fact { padding-left: 24px; border-left: 1px solid rgba(255,255,255,.2); }
-.fact strong { display:block; margin-bottom:5px; color: var(--event-mint); font-size: .72rem; }
-.fact span { font-size: .58rem; text-transform: uppercase; letter-spacing: .11em; color: rgba(255,255,255,.58); }
+.fact { padding: 18px 24px 18px 0; }
+.fact + .fact { padding-left: 24px; border-left: 1px solid rgba(255,255,255,.14); }
+.fact strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #e2b978;
+  font-size: 1.45rem;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+.fact span {
+  font-size: .56rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.75);
+  font-weight: 600;
+  display: block;
+}
 @media (max-width: 900px) {
   .grid { grid-template-columns: 1fr; gap: 38px; }
   .copy { justify-self: start; }

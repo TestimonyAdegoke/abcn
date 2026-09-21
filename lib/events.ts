@@ -70,7 +70,7 @@ export const FIALI_FALLBACK: EventRecord = {
   short_description:
     "Empowering international female founders in Frankfurt through intensive business development, AI and digitalization, mentorship, matchmaking and ecosystem access.",
   description:
-    "A two-event pilot programme bringing together 10–15 international female founders from Frankfurt am Main to strengthen business models and connect directly with the city's business and innovation ecosystem.",
+    "A two-event pilot programme bringing together 10-15 international female founders from Frankfurt am Main to strengthen business models and connect directly with the city's business and innovation ecosystem.",
   long_description:
     "FIALI is designed to highlight entrepreneurial potential, build stronger ventures through hands-on workshops and expert support, and create concrete connections to corporates, investors, business angels and strategic partners. The programme is led by Harmonie Essome and centres Afropean leadership, inclusive innovation and international female entrepreneurship.",
   city: "Frankfurt am Main",
@@ -82,10 +82,8 @@ export const FIALI_FALLBACK: EventRecord = {
   status: "published",
   event_type: "Founder programme",
   organizer: "ABCN · led by Harmonie Essome",
-  hero_image_url:
-    "https://images.unsplash.com/photo-1758519291037-db9ec86cda69?auto=format&fit=crop&fm=jpg&q=86&w=1800",
-  card_image_url:
-    "https://images.unsplash.com/photo-1776039324982-449086984ceb?auto=format&fit=crop&fm=jpg&q=86&w=1800",
+  hero_image_url: "/assets/fiali/female-founders-summit.jpg",
+  card_image_url: "/assets/fiali/female-founder-workshop.jpg",
   registration_url: null,
   featured: true,
   priority: 100,
@@ -95,7 +93,7 @@ export const FIALI_FALLBACK: EventRecord = {
   deep_color: "#0F4C38",
   light_color: "#F0F5F3",
   highlights: [
-    "10–15 international female founders",
+    "10-15 international female founders",
     "Two-stage pilot programme",
     "AI & digitalization",
     "90-day growth planning",
@@ -113,46 +111,54 @@ export const FIALI_FALLBACK: EventRecord = {
         "Leadership & Positioning",
         "AI & Digitalization",
         "Go-to-Market Strategy",
+        "Individual 90-Day Growth Plan",
       ],
     },
     {
       stage: "Stage 2",
       title: "Female Founder Business Networking Summit",
       description:
-        "Curated access to Frankfurt’s business and innovation ecosystem through founder pitches, matchmaking, expert keynotes and strategic networking.",
+        "An exclusive evening ecosystem summit connecting cohort founders directly with Frankfurt corporates, investors, business angels, and institutional innovators.",
       items: [
         "Founder Pitches",
         "Business Matchmaking",
         "Expert Keynotes",
-        "AI & Innovation Insights",
+        "AI & Innovation Showcases",
       ],
     },
   ],
   eligibility: [
-    "Already incorporated or on the verge of doing so",
-    "Pursuing an innovative or scalable business model",
-    "Strong interest in digitalization and AI",
-    "High growth potential",
-    "Ambition to scale within Frankfurt",
+    "International female founders in Frankfurt and Rhine-Main",
+    "African / Afropean diaspora background strongly welcome",
+    "Innovative or scalable business model",
+    "High interest in AI and digitalization",
+    "Growth potential within Frankfurt",
   ],
   partners: [
-    { name: "ABCN", logo: "/assets/fiali/logos/abcn.png" },
+    { name: "ABCN (Afropean Business & Culture Network)", logo: "/assets/fiali/logos/abcn.png" },
     { name: "DIVOC Rising", logo: "/assets/fiali/logos/divoc-rising.png" },
-    { name: "Black Women in Tech DACH", logo: "/assets/fiali/logos/black-women-in-tech-dach.png" },
     { name: "Kompass Frankfurt", logo: "/assets/fiali/logos/kompass-frankfurt.png" },
-    { name: "Flourish & Prosper", logo: "/assets/fiali/logos/flourish-prosper.png" },
+    { name: "Black Women in Tech DACH", logo: "/assets/fiali/logos/black-women-in-tech-dach.png" },
     { name: "EquiNet", logo: "/assets/fiali/logos/equinet.png" },
+    { name: "Flourish & Prosper", logo: "/assets/fiali/logos/flourish-prosper.png" },
   ],
   grants: {
     count: 2,
     amount_each: "€500",
-    title: "Startup Innovation Grant",
+    title: "Startup Innovation Grants",
     description:
       "Two grants of €500 each support early-stage founders developing digital or technical solutions, including prototyping, product development, branding, market entry, initial marketing and sales, and eligible incorporation expenses.",
   },
-  gallery: [],
+  gallery: [
+    "/assets/fiali/female-founders-summit.jpg",
+    "/assets/fiali/growth-lab-session.jpg",
+    "/assets/fiali/female-founder-workshop.jpg",
+    "/assets/fiali/female-founder-vision.jpg",
+    "/assets/abcn/collaborators.png",
+    "/assets/abcn/harmonie-essome.png",
+  ],
   application_open: true,
-  application_deadline: "Applications reviewed on a rolling basis · limited cohort of 10–15 founders",
+  application_deadline: "Applications reviewed on a rolling basis · limited cohort of 10-15 founders",
   application_cta: "Apply for FIALI",
   focus_areas: [
     { title: "Business Model Development", description: "Sharpen the model, value proposition and commercial logic behind the venture." },

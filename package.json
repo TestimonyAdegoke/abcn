@@ -8,10 +8,13 @@
     "start": "next start"
   },
   "dependencies": {
+    "@neondatabase/neon-js": "0.7.0-beta",
+    "@types/three": "^0.186.0",
+    "gsap": "^3.15.0",
     "next": "15.5.24",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "@neondatabase/neon-js": "0.7.0-beta"
+    "three": "^0.186.0"
   },
   "devDependencies": {
     "@types/node": "22.13.10",

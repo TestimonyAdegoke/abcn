@@ -1,4 +1,4 @@
-# ABCN — Afropean Business & Culture Network
+# ABCN - Afropean Business & Culture Network
 
 A bespoke digital home for the Afropean Business & Culture Network.
 

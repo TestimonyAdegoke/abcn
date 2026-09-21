@@ -1,0 +1,159 @@
+.marqueeWrap {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: transparent !important;
+  border: none !important;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5vw;
+  margin-bottom: 2px;
+}
+
+.headerLabel {
+  font-size: 0.54rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 800;
+  opacity: 0.72;
+}
+
+.marqueeWrap.light .headerLabel {
+  color: #12241d;
+}
+
+.marqueeWrap.dark .headerLabel {
+  color: #a3e7d8;
+}
+
+.headerTag {
+  font-size: 0.52rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.55;
+  color: inherit;
+}
+
+.marqueeTrackWrap {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: transparent !important;
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+}
+
+.marqueeTrack {
+  display: flex;
+  gap: 48px;
+  align-items: center;
+  flex-shrink: 0;
+  animation: scrollMarquee 26s linear infinite;
+  will-change: transform;
+  background: transparent !important;
+}
+
+.marqueeWrap:hover .marqueeTrack {
+  animation-play-state: paused;
+}
+
+.slow .marqueeTrack {
+  animation-duration: 38s;
+}
+
+.fast .marqueeTrack {
+  animation-duration: 18s;
+}
+
+@keyframes scrollMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.logoCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  min-width: 160px;
+  padding: 0 16px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+
+.logoCard:hover {
+  transform: translateY(-2px);
+}
+
+.logoImage {
+  max-height: 48px;
+  max-width: 160px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: grayscale(80%) brightness(90%) contrast(105%);
+  opacity: 0.82;
+  transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.marqueeWrap.dark .logoImage {
+  filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+  opacity: 0.78;
+}
+
+.marqueeWrap.dark .logoCard:hover .logoImage {
+  filter: none drop-shadow(0 4px 16px rgba(163, 231, 216, 0.35));
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.marqueeWrap.light .logoCard:hover .logoImage {
+  filter: grayscale(0%) contrast(105%) brightness(100%);
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.logoNameFallback {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: currentColor;
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .logoCard {
+    height: 52px;
+    min-width: 130px;
+    padding: 0 10px;
+  }
+  .logoImage {
+    max-height: 38px;
+    max-width: 130px;
+  }
+  .marqueeTrack {
+    gap: 30px;
+    animation-duration: 20s;
+  }
+}

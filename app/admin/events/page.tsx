@@ -328,13 +328,13 @@ export default function EventsAdminPage() {
               <div className="cms-divider cms-full" />
               <label>Accent colour<input type="color" value={form.accent_color || "#58AC8C"} onChange={(e)=>update("accent_color",e.target.value)} /></label>
               <label>Deep colour<input type="color" value={form.deep_color || "#0F4C38"} onChange={(e)=>update("deep_color",e.target.value)} /></label>
-              <label className="cms-full">Highlights — one per line<textarea value={(form.highlights || []).join("\n")} onChange={(e)=>update("highlights",lines(e.target.value))} /></label>
-              <label className="cms-full">Focus areas — Title | Description<textarea value={focusText} onChange={(e)=>update("focus_areas",cardsFromText(e.target.value))} /></label>
-              <label className="cms-full">Benefits / Why join — Title | Description<textarea value={benefitsText} onChange={(e)=>update("benefits",cardsFromText(e.target.value))} /></label>
-              <label className="cms-full">Eligibility — one per line<textarea value={(form.eligibility || []).join("\n")} onChange={(e)=>update("eligibility",lines(e.target.value))} /></label>
-              <label className="cms-full">Partners — Name | Logo URL | Website<textarea value={partnersText} onChange={(e)=>update("partners",partnersFromText(e.target.value))} /></label>
-              <label className="cms-full">Programme stages — JSON<textarea style={{minHeight:220}} value={stagesText} onChange={(e)=>{try{update("stages",JSON.parse(e.target.value) as EventStage[]);setError("")}catch{setError("Stages JSON is not valid yet.")}}} /></label>
-              <label className="cms-full">Grant / support — JSON<textarea value={grantsText} onChange={(e)=>{try{update("grants",JSON.parse(e.target.value));setError("")}catch{setError("Grant JSON is not valid yet.")}}} /></label>
+              <label className="cms-full">Highlights - one per line<textarea value={(form.highlights || []).join("\n")} onChange={(e)=>update("highlights",lines(e.target.value))} /></label>
+              <label className="cms-full">Focus areas - Title | Description<textarea value={focusText} onChange={(e)=>update("focus_areas",cardsFromText(e.target.value))} /></label>
+              <label className="cms-full">Benefits / Why join - Title | Description<textarea value={benefitsText} onChange={(e)=>update("benefits",cardsFromText(e.target.value))} /></label>
+              <label className="cms-full">Eligibility - one per line<textarea value={(form.eligibility || []).join("\n")} onChange={(e)=>update("eligibility",lines(e.target.value))} /></label>
+              <label className="cms-full">Partners - Name | Logo URL | Website<textarea value={partnersText} onChange={(e)=>update("partners",partnersFromText(e.target.value))} /></label>
+              <label className="cms-full">Programme stages - JSON<textarea style={{minHeight:220}} value={stagesText} onChange={(e)=>{try{update("stages",JSON.parse(e.target.value) as EventStage[]);setError("")}catch{setError("Stages JSON is not valid yet.")}}} /></label>
+              <label className="cms-full">Grant / support - JSON<textarea value={grantsText} onChange={(e)=>{try{update("grants",JSON.parse(e.target.value));setError("")}catch{setError("Grant JSON is not valid yet.")}}} /></label>
             </div>
             <div className="cms-actions"><button onClick={saveEvent} disabled={saving}>{saving ? "Saving…" : selectedId ? "Save changes" : "Create event"}</button>{selectedId && <button className="danger" onClick={removeEvent}>Delete event</button>}<button className="secondary" onClick={()=>setForm({...FIALI_FALLBACK})}>Load FIALI template</button></div>
 

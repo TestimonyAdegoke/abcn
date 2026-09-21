@@ -58,15 +58,15 @@ The site uses remote Unsplash photography selected for business, culture and com
 For production longevity, these can later be replaced with ABCN-owned event photography.
 
 
-## FIALI event programme — supplied source
+## FIALI event programme - supplied source
 
 Source: `Afro-European Female Innovators Initiative.pdf`, supplied for the September 2026 website update.
 
 Verified programme details used in the Events section:
-- **Female Innovation Afropean Leadership Initiative (FIALI)** — Frankfurt 2026.
+- **Female Innovation Afropean Leadership Initiative (FIALI)** - Frankfurt 2026.
 - Led by **Harmonie Essome** and positioned around empowering international female founders in Frankfurt.
 - Two-stage pilot: **Female Innovation Growth Lab** followed by the **Female Founder Business Networking Summit**.
-- Target cohort: **10–15 international female founders** in Frankfurt / Rhine-Main, with a particular Afropean / immigrant diaspora focus, scalable business models and strong interest in AI and digitalization.
+- Target cohort: **10-15 international female founders** in Frankfurt / Rhine-Main, with a particular Afropean / immigrant diaspora focus, scalable business models and strong interest in AI and digitalization.
 - Stage 1 covers business-model development, leadership and positioning, AI and digitalization, and go-to-market strategy, culminating in an individual 90-day growth plan.
 - Stage 2 covers founder pitches, business matchmaking, expert keynotes and AI / innovation insights.
 - Two **€500 Startup Innovation Grants** are described for eligible early-stage founders.
