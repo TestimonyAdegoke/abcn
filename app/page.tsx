@@ -546,7 +546,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Benchmark-Inspired Why Section: 6-Card Numbered Value Grid */}
+      {/* The Female Founders & Innovators Mandate */}
       <section id="why" className="why-section">
         <div className="why-header">
           <div className="hero-eyebrow-dots">
@@ -554,169 +554,54 @@ export default function Home() {
             <span className="dot dot-blue" />
             <span className="dot dot-gold" />
             <span className="dot dot-red" />
-            <span>04 · VALUE CREATION &amp; INFRASTRUCTURE</span>
+            <span>04 · THE FEMALE FOUNDERS &amp; INNOVATORS MANDATE</span>
           </div>
           <h2>
-            What you gain from<br />
-            <em>this living ecosystem.</em>
+            Empowering Afro-European Women<br />
+            <em>to Lead, Build &amp; Scale.</em>
           </h2>
-          <p style={{ color: "#8da4b8", fontSize: "0.92rem", maxWidth: "680px", marginTop: "10px", lineHeight: "1.6" }}>
-            A structured platform where diaspora ambition meets corporate velocity, investment readiness, and cross-border scalability.
+          <p style={{ color: "#a4b9cb", fontSize: "0.95rem", maxWidth: "680px", marginTop: "12px", lineHeight: "1.62" }}>
+            A dedicated ecosystem breaking the venture capital gap, expanding executive boardrooms, and unlocking bilateral European-African market pathways for women innovators.
           </p>
         </div>
 
         <div className="why-grid">
           <div className="why-card">
             <div className="why-num">01</div>
-            <h4>Dual-Continent Fluency</h4>
+            <h4>Early-Stage Grants &amp; Capital</h4>
             <p>
-              Operate with native credibility across European executive boardrooms and high-growth African commercial markets without code-switching or dilution.
+              Direct eligibility for the FIALI €500 × 2 Startup Innovation Grants, pitch showcases, and introductions to angel syndicates actively backing women founders.
             </p>
           </div>
 
           <div className="why-card">
             <div className="why-num">02</div>
-            <h4>Direct Market Access</h4>
+            <h4>Executive Sisterhood</h4>
             <p>
-              Verified regulatory pathways, local market intelligence, and institutional introductions across Germany, France, and Central Africa.
+              A high-trust, confidential network of female directors, corporate executives, and founders sharing proprietary deal flow, board access, and tactical guidance.
             </p>
           </div>
 
           <div className="why-card">
             <div className="why-num">03</div>
-            <h4>Seed Capital &amp; Innovation Grants</h4>
+            <h4>AI &amp; Digital Toolkits</h4>
             <p>
-              Direct eligibility for the FIALI €500 × 2 Startup Innovation Grants, with bespoke introductions to angel syndicates and diaspora venture funds.
+              Practical masterclasses in AI automation, customer intelligence workflows, and modern software toolkits designed to help female founders scale with lean teams.
             </p>
           </div>
 
           <div className="why-card">
             <div className="why-num">04</div>
-            <h4>Practical AI Toolkits</h4>
+            <h4>Bilateral Market Corridors</h4>
             <p>
-              Master actionable AI automation workflows, customer intelligence models, and operational toolkits built for rapid execution.
-            </p>
-          </div>
-
-          <div className="why-card">
-            <div className="why-num">05</div>
-            <h4>Cross-Border Policy &amp; Advisory</h4>
-            <p>
-              Direct advisory conduits linking diaspora entrepreneurs with municipal innovation leaders, trade bodies, and pan-African summit delegations.
-            </p>
-          </div>
-
-          <div className="why-card">
-            <div className="why-num">06</div>
-            <h4>High-Trust Sisterhood</h4>
-            <p>
-              A curated cohort of founders, executives, and creative directors who share deal flow, institutional access, and tactical guidance.
+              Direct conduits connecting female entrepreneurs in Germany and Europe with African commercial ecosystems, municipal leaders, and trade delegations.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Benchmark-Inspired Cross-Border Innovation Corridors */}
-      <section id="corridors" className="corridors-section">
-        <div className="why-header">
-          <div className="hero-eyebrow-dots">
-            <span className="dot dot-green" />
-            <span className="dot dot-blue" />
-            <span className="dot dot-gold" />
-            <span className="dot dot-red" />
-            <span>05 · BILATERAL CORRIDORS · EUROPE ↔ AFRICA</span>
-          </div>
-          <h2>
-            Four Connected Hubs.<br />
-            <em>One Unified Corridor.</em>
-          </h2>
-          <p style={{ color: "#8da4b8", fontSize: "0.92rem", maxWidth: "680px", marginTop: "10px", lineHeight: "1.6" }}>
-            Connecting the Rhine-Main financial hub with key diaspora capitals and the Cameroon International Tech Summit (CITS 2026).
-          </p>
-        </div>
-
-        <div className="corridors-grid">
-          {/* Hub 01: Frankfurt */}
-          <div className="corridor-card">
-            <div className="corridor-img-wrap">
-              <img src="/assets/fiali/female-founders-summit.jpg" alt="Frankfurt am Main" />
-              <div className="corridor-num-badge">01 · DE</div>
-            </div>
-            <div className="corridor-body">
-              <span className="corridor-date">Headquarters &amp; Flagship</span>
-              <h3 className="corridor-city">Frankfurt am Main</h3>
-              <p className="corridor-desc">
-                Financial capital of continental Europe and home to ABCN&rsquo;s flagship FIALI 2026 Female Innovators Initiative.
-              </p>
-              <div className="corridor-tags">
-                <span className="corridor-tag">FIALI 2026</span>
-                <span className="corridor-tag">Rhine-Main</span>
-                <span className="corridor-tag">Ecosystem</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hub 02: Paris */}
-          <div className="corridor-card">
-            <div className="corridor-img-wrap">
-              <img src="/assets/abcn/collaborators.png" alt="Paris, France" />
-              <div className="corridor-num-badge">02 · FR</div>
-            </div>
-            <div className="corridor-body">
-              <span className="corridor-date">Francophone Capital</span>
-              <h3 className="corridor-city">Paris</h3>
-              <p className="corridor-desc">
-                Creative heartbeat and major diaspora capital bridging pan-European fashion, media, culinary arts, and venture capital.
-              </p>
-              <div className="corridor-tags">
-                <span className="corridor-tag">Creative Economy</span>
-                <span className="corridor-tag">Culture</span>
-                <span className="corridor-tag">Venture</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hub 03: Douala */}
-          <div className="corridor-card">
-            <div className="corridor-img-wrap">
-              <img src="/assets/abcn/ecosystem-network.png" alt="Douala, Cameroon" />
-              <div className="corridor-num-badge">03 · CM</div>
-            </div>
-            <div className="corridor-body">
-              <span className="corridor-date">Commercial Engine</span>
-              <h3 className="corridor-city">Douala</h3>
-              <p className="corridor-desc">
-                Central Africa&rsquo;s bustling private sector metropolis. Strategic B2B meetings, supply chain logistics, and direct commerce.
-              </p>
-              <div className="corridor-tags">
-                <span className="corridor-tag">Enterprise</span>
-                <span className="corridor-tag">Trade</span>
-                <span className="corridor-tag">Private Sector</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hub 04: Yaoundé (Star Card - CITS 2026) */}
-          <div className="corridor-card corridor-card--star">
-            <div className="corridor-img-wrap">
-              <img src="/assets/fiali/female-founder-vision.jpg" alt="Yaoundé CITS Summit" />
-              <div className="corridor-num-badge corridor-star-badge">04 ★ CITS</div>
-            </div>
-            <div className="corridor-body">
-              <span className="corridor-date" style={{ color: "#ffb833" }}>15-17 Oct · Tech Summit</span>
-              <h3 className="corridor-city">Yaoundé</h3>
-              <p className="corridor-desc">
-                Culmination at the Cameroon International Tech Summit (Palais des Congrès &amp; Mountain Hub Incubator). High-level trade delegation &amp; deal rooms.
-              </p>
-              <div className="corridor-tags">
-                <span className="corridor-tag" style={{ background: "rgba(224,144,0,0.15)", color: "#ffc966", borderColor: "rgba(224,144,0,0.3)" }}>CITS 2026</span>
-                <span className="corridor-tag">Mountain Hub</span>
-                <span className="corridor-tag">Tech Summit</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Flagship Initiative Spotlight: FIALI 2026 for Female Innovators */}
+      <FeaturedEventSpotlight />
 
       {/* Redesigned Manifesto Section */}
       <section id="manifesto" className="manifesto">
