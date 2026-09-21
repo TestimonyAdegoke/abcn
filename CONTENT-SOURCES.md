@@ -56,3 +56,32 @@ The site uses remote Unsplash photography selected for business, culture and com
 - Ben Iwara / Unsplash
 
 For production longevity, these can later be replaced with ABCN-owned event photography.
+
+
+## FIALI event programme — supplied source
+
+Source: `Afro-European Female Innovators Initiative.pdf`, supplied for the September 2026 website update.
+
+Verified programme details used in the Events section:
+- **Female Innovation Afropean Leadership Initiative (FIALI)** — Frankfurt 2026.
+- Led by **Harmonie Essome** and positioned around empowering international female founders in Frankfurt.
+- Two-stage pilot: **Female Innovation Growth Lab** followed by the **Female Founder Business Networking Summit**.
+- Target cohort: **10–15 international female founders** in Frankfurt / Rhine-Main, with a particular Afropean / immigrant diaspora focus, scalable business models and strong interest in AI and digitalization.
+- Stage 1 covers business-model development, leadership and positioning, AI and digitalization, and go-to-market strategy, culminating in an individual 90-day growth plan.
+- Stage 2 covers founder pitches, business matchmaking, expert keynotes and AI / innovation insights.
+- Two **€500 Startup Innovation Grants** are described for eligible early-stage founders.
+- Partner marks shown in the supplied deck include ABCN, DIVOC Rising, Black Women in Tech DACH, Kompass Frankfurt, Flourish & Prosper and EquiNet.
+
+### Date / venue caution
+The deck consistently identifies the programme as **Frankfurt 2026** but does not provide a trustworthy confirmed event date or venue. A slide labelled “June 23, 2035” conflicts with the rest of the document and is treated as an unverified template artefact, not a public event date. The website therefore says **“Dates to be announced”** until the CMS is updated with confirmed logistics.
+
+### FIALI visual identity
+The website event theme is sampled from the supplied deck:
+- Deep green: `#0F4C38`
+- Forest / teal: `#1F684F`
+- Mid green: `#318E6C`
+- Accent mint-green: `#58AC8C`
+- Light mint: `#A7DEC8`
+- Near-white: `#F0F5F3`
+
+Partner/logo assets should be treated as programme-provided marks from the supplied document.
