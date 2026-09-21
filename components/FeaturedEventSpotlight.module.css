@@ -112,3 +112,11 @@
   .eventMark{border-right:0;border-bottom:1px solid rgba(15,76,56,.18);padding:0 0 12px}
   .partnerBand img{height:auto;max-height:78px}
 }
+
+.urgency{
+  margin-top:16px;padding:10px 12px;
+  border-left:2px solid var(--event-mint);
+  background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.65);
+  font-size:.54rem;line-height:1.5;letter-spacing:.08em;text-transform:uppercase;
+}
