@@ -172,6 +172,11 @@ export default function Home() {
         <div className="orbit orbit-b" />
 
         <div className="hero-copy reveal">
+          <a className="event-announcement" href="/events/fiali-frankfurt-2026#apply">
+            <span>NOW FEATURED</span>
+            <strong>FIALI · Frankfurt 2026</strong>
+            <i>Applications · limited founder cohort →</i>
+          </a>
           <p className="eyebrow"><span /> BUSINESS · CULTURE · COMMUNITY</p>
           <h1>
             African roots.
