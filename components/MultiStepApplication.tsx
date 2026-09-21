@@ -1,6 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import { neon } from "@/lib/neon";
+
+type Props = {
+  eventId?: string;
+  eventSlug: string;
+  eventTitle: string;
+};
 
 interface FormData {
   firstName: string;
@@ -36,13 +43,13 @@ const initialData: FormData = {
   consent: false,
 };
 
-export default function MultiStepApplication() {
+export default function MultiStepApplication({ eventId, eventSlug, eventTitle }: Props) {
   const [step, setStep] = useState<number>(1);
   const [formData, setFormData] = useState<FormData>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
-  const [refId, setRefId] = useState<string>("");
+  const [submitError, setSubmitError] = useState<string>("");
 
   const updateField = (field: keyof FormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -90,16 +97,58 @@ export default function MultiStepApplication() {
     setStep((s) => Math.max(s - 1, 1));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep(4)) return;
 
+    setSubmitError("");
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setRefId(`FIALI-2026-${Math.floor(1000 + Math.random() * 9000)}`);
+
+    try {
+      let id = eventId;
+      if (!id) {
+        const { data, error: eventError } = await neon
+          .from("events")
+          .select("id")
+          .eq("slug", eventSlug)
+          .eq("status", "published")
+          .limit(1);
+        if (eventError || !data?.[0]?.id) {
+          throw new Error("This programme is not currently accepting applications.");
+        }
+        id = String(data[0].id);
+      }
+
+      const { error: insertError } = await neon.from("event_applications").insert({
+        event_id: id,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        role_title: formData.jobTitle,
+        email: formData.email,
+        phone: formData.phone,
+        city: "",
+        country: formData.country,
+        company_name: formData.companyName,
+        company_website: formData.companyUrl,
+        business_model: formData.sector,
+        venture_stage: formData.stage,
+        ai_interest: formData.aiFocus,
+        motivation: formData.motivation,
+        goals: formData.grantInterest,
+        referral_source: "",
+        consent: formData.consent,
+        status: "submitted",
+      });
+      if (insertError) throw insertError;
+
       setIsSubmitted(true);
-    }, 1200);
+    } catch (err: any) {
+      setSubmitError(
+        err?.message || "We could not submit your application. Please try again, or email us directly."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {
@@ -155,9 +204,9 @@ export default function MultiStepApplication() {
           textAlign: "left",
           lineHeight: "1.6"
         }}>
-          <div>• Confirmation email sent to: <strong style={{ color: "#fff" }}>{formData.email}</strong></div>
-          <div>• Reference ID: <strong style={{ color: "#E09000", fontFamily: "monospace" }}>{refId}</strong></div>
-          <div>• Secretariat Contact: <span style={{ color: "#fff" }}>harmonie.essome@softxcloud.net</span></div>
+          <div>• We will reply to: <strong style={{ color: "#fff" }}>{formData.email}</strong></div>
+          <div>• Programme: <strong style={{ color: "#E09000" }}>{eventTitle}</strong></div>
+          <div>• Questions? <span style={{ color: "#fff" }}>harmonie.essome@softxcloud.net</span></div>
         </div>
         <button
           type="button"
@@ -491,6 +540,24 @@ export default function MultiStepApplication() {
                 </label>
                 {errors.consent && <div className="wizard-err">{errors.consent}</div>}
               </div>
+            </div>
+          )}
+
+          {submitError && (
+            <div
+              role="alert"
+              style={{
+                marginTop: "18px",
+                padding: "12px 16px",
+                borderRadius: "12px",
+                background: "rgba(214, 69, 69, 0.12)",
+                border: "1px solid rgba(214, 69, 69, 0.35)",
+                color: "#ffb4b4",
+                fontSize: "0.8rem",
+                lineHeight: 1.55,
+              }}
+            >
+              {submitError}
             </div>
           )}
 
