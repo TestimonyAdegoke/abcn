@@ -18,10 +18,12 @@ export default function FeaturedEventSpotlight() {
       .eq("show_on_home", true)
       .order("priority", { ascending: false })
       .limit(1)
-      .then(({ data }) => {
-        if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>));
-      })
-      .catch(() => {});
+      .then(
+        ({ data }) => {
+          if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>));
+        },
+        () => {}
+      );
     return () => { live = false; };
   }, []);
 
