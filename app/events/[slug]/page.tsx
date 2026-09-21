@@ -86,23 +86,27 @@ export default function EventDetailPage() {
         </section>
       )}
 
-      <section className="detail-section audience-grid">
-        <div>
-          <span className="detail-kicker">Who it is for</span>
-          <h2>International female founders with room to scale.</h2>
-          <p className="detail-note">
-            FIALI focuses on founders in Frankfurt and the Rhine-Main region, particularly within the diverse Afropean, immigrant and international community, with scalable models and an interest in AI and digitalization.
-          </p>
-        </div>
-        <div>
-          <span className="detail-kicker">Participation requirements</span>
-          <div className="requirements">
-            {event.eligibility.map((item, index) => (
-              <div className="requirement" key={item}><span>{String(index + 1).padStart(2, "0")}</span><span>{item}</span></div>
-            ))}
+      {event.eligibility.length > 0 && (
+        <section className="detail-section audience-grid">
+          <div>
+            <span className="detail-kicker">Who it is for</span>
+            <h2>{isFiali ? "International female founders with room to scale." : "Who should take part."}</h2>
+            <p className="detail-note">
+              {isFiali
+                ? "FIALI focuses on founders in Frankfurt and the Rhine-Main region, particularly within the diverse Afropean, immigrant and international community, with scalable models and an interest in AI and digitalization."
+                : event.short_description}
+            </p>
           </div>
-        </div>
-      </section>
+          <div>
+            <span className="detail-kicker">Participation requirements</span>
+            <div className="requirements">
+              {event.eligibility.map((item, index) => (
+                <div className="requirement" key={item}><span>{String(index + 1).padStart(2, "0")}</span><span>{item}</span></div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {event.grants?.title && (
         <section className="detail-section">
