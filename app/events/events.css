@@ -103,3 +103,7 @@
  .stage-items{grid-template-columns:1fr}.partner-list{grid-template-columns:1fr}
  .grant-card{padding:30px}.events-footer{padding:35px 22px;align-items:flex-start;flex-direction:column}
 }
+
+.fiali-abcn-logo{width:170px;max-height:82px;object-fit:contain;object-position:left center;background:white;padding:8px;margin-bottom:24px}
+.partner-strip{margin-top:46px;padding:24px;background:white;border:1px solid rgba(16,37,31,.15);overflow:hidden}
+.partner-strip img{display:block;width:100%;height:auto;max-height:130px;object-fit:contain}
