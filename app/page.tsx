@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import FeaturedEventSpotlight from "@/components/FeaturedEventSpotlight";
 
 const instagram = "https://www.instagram.com/afropeanbusinessnetwork/";
 const founderInstagram = "https://www.instagram.com/harmonieessome/";
@@ -128,6 +129,7 @@ export default function Home() {
         <nav className={"nav-links " + (menu ? "open" : "")}>
           <a href="#about" onClick={() => setMenu(false)}>About</a>
           <a href="#network" onClick={() => setMenu(false)}>Network</a>
+          <a href="/events" onClick={() => setMenu(false)}>Events</a>
           <a href="#founder" onClick={() => setMenu(false)}>Founder</a>
           <a href="#join" onClick={() => setMenu(false)}>Join</a>
         </nav>
@@ -221,6 +223,8 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      <FeaturedEventSpotlight />
 
       <section id="about" className="section paper about">
         <div className="section-no">01</div>
@@ -432,6 +436,7 @@ export default function Home() {
         <div className="footer-links">
           <a href="#about">About</a>
           <a href="#network">Network</a>
+          <a href="/events">Events</a>
           <a href="#founder">Founder</a>
           <a href={instagram} target="_blank" rel="noreferrer">Instagram</a>
         </div>
