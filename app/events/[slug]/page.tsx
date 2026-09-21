@@ -18,7 +18,7 @@ export default function EventDetailPage() {
     neon.from("events").select("*").eq("slug", slug).eq("status", "published").limit(1)
       .then(({ data }) => {
         if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>));
-      }).catch(() => {});
+      }, () => {});
     return () => { live = false; };
   }, [slug]);
 
