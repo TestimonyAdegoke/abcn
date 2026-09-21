@@ -35,6 +35,7 @@ export default function EventDetailPage() {
 
       <section className="detail-hero">
         <div className="detail-hero-copy">
+          {isFiali && <img className="fiali-abcn-logo" src="/assets/fiali/logos/abcn.png" alt="ABCN" />}
           <span className="mini">{event.eyebrow || "ABCN event"}</span>
           <h1>{event.title}</h1>
           <p>{event.short_description}</p>
@@ -118,12 +119,15 @@ export default function EventDetailPage() {
         <section className="detail-section partners">
           <span className="detail-kicker">Partner ecosystem</span>
           <h2>Built with community.</h2>
+          {isFiali && (
+            <div className="partner-strip">
+              <img src="/assets/fiali/partners-strip.jpg" alt="FIALI programme partner logos" />
+            </div>
+          )}
           <div className="partner-list">
             {event.partners.map((partner) => (
               <div className="partner" key={partner.name}>
-                {partner.logo ? (
-                  <img src={partner.logo} alt={partner.name + " logo"} onError={(e) => { e.currentTarget.style.display = "none"; }} />
-                ) : null}
+                {!isFiali && partner.logo ? <img src={partner.logo} alt={partner.name + " logo"} /> : null}
                 <span>{partner.name}</span>
               </div>
             ))}
