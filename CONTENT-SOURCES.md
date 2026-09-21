@@ -85,3 +85,55 @@ The website event theme is sampled from the supplied deck:
 - Near-white: `#F0F5F3`
 
 Partner/logo assets should be treated as programme-provided marks from the supplied document.
+---
+
+## Messaging architecture (added in the Phase 0-4 revision)
+
+ABCN is an **inclusive** platform. FIALI is a **women-only programme inside it**.
+The site must hold that distinction on both axes - words and pictures.
+
+| Surface | Audience | Imagery |
+| --- | --- | --- |
+| `/` hero, About, Join, footer | Everyone: founders, professionals, creatives, organisations | Mixed-gender, visibly Afropean, ABCN-owned |
+| `/` FIALI spotlight, `/events/fiali-frankfurt-2026` | International female founders | FIALI programme photography |
+
+**Rule: do not use `/public/assets/fiali/*` on a brand surface.** That boundary is
+what previously failed - FIALI assets became the brand's imagery, so an inclusive
+platform read as a women's network to anyone who landed on the homepage.
+
+## Outstanding: brand photography
+
+Every photograph of people in this repository is of women, and two of the brand
+images are weak on their own terms:
+
+- `assets/abcn/ecosystem-network.png` - **not a photograph.** A flat green
+  gradient with circles. It is currently marked decorative (`alt=""`) and given
+  an emblem overlay so it reads as an intentional graphic panel rather than a
+  broken image. It should be replaced with a real photograph.
+- `assets/abcn/collaborators.png` - generic stock-style image with no visible
+  Afropean context; appears to be AI-generated.
+
+**Needed:** ABCN-owned event photography, mixed-gender, visibly Afropean, ideally
+from real ABCN gatherings. Until it exists the homepage cannot fully deliver the
+inclusive positioning above, no matter what the copy says.
+
+## Outstanding: facts the site cannot state yet
+
+These are genuinely unknown from any supplied source. Do not guess them:
+
+- FIALI exact dates and venue (the deck's "June 23, 2035" is a template artefact).
+- Whether FIALI has a participation fee.
+- The working language of the programme (English, German, or both).
+- ABCN-level partner organisations. The hero previously claimed "In Strategic
+  Alliance: Mountain Hub / SoftXcloud GmbH / CITS 2026 / Kompass Frankfurt /
+  BWIT DACH". None of these is evidenced as an ABCN partnership in any supplied
+  document, so the strip was removed. Restore it only with confirmed partners.
+
+The FIALI FAQ in `app/events/[slug]/page.tsx` answers only what the deck supports
+and carries a comment listing the four questions above as deliberately unanswered.
+
+## Outstanding: testimonials
+
+`components/Voices.tsx` renders the member-voices section but ships with an empty
+list, so nothing appears until real, attributable quotes are added. Testimonials
+were not invented. This is the single highest-value addition left on the site.

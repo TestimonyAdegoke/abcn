@@ -2,9 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
-import HeroScene from "@/components/HeroScene";
+import dynamic from "next/dynamic";
 import FeaturedEventSpotlight from "@/components/FeaturedEventSpotlight";
 import NavExtras from "@/components/NavExtras";
+import Voices from "@/components/Voices";
+
+// Three.js is ~150kB and purely decorative, so it must never block the hero copy.
+const HeroScene = dynamic(() => import("@/components/HeroScene"), { ssr: false });
 
 const instagram = "https://www.instagram.com/afropeanbusinessnetwork/";
 const founderInstagram = "https://www.instagram.com/harmonieessome/";
@@ -86,21 +90,48 @@ export default function Home() {
     return () => window.removeEventListener("scroll", update);
   }, []);
 
-  // GSAP Entrance Animations
+  // GSAP entrance animation.
+  // The hero copy is visible in CSS by default and this only plays it in, so a
+  // failed/slow bundle or a reverted context can never leave the headline, the
+  // value proposition and both CTAs stuck at opacity 0.
   useEffect(() => {
-    if (heroRef.current) {
-      const ctx = gsap.context(() => {
-        gsap.from(".hero-anim-item", {
-          opacity: 0,
-          y: 32,
+    if (!heroRef.current) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".hero-anim-item",
+        { opacity: 0, y: 32 },
+        {
+          opacity: 1,
+          y: 0,
           duration: 1.1,
           stagger: 0.14,
           ease: "power3.out",
           delay: 0.2,
+          clearProps: "opacity,transform",
+        }
+      );
+    }, heroRef);
+
+    // Failsafe: if the tween is created but never ticks (a reverted StrictMode
+    // context, a throttled tab, a GSAP failure), reveal the copy anyway.
+    const failsafe = window.setTimeout(() => {
+      heroRef.current
+        ?.querySelectorAll<HTMLElement>(".hero-anim-item")
+        .forEach((el) => {
+          if (Number(getComputedStyle(el).opacity) < 1) {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          }
         });
-      }, heroRef);
-      return () => ctx.revert();
-    }
+    }, 2600);
+
+    return () => {
+      window.clearTimeout(failsafe);
+      ctx.revert();
+    };
   }, []);
 
   const active = useMemo(
@@ -120,6 +151,7 @@ export default function Home() {
 
   return (
     <main>
+      <a className="skip-link" href="#top">Skip to main content</a>
       <div className="progress" style={{ width: progress + "%" }} />
 
       {/* Modern Sticky Navigation */}
@@ -136,10 +168,17 @@ export default function Home() {
           <a href="/about" onClick={() => setMenu(false)}>About</a>
           <a href="#network" onClick={() => setMenu(false)}>Network</a>
           <a href="/events" onClick={() => setMenu(false)}>Events</a>
-          <a href="#why" onClick={() => setMenu(false)}>Why ABCN</a>
-          <a href="#corridors" onClick={() => setMenu(false)}>Corridors</a>
           <a href="#founder" onClick={() => setMenu(false)}>Founder</a>
           <a href="#join" onClick={() => setMenu(false)}>Join</a>
+          <a
+            className="nav-cta-mobile"
+            href={instagram}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => setMenu(false)}
+          >
+            Enter the network
+          </a>
         </nav>
 
         {/* Right Nav Cluster: Social Share, Language Switcher & CTA */}
@@ -162,139 +201,73 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Atmospheric Luxury Hero with Three.js 3D Particle Constellation */}
-      <section id="top" className="hero" ref={heroRef}>
-        {/* Interactive Three.js WebGL Particle Network */}
-        <HeroScene />
+      {/* ------------------------------------------------------------------
+          CINEMATIC HERO
+          One frame, one statement. The previous version stacked an announcement
+          pill, a four-dot eyebrow, a KPI strip, a partner strip, a photo card,
+          a glass city tag, an emblem badge and a corner index - so nothing led.
+          This is a single full-bleed shot, a title, a line, and one way in.
+         ------------------------------------------------------------------ */}
+      <section id="top" className="hero-cine" ref={heroRef}>
+        <div className="hero-cine-media">
+          <img
+            src={images.hero}
+            alt=""
+            aria-hidden="true"
+            className="hero-cine-img"
+          />
+          <div className="hero-cine-veil" />
+        </div>
 
-        {/* Glowing Atmospheric Lighting Orbs */}
-        <div className="hero-glow-amber" />
-        <div className="hero-glow-blue" />
+        {/* Particle field sits above the image, well below the type. */}
+        <HeroScene />
         <div className="grain" />
 
-        <div className="hero-copy">
-          <div className="hero-anim-item">
-            <a className="event-announcement" href="/events/fiali-frankfurt-2026#apply">
-              <span>NOW FEATURED</span>
-              <strong>FIALI · Frankfurt 2026</strong>
-              <i>Applications · limited founder cohort →</i>
-            </a>
-          </div>
+        <div className="hero-cine-rule hero-cine-rule-top" />
 
-          {/* Benchmark Eyebrow with Brand Colored Dots */}
-          <div className="hero-eyebrow-dots hero-anim-item">
-            <span className="dot dot-green" />
-            <span className="dot dot-blue" />
-            <span className="dot dot-gold" />
-            <span className="dot dot-red" />
-            <span>Afropean Network &amp; Leadership · 2026 Initiatives</span>
-          </div>
+        <div className="hero-cine-inner">
+          <p className="hero-cine-meta hero-anim-item">
+            <span>Frankfurt am Main</span>
+            <i />
+            <span>Europe &harr; Africa</span>
+          </p>
 
           <h1 className="hero-anim-item">
             <span className="hero-title-prefix">African roots.</span>
-            <br />
             <em className="hero-horizon-shimmer">European horizons.</em>
           </h1>
 
-          <p className="hero-intro hero-anim-item">
-            An inclusive executive network dedicated to elevating Afropean diaspora leaders - connecting visionary founders, creative voices, and institutional partners across business, culture, and bilateral innovation.
+          <p className="hero-cine-lead hero-anim-item">
+            Frankfurt&rsquo;s network for Afropean founders, professionals and
+            creatives building between Europe and Africa.
           </p>
 
-          {/* Benchmark Hero KPIs Bar */}
-          <div className="hero-kpis-strip hero-anim-item">
-            <div className="kpi-item">
-              <strong>7.6K+</strong>
-              <span>Public Network</span>
-            </div>
-            <div className="kpi-div" />
-            <div className="kpi-item">
-              <strong>10-15</strong>
-              <span>Cohort Capacity</span>
-            </div>
-            <div className="kpi-div" />
-            <div className="kpi-item">
-              <strong>2</strong>
-              <span>Continents</span>
-            </div>
-            <div className="kpi-div" />
-            <div className="kpi-item">
-              <strong>€1,000</strong>
-              <span>Grants Pool</span>
-            </div>
-          </div>
-
-          <div className="hero-actions hero-anim-item">
-            <a href="/events/fiali-frankfurt-2026#apply" className="hero-btn-primary">
-              <span>Apply for FIALI 2026</span>
+          <div className="hero-cine-actions hero-anim-item">
+            <a
+              href={instagram}
+              target="_blank"
+              rel="noreferrer"
+              className="hero-btn-primary"
+            >
+              <span>Join the network</span>
               <Arrow />
             </a>
-            <a href="/about" className="hero-btn-glass">
-              <span>Discover ABCN dossier</span>
-              <Arrow />
+            <a href="/about" className="hero-cine-text-link">
+              What ABCN is <Arrow />
             </a>
-          </div>
-
-          {/* Benchmark Strategic Alliance Strip */}
-          <div className="hero-partners-strip hero-anim-item">
-            <span className="partner-tag">In Strategic Alliance:</span>
-            <div className="partner-pill-row">
-              <span className="partner-pill">Mountain Hub</span>
-              <span className="partner-pill">SoftXcloud GmbH</span>
-              <span className="partner-pill">CITS 2026</span>
-              <span className="partner-pill">Kompass Frankfurt</span>
-              <span className="partner-pill">BWIT DACH</span>
-            </div>
           </div>
         </div>
 
-        {/* Dynamic Multi-Layered Visual Showcase (Benchmark Inspired) */}
-        <div className="hero-visual-showcase reveal delay">
-          {/* Main Hero Card */}
-          <div className="hero-main-card">
-            <img
-              src={images.hero}
-              alt="Afropean female founders during Frankfurt innovation summit"
-              className="hero-main-img"
-            />
-            <div className="hero-main-glass-tag">
-              <span className="city-pulse-dot" />
-              <div className="city-tag-text">
-                <strong>Frankfurt am Main</strong>
-                <span>Bilateral Corridor · Europe ↔ Africa</span>
-              </div>
-              <span className="city-tag-badge">Flagship 2026</span>
-            </div>
-          </div>
-
-          {/* Floating Top-Right ABCN Emblem Badge */}
-          <div className="hero-float-emblem-badge">
-            <img
-              src="/assets/abcn/abcn-emblem.png"
-              alt="ABCN Global Emblem"
-              className="float-emblem-icon"
-            />
-            <div>
-              <strong>FIALI 2026</strong>
-              <span>Growth Lab &amp; Summit</span>
-            </div>
-          </div>
-
-          {/* Floating Bottom-Left Accent Preview Card */}
-          <div className="hero-float-accent-card">
-            <img
-              src="/assets/fiali/female-founder-workshop.jpg"
-              alt="Cohort Workshop"
-              className="float-accent-thumb"
-            />
-            <div>
-              <span className="float-accent-kicker">★ INTENSIVE COHORT</span>
-              <strong>10-15 Founders</strong>
-              <small>€500 × 2 Startup Grants</small>
-            </div>
-          </div>
+        <div className="hero-cine-foot">
+          <a className="hero-cine-featured" href="#featured-event">
+            <span className="hero-cine-featured-tag">Now featured</span>
+            <span className="hero-cine-featured-name">FIALI &middot; Frankfurt 2026</span>
+            <Arrow />
+          </a>
+          <a className="hero-cine-scroll" href="#featured-event" aria-label="Scroll to featured programme">
+            <span />
+          </a>
         </div>
-
-        <div className="hero-index">ABCN / 2026</div>
       </section>
 
       {/* Priority Event Spotlight with Transparent Scrolling Logo Marquee */}
@@ -342,14 +315,19 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right: Three Core Impact Pillars */}
+          {/* "Who is ABCN for?" - the question the homepage never answered.
+              The three impact pillars that used to sit here are already on /about
+              as the mandates section, in near-identical wording. */}
           <div className="about-pillars-stack">
+            <span className="about-audience-label">Who ABCN is for</span>
+
             <div className="about-pillar-card">
               <span className="about-pillar-index">01</span>
               <div className="about-pillar-content">
-                <h3>Celebrating Culture</h3>
+                <h3>Founders &amp; entrepreneurs</h3>
                 <p>
-                  Honoring diverse African and Afropean cultures, creative arts, and lived experiences without translation or compromise.
+                  Building a venture across African and European markets, and tired of
+                  explaining the context every time.
                 </p>
               </div>
             </div>
@@ -357,9 +335,10 @@ export default function Home() {
             <div className="about-pillar-card">
               <span className="about-pillar-index">02</span>
               <div className="about-pillar-content">
-                <h3>Connecting Businesses</h3>
+                <h3>Professionals &amp; creatives</h3>
                 <p>
-                  Bridging founders, startups, tech operators, and commercial ecosystems between European hubs and African markets.
+                  Working in European tech, business or culture, and looking for peers who
+                  share the reference points.
                 </p>
               </div>
             </div>
@@ -367,12 +346,17 @@ export default function Home() {
             <div className="about-pillar-card">
               <span className="about-pillar-index">03</span>
               <div className="about-pillar-content">
-                <h3>Fostering Visibility &amp; Opportunity</h3>
+                <h3>Organisations &amp; institutions</h3>
                 <p>
-                  Creating access to venture capital, executive boardrooms, and international stages for diaspora innovators.
+                  Seeking genuine diaspora engagement rather than a logo on a panel, and
+                  partners who can actually open the corridor.
                 </p>
               </div>
             </div>
+
+            <p className="about-audience-note">
+              Come as you are. Bring what you know.
+            </p>
           </div>
         </div>
 
@@ -385,7 +369,7 @@ export default function Home() {
             Explore the full About story &amp; FAQs <Arrow />
           </a>
           <div style={{ display: "flex", gap: "24px", fontSize: "0.75rem", color: "#6a7670", fontWeight: 700 }}>
-            <span>7.6K+ Community Reach</span>
+            <span>7.6K+ on Instagram</span>
             <span>·</span>
             <span>Frankfurt Ecosystem</span>
             <span>·</span>
@@ -444,7 +428,17 @@ export default function Home() {
           </div>
         </article>
         <article className="story">
-          <img src={images.culture} alt="Ecosystem networking in Frankfurt and across borders" />
+          {/* ecosystem-network.png is a flat gradient, not a photograph, so it is
+              marked decorative and given a deliberate graphic treatment rather than
+              looking like a failed image load. Replace with real ABCN event
+              photography when available (see CONTENT-SOURCES.md). */}
+          <img src={images.culture} alt="" aria-hidden="true" />
+          <img
+            src="/assets/abcn/abcn-emblem.png"
+            alt=""
+            aria-hidden="true"
+            className="story-emblem"
+          />
           <div className="story-shade" />
           <span className="credit">ABCN · Culture & Ecosystem Room</span>
           <div className="story-copy">
@@ -483,11 +477,12 @@ export default function Home() {
             ["03", "Cross-border rooms", "Introductions and conversations that connect African and European ecosystems around practical opportunity."],
             ["04", "Member stories", "A visible platform for the leaders and innovators shaping Afropean business and culture."],
           ].map(([no, title, copy]) => (
+            // No arrow: these formats are not links, and an arrow plus a hover
+            // shift promised a destination that does not exist.
             <div className="format-row" key={no}>
-              <span>{no}</span>
+              <span className="format-no">{no}</span>
               <h3>{title}</h3>
               <p>{copy}</p>
-              <Arrow />
             </div>
           ))}
         </div>
@@ -533,6 +528,9 @@ export default function Home() {
 
 
 
+      {/* Renders only once real, attributable member quotes exist. */}
+      <Voices />
+
       {/* Redesigned Manifesto Section */}
       <section id="manifesto" className="manifesto">
         <div className="manifesto-top-row">
@@ -547,43 +545,26 @@ export default function Home() {
           <em>Fluent in more than one.</em>
         </blockquote>
 
-        <div className="manifesto-pillars-grid">
-          <div className="manifesto-pillar-item">
-            <span className="manifesto-pillar-num">01 / DUAL FLUENCY</span>
-            <h4>Culture Without Translation</h4>
-            <p>
-              We reject the idea that diaspora identity requires compromise. Lived African heritage and European commercial experience enhance one another.
-            </p>
-          </div>
-
-          <div className="manifesto-pillar-item">
-            <span className="manifesto-pillar-num">02 / DURABLE ASSETS</span>
-            <h4>From Contacts to Equity</h4>
-            <p>
-              Less collecting business cards. More building joint ventures, software scalability, investment rounds, and long-term economic independence.
-            </p>
-          </div>
-
-          <div className="manifesto-pillar-item">
-            <span className="manifesto-pillar-num">03 / CONTINENTAL SCALE</span>
-            <h4>Frankfurt to the World</h4>
-            <p>
-              Rooted in Frankfurt am Main with active corridors into London, Paris, Douala, Lagos, and Kigali - opening doors across two continents.
-            </p>
-          </div>
-        </div>
+        {/* The three pillars that sat here restated the network lenses and the
+            About section almost verbatim - the fifth 3-up card grid on one page.
+            The manifesto now does one job: state the creed and move on. */}
 
         <div className="manifesto-foot">
-          <p>
-            &ldquo;ABCN is for the overlap - where inherited culture, present experience, and future ambition converge into tangible leadership.&rdquo;
-          </p>
-          <div className="manifesto-emblem-badge">
+          <blockquote className="manifesto-coda">
+            ABCN is for the overlap &ndash; where inherited culture, present
+            experience and future ambition converge into tangible leadership.
+          </blockquote>
+          <div className="manifesto-mark">
             <img
               src="/assets/abcn/abcn-emblem.png"
-              alt="ABCN Global Emblem"
+              alt=""
+              aria-hidden="true"
               className="manifesto-emblem-img"
             />
-            <Weave />
+            <span className="manifesto-mark-text">
+              <strong>Afropean Business &amp; Culture Network</strong>
+              <small>Frankfurt am Main &middot; Europe &harr; Africa</small>
+            </span>
           </div>
         </div>
       </section>
@@ -603,19 +584,21 @@ export default function Home() {
           </p>
 
           <div className="join-actions-cluster">
-            <a
-              href="/events/fiali-frankfurt-2026#apply"
-              className="join-btn-primary"
-            >
-              Apply to FIALI 2026 →
-            </a>
+            {/* Inclusive action leads: most visitors are not eligible for FIALI,
+                so sending them to a women-only application is a dead end. */}
             <a
               href={instagram}
               target="_blank"
               rel="noreferrer"
+              className="join-btn-primary"
+            >
+              Join the community ↗
+            </a>
+            <a
+              href="/events/fiali-frankfurt-2026#apply"
               className="join-btn-glass"
             >
-              Instagram Network ↗
+              Apply to FIALI 2026 →
             </a>
             <a href="/about" className="text-link" style={{ color: "rgba(255,255,255,0.7)" }}>
               Official About dossier <Arrow />
@@ -625,7 +608,7 @@ export default function Home() {
           <div className="join-metrics-row">
             <div className="join-metric-item">
               <strong>7.6K+</strong>
-              <span>Public Diaspora Network</span>
+              <span>Followers on Instagram</span>
             </div>
             <div className="join-metric-item">
               <strong>10-15</strong>
@@ -638,11 +621,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Feature Visual Card with Verified Female Founders Photography */}
+        {/* Brand surface: uses an ABCN asset, not a FIALI programme asset.
+            See CONTENT-SOURCES.md - this still needs mixed-gender ABCN-owned
+            photography to stop the inclusive homepage reading as women-only. */}
         <div className="join-visual-frame">
           <img
-            src="/assets/fiali/female-founders-summit.jpg"
-            alt="Afropean Female Founders Summit in Frankfurt"
+            src={images.community}
+            alt="ABCN members in conversation at a community gathering"
             className="join-visual-img"
           />
           <div className="join-visual-overlay">
@@ -656,36 +641,69 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Benchmark-Enhanced Footer with Compliance Triggers */}
+      {/* Two-tier footer: an identity + navigation deck, then a legal bar.
+          Previously a single four-column row that stranded the compliance line
+          on the far right of wide screens. */}
       <footer>
-        <div className="footer-brand">ABCN</div>
-        <p>Afropean Business &amp; Culture Network · Frankfurt am Main</p>
-        <div className="footer-links">
-          <a href="/about">About</a>
-          <a href="#network">Network</a>
-          <a href="/events">Events</a>
-          <a href="#why">Why ABCN</a>
-          <a href="#corridors">Corridors</a>
-          <a href="#founder">Founder</a>
-          <a href={instagram} target="_blank" rel="noreferrer">Instagram</a>
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent("open-gdpr"))}
-            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit" }}
-          >
-            Privacy Policy &amp; GDPR
-          </button>
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent("open-cookies"))}
-            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit" }}
-          >
-            Cookie Settings
-          </button>
+        <div className="footer-deck">
+          <div className="footer-identity">
+            <div className="footer-brand">ABCN</div>
+            <p className="footer-tagline">
+              Afropean Business &amp; Culture Network
+            </p>
+            <p className="footer-place">Frankfurt am Main &middot; Europe &harr; Africa</p>
+            <a
+              className="footer-social"
+              href={instagram}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Instagram &mdash; @afropeanbusinessnetwork
+              <Arrow />
+            </a>
+          </div>
+
+          <nav className="footer-nav" aria-label="Footer">
+            <div className="footer-col">
+              <h4>Network</h4>
+              <a href="/about">About</a>
+              <a href="#network">The network</a>
+              <a href="#founder">Founder</a>
+              <a href="#manifesto">Manifesto</a>
+            </div>
+            <div className="footer-col">
+              <h4>Programmes</h4>
+              <a href="/events">All events</a>
+              <a href="/events/fiali-frankfurt-2026">FIALI 2026</a>
+              <a href="/events/fiali-frankfurt-2026#apply">Apply</a>
+            </div>
+            <div className="footer-col">
+              <h4>Legal</h4>
+              <button
+                type="button"
+                className="footer-linkbtn"
+                onClick={() => window.dispatchEvent(new CustomEvent("open-gdpr"))}
+              >
+                Privacy &amp; GDPR
+              </button>
+              <button
+                type="button"
+                className="footer-linkbtn"
+                onClick={() => window.dispatchEvent(new CustomEvent("open-cookies"))}
+              >
+                Cookie settings
+              </button>
+            </div>
+          </nav>
         </div>
-        <span className="footer-meta">
-          AFRICAN ROOTS · EUROPEAN HORIZONS · GDPR/DSGVO COMPLIANT · AES-256-GCM ENCRYPTED
-        </span>
+
+        <div className="footer-bar">
+          <span className="footer-copy">
+            &copy; {new Date().getFullYear()} Afropean Business &amp; Culture Network
+          </span>
+          <span className="footer-creed">African roots &middot; European horizons</span>
+          <span className="footer-meta">GDPR / DSGVO compliant</span>
+        </div>
       </footer>
     </main>
   );
