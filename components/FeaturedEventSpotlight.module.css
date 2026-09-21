@@ -98,3 +98,17 @@
   .fact, .fact + .fact { border-left: 0; border-top: 1px solid rgba(255,255,255,.2); padding: 17px 0; }
   .fact:first-child { border-top: 0; }
 }
+
+.partnerBand{
+  position:relative;z-index:2;margin-top:48px;padding:15px 18px;background:rgba(255,255,255,.94);
+  display:grid;grid-template-columns:240px 1fr;gap:25px;align-items:center;color:var(--event-dark)
+}
+.eventMark{display:flex;flex-direction:column;gap:4px;padding-right:22px;border-right:1px solid rgba(15,76,56,.18)}
+.eventMark span{font-size:1.55rem;font-weight:950;letter-spacing:-.055em}
+.eventMark small{font-size:.48rem;line-height:1.35;letter-spacing:.11em;text-transform:uppercase;color:rgba(15,76,56,.63)}
+.partnerBand img{display:block;width:100%;height:68px;object-fit:contain;object-position:left center}
+@media(max-width:700px){
+  .partnerBand{grid-template-columns:1fr;padding:16px}
+  .eventMark{border-right:0;border-bottom:1px solid rgba(15,76,56,.18);padding:0 0 12px}
+  .partnerBand img{height:auto;max-height:78px}
+}
