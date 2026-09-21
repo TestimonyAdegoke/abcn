@@ -143,11 +143,11 @@ export default function HeroScene() {
     window.addEventListener("resize", onResize);
 
     let animId: number;
-    let clock = new THREE.Clock();
+    const startTime = performance.now();
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
+      const elapsedTime = (performance.now() - startTime) * 0.001;
 
       // Gentle, calm rotation speed (peaceful and slow)
       mouseX += (targetX - mouseX) * 0.03;

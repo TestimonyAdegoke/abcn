@@ -1,11 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function NavExtras() {
   const [lang, setLang] = useState<"en" | "de" | "fr">("en");
+  const [shareUrl, setShareUrl] = useState("https://abcn.network");
 
-  const shareUrl = typeof window !== "undefined" ? window.location.href : "https://abcn.network";
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.origin.includes("abcn.network")) {
+      setShareUrl(window.location.href);
+    }
+  }, []);
+
   const shareText = "ABCN - Afropean Business & Culture Network | Connecting Diaspora Innovation Across Africa & Europe";
 
   return (

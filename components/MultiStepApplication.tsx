@@ -42,6 +42,7 @@ export default function MultiStepApplication() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [refId, setRefId] = useState<string>("");
 
   const updateField = (field: keyof FormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -96,6 +97,7 @@ export default function MultiStepApplication() {
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
+      setRefId(`FIALI-2026-${Math.floor(1000 + Math.random() * 9000)}`);
       setIsSubmitted(true);
     }, 1200);
   };
@@ -119,7 +121,7 @@ export default function MultiStepApplication() {
         </p>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4 max-w-md mx-auto text-xs text-gray-400 mb-8 space-y-1 text-left">
           <p>• Confirmation email sent to: <span className="text-white font-medium">{formData.email}</span></p>
-          <p>• Reference ID: <span className="text-[#E09000] font-mono font-semibold">FIALI-2026-{Math.floor(1000 + Math.random() * 9000)}</span></p>
+          <p>• Reference ID: <span className="text-[#E09000] font-mono font-semibold">{refId}</span></p>
           <p>• Secretariat Contact: <span className="text-gray-300">harmonie.essome@softxcloud.net</span></p>
         </div>
         <button
