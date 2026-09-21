@@ -7,6 +7,18 @@ import { EventRecord, EventStage, EventPartner, FIALI_FALLBACK, normaliseEvent }
 
 type Mode = "checking" | "signed-out" | "needs-admin" | "admin";
 type Editable = EventRecord & { id?: string };
+type ApplicationRow = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  company_name?: string | null;
+  venture_stage?: string | null;
+  motivation?: string | null;
+  status: string;
+  submitted_at: string;
+  admin_notes?: string | null;
+};
 
 const blankEvent = (): Editable => ({
   slug: "",
@@ -40,6 +52,11 @@ const blankEvent = (): Editable => ({
   partners: [],
   grants: {},
   gallery: [],
+  application_open: false,
+  application_deadline: "",
+  application_cta: "Apply now",
+  focus_areas: [],
+  benefits: [],
 });
 
 const lines = (value: string) => value.split("\n").map((v) => v.trim()).filter(Boolean);
@@ -47,6 +64,11 @@ const partnersFromText = (value: string): EventPartner[] =>
   lines(value).map((row) => {
     const [name, logo, website] = row.split("|").map((v) => v.trim());
     return { name, ...(logo ? { logo } : {}), ...(website ? { website } : {}) };
+  });
+const cardsFromText = (value: string) =>
+  lines(value).map((row) => {
+    const [title, ...rest] = row.split("|");
+    return { title: title.trim(), description: rest.join("|").trim() };
   });
 
 async function compressImage(file: File): Promise<string> {
@@ -84,10 +106,14 @@ export default function EventsAdminPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [applications, setApplications] = useState<ApplicationRow[]>([]);
+  const [applicationsLoading, setApplicationsLoading] = useState(false);
 
   const stagesText = useMemo(() => JSON.stringify(form.stages || [], null, 2), [form.stages]);
   const grantsText = useMemo(() => JSON.stringify(form.grants || {}, null, 2), [form.grants]);
   const partnersText = useMemo(() => (form.partners || []).map((p) => [p.name, p.logo || "", p.website || ""].join(" | ")).join("\n"), [form.partners]);
+  const focusText = useMemo(() => (form.focus_areas || []).map((p) => [p.title, p.description].join(" | ")).join("\n"), [form.focus_areas]);
+  const benefitsText = useMemo(() => (form.benefits || []).map((p) => [p.title, p.description].join(" | ")).join("\n"), [form.benefits]);
 
   async function refreshSession() {
     const { data } = await neon.auth.getSession();
@@ -136,12 +162,22 @@ export default function EventsAdminPage() {
     setMode("signed-out"); setEvents([]); setForm(blankEvent());
   }
 
+  async function loadApplications(eventId?: string) {
+    if (!eventId) { setApplications([]); return; }
+    setApplicationsLoading(true);
+    const { data, error: q } = await neon.from("event_applications").select("*").eq("event_id", eventId).order("submitted_at", { ascending: false });
+    if (q) setError(q.message);
+    else setApplications((data || []) as ApplicationRow[]);
+    setApplicationsLoading(false);
+  }
+
   function selectEvent(event: Editable) {
     setSelectedId(event.id); setForm({ ...event }); setError(""); setMessage("");
+    loadApplications(event.id);
   }
 
   function newEvent() {
-    setSelectedId(undefined); setForm(blankEvent()); setError(""); setMessage("");
+    setSelectedId(undefined); setForm(blankEvent()); setApplications([]); setError(""); setMessage("");
   }
 
   function update<K extends keyof Editable>(key: K, value: Editable[K]) {
@@ -175,6 +211,19 @@ export default function EventsAdminPage() {
     const { error: q } = await neon.from("events").delete().eq("id", selectedId);
     if (q) { setError(q.message); return; }
     newEvent(); setMessage("Event deleted."); await loadEvents();
+  }
+
+  async function updateApplicationStatus(id: string, status: string) {
+    const { error: q } = await neon.from("event_applications").update({ status }).eq("id", id);
+    if (q) { setError(q.message); return; }
+    setApplications((rows) => rows.map((row) => row.id === id ? { ...row, status } : row));
+  }
+
+  async function deleteApplication(id: string) {
+    if (!confirm("Delete this application permanently?")) return;
+    const { error: q } = await neon.from("event_applications").delete().eq("id", id);
+    if (q) { setError(q.message); return; }
+    setApplications((rows) => rows.filter((row) => row.id !== id));
   }
 
   async function handleImage(file?: File) {
@@ -266,6 +315,9 @@ export default function EventsAdminPage() {
               <label>Priority<input type="number" value={form.priority} onChange={(e)=>update("priority",Number(e.target.value))} /><span className="cms-help">Higher values appear first.</span></label>
               <label className="cms-toggle"><input type="checkbox" checked={form.featured} onChange={(e)=>update("featured",e.target.checked)} /> Featured event</label>
               <label className="cms-toggle"><input type="checkbox" checked={form.show_on_home} onChange={(e)=>update("show_on_home",e.target.checked)} /> Promote on homepage</label>
+              <label className="cms-toggle"><input type="checkbox" checked={Boolean(form.application_open)} onChange={(e)=>update("application_open",e.target.checked)} /> Accept applications on site</label>
+              <label>Application CTA<input value={form.application_cta || ""} onChange={(e)=>update("application_cta",e.target.value)} placeholder="Apply now" /></label>
+              <label className="cms-full">Application timing / scarcity message<input value={form.application_deadline || ""} onChange={(e)=>update("application_deadline",e.target.value)} placeholder="Applications reviewed on a rolling basis · limited places" /></label>
 
               <div className="cms-divider cms-full" />
               <label className="cms-full">Hero image URL<input value={form.hero_image_url || ""} onChange={(e)=>update("hero_image_url",e.target.value)} /><span className="cms-help">Use a URL, or upload an image below. Uploaded images are compressed and stored with the event.</span></label>
@@ -277,12 +329,52 @@ export default function EventsAdminPage() {
               <label>Accent colour<input type="color" value={form.accent_color || "#58AC8C"} onChange={(e)=>update("accent_color",e.target.value)} /></label>
               <label>Deep colour<input type="color" value={form.deep_color || "#0F4C38"} onChange={(e)=>update("deep_color",e.target.value)} /></label>
               <label className="cms-full">Highlights — one per line<textarea value={(form.highlights || []).join("\n")} onChange={(e)=>update("highlights",lines(e.target.value))} /></label>
+              <label className="cms-full">Focus areas — Title | Description<textarea value={focusText} onChange={(e)=>update("focus_areas",cardsFromText(e.target.value))} /></label>
+              <label className="cms-full">Benefits / Why join — Title | Description<textarea value={benefitsText} onChange={(e)=>update("benefits",cardsFromText(e.target.value))} /></label>
               <label className="cms-full">Eligibility — one per line<textarea value={(form.eligibility || []).join("\n")} onChange={(e)=>update("eligibility",lines(e.target.value))} /></label>
               <label className="cms-full">Partners — Name | Logo URL | Website<textarea value={partnersText} onChange={(e)=>update("partners",partnersFromText(e.target.value))} /></label>
               <label className="cms-full">Programme stages — JSON<textarea style={{minHeight:220}} value={stagesText} onChange={(e)=>{try{update("stages",JSON.parse(e.target.value) as EventStage[]);setError("")}catch{setError("Stages JSON is not valid yet.")}}} /></label>
               <label className="cms-full">Grant / support — JSON<textarea value={grantsText} onChange={(e)=>{try{update("grants",JSON.parse(e.target.value));setError("")}catch{setError("Grant JSON is not valid yet.")}}} /></label>
             </div>
             <div className="cms-actions"><button onClick={saveEvent} disabled={saving}>{saving ? "Saving…" : selectedId ? "Save changes" : "Create event"}</button>{selectedId && <button className="danger" onClick={removeEvent}>Delete event</button>}<button className="secondary" onClick={()=>setForm({...FIALI_FALLBACK})}>Load FIALI template</button></div>
+
+            {selectedId && (
+              <div className="cms-applications">
+                <div className="cms-applications-head">
+                  <div><span>APPLICATIONS</span><h2>Founder pipeline</h2></div>
+                  <strong>{applications.length}</strong>
+                </div>
+                {applicationsLoading ? <p className="cms-sub">Loading applications…</p> : applications.length === 0 ? (
+                  <div className="cms-empty">No applications received yet.</div>
+                ) : (
+                  <div className="cms-application-list">
+                    {applications.map((application) => (
+                      <article className="cms-application" key={application.id}>
+                        <div className="cms-application-main">
+                          <div>
+                            <strong>{application.first_name} {application.last_name}</strong>
+                            <span>{application.company_name || "Venture not named"} · {application.email}</span>
+                          </div>
+                          <span className={"cms-pill app-" + application.status}>{application.status}</span>
+                        </div>
+                        {application.motivation && <p>{application.motivation}</p>}
+                        <div className="cms-application-actions">
+                          <select value={application.status} onChange={(e)=>updateApplicationStatus(application.id,e.target.value)}>
+                            <option value="submitted">Submitted</option>
+                            <option value="reviewing">Reviewing</option>
+                            <option value="shortlisted">Shortlisted</option>
+                            <option value="accepted">Accepted</option>
+                            <option value="declined">Declined</option>
+                            <option value="withdrawn">Withdrawn</option>
+                          </select>
+                          <button className="danger" onClick={()=>deleteApplication(application.id)}>Delete</button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </section>
         </div>
       </div>
