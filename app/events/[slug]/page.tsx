@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import EventApplicationForm from "@/components/EventApplicationForm";
 import MultiStepApplication from "@/components/MultiStepApplication";
 import NavExtras from "@/components/NavExtras";
 import LogoMarquee from "@/components/LogoMarquee";
@@ -572,6 +571,56 @@ export default function EventDetailPage() {
         </section>
       )}
 
+      {/* Objection-handling FAQ.
+          Every answer below is grounded in the supplied FIALI deck. Four questions
+          applicants will certainly ask CANNOT be answered from any source we hold -
+          exact dates, venue, whether there is a participation fee, and the working
+          language. Add them here once confirmed; do not guess. */}
+      {isFiali && (
+        <section id="faq" className="fiali-faq">
+          <div className="fiali-faq-head">
+            <span className="benchmark-kicker">Before you apply</span>
+            <h2>
+              The questions<br />
+              <em>founders actually ask.</em>
+            </h2>
+          </div>
+          <div className="fiali-faq-grid">
+            {[
+              [
+                "Do I need to be incorporated already?",
+                "No. FIALI is open to founders who have already incorporated and to those on the verge of doing so. The grants can even cover essential incorporation costs.",
+              ],
+              [
+                "How many places are there?",
+                "Between 10 and 15. It is deliberately small - the point is a room where you are known, not an audience you sit in.",
+              ],
+              [
+                "What do I actually leave with?",
+                "An individual 90-day growth plan built during the Growth Lab, practical AI and digitalisation training, and a pitch in front of Frankfurt corporates, investors and business angels at the Summit.",
+              ],
+              [
+                "Is there funding attached?",
+                "Two Startup Innovation Grants of €500 each. They cover prototyping and product development, branding and market entry, first marketing and sales activity, and incorporation costs. Two founders are selected on the growth potential and innovation of their model.",
+              ],
+              [
+                "Do I need to be an AI company?",
+                "No, but you should have genuine interest in digitalisation and AI, and a business model that can scale. The programme is built around applying those tools to whatever you are building.",
+              ],
+              [
+                "Where do I need to be based?",
+                "Frankfurt and the Rhine-Main region. There is a particular focus on founders from the city's Afropean, immigrant and international diaspora communities.",
+              ],
+            ].map(([q, a]) => (
+              <div className="fiali-faq-item" key={q}>
+                <h3>{q}</h3>
+                <p>{a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Application Form Section */}
       {hasApplications && (
         <section id="apply" className="application-section">
@@ -613,7 +662,11 @@ export default function EventDetailPage() {
             )}
           </div>
           <div style={{ flex: 1, minWidth: "320px" }}>
-            <MultiStepApplication />
+            <MultiStepApplication
+              eventId={event.id}
+              eventSlug={event.slug}
+              eventTitle={event.title}
+            />
           </div>
         </section>
       )}

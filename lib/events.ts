@@ -176,10 +176,32 @@ export const FIALI_FALLBACK: EventRecord = {
   ],
 };
 
+/**
+ * Event imagery must be curated. A CMS row was carrying a generic remote stock
+ * URL as FIALI's hero image - it rendered a photograph of a man at the top of a
+ * programme for female founders. Remote stock URLs are therefore rejected and
+ * the curated local asset is used instead.
+ *
+ * Locally-hosted paths (/assets/...) always win, so the CMS keeps full control
+ * as soon as a proper image is uploaded to the project.
+ */
+const REMOTE_STOCK = /^https?:\/\/(images\.unsplash\.com|source\.unsplash\.com|images\.pexels\.com)/i;
+
+function curatedImage(
+  value: string | null | undefined,
+  fallback: string | null | undefined
+): string | null {
+  if (!value) return fallback ?? null;
+  if (REMOTE_STOCK.test(value)) return fallback ?? null;
+  return value;
+}
+
 export function normaliseEvent(row: Partial<EventRecord>): EventRecord {
   return {
     ...FIALI_FALLBACK,
     ...row,
+    hero_image_url: curatedImage(row.hero_image_url, FIALI_FALLBACK.hero_image_url),
+    card_image_url: curatedImage(row.card_image_url, FIALI_FALLBACK.card_image_url),
     slug: row.slug || FIALI_FALLBACK.slug,
     title: row.title || FIALI_FALLBACK.title,
     short_description: row.short_description || "",
@@ -193,7 +215,12 @@ export function normaliseEvent(row: Partial<EventRecord>): EventRecord {
     eligibility: Array.isArray(row.eligibility) ? row.eligibility : [],
     partners: Array.isArray(row.partners) ? row.partners : [],
     grants: row.grants && typeof row.grants === "object" ? row.grants : {},
-    gallery: Array.isArray(row.gallery) ? row.gallery : [],
+    gallery: (() => {
+      if (!Array.isArray(row.gallery)) return [];
+      const curated = row.gallery.filter((src) => !REMOTE_STOCK.test(src));
+      // Don't leave the gallery empty just because every CMS entry was stock.
+      return curated.length > 0 ? curated : FIALI_FALLBACK.gallery;
+    })(),
     application_open: Boolean(row.application_open),
     application_deadline: row.application_deadline || null,
     application_cta: row.application_cta || "Apply now",
