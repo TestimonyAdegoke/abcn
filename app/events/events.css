@@ -8,13 +8,27 @@
 }
 .events-shell { min-height:100vh; background:#f4efe5; color:#121411; }
 .events-nav {
-  height:76px; padding:0 5vw; display:flex; align-items:center; justify-content:space-between;
+  height:76px; padding:0 clamp(22px, 5vw, 60px); display:flex; align-items:center; justify-content:space-between;
+  gap:24px;
   border-bottom:1px solid rgba(18,20,17,.15); background:rgba(244,239,229,.95); position:sticky; top:0; z-index:30;
   backdrop-filter:blur(18px);
 }
-.events-brand { font-weight:900; letter-spacing:-.06em; font-size:1.35rem; }
-.events-brand small { margin-left:12px; font-size:0.75rem; letter-spacing:.13em; text-transform:uppercase; opacity:.55; font-weight:700; }
-.events-navlinks { display:flex; gap:24px; align-items:center; font-size:0.78rem; letter-spacing:.13em; text-transform:uppercase; font-weight:800; }
+/* The brand's <small> used to be an inline child with no wrap control. Squeezed
+   by the link row it wrapped to four lines, making .events-brand 135px tall
+   inside a fixed 76px bar, so it spilled over the hero below. */
+.events-brand {
+  display:inline-flex; align-items:baseline; gap:11px;
+  flex-shrink:0; white-space:nowrap;
+  font-weight:900; letter-spacing:-.06em; font-size:1.35rem;
+}
+.events-brand small {
+  font-size:0.75rem; letter-spacing:.11em; text-transform:uppercase;
+  opacity:.55; font-weight:700; white-space:nowrap;
+}
+.events-navlinks {
+  display:flex; gap:24px; align-items:center; min-width:0; flex-wrap:nowrap; white-space:nowrap;
+  font-size:0.78rem; letter-spacing:.13em; text-transform:uppercase; font-weight:800;
+}
 .events-hero {
   padding:110px 7vw 90px; color:white; position:relative; overflow:hidden;
   background:radial-gradient(circle at 90% 12%,rgba(167,222,200,.38),transparent 28%),linear-gradient(132deg,var(--fiali-deep),var(--fiali-mid));
@@ -93,8 +107,17 @@
  .detail-strip{grid-template-columns:1fr 1fr}.detail-intro,.audience-grid{grid-template-columns:1fr}.detail-intro-copy{padding-top:0}
  .stage-grid{grid-template-columns:1fr}.partner-list{grid-template-columns:1fr 1fr}
 }
+/* Measured: brand 374 + links 831 + social 110 + gaps 48 = 1363, plus 120 of
+   padding, so the descriptor only coexists with the full link row above
+   ~1483px. Below that it is dropped - it is decorative, the links are not. */
+@media(max-width:1519px){
+ .events-brand small{display:none}
+}
+@media(max-width:1180px){
+ .events-navlinks{gap:16px; letter-spacing:.09em}
+}
 @media(max-width:600px){
- .events-nav{padding:0 20px}.events-brand small,.events-navlinks a:not(:last-child){display:none}
+ .events-nav{padding:0 20px}.events-navlinks a:not(:last-child){display:none}
  .events-hero,.events-container,.detail-section,.detail-hero-copy{padding-left:22px;padding-right:22px}
  .events-hero h1,.detail-hero-copy h1{font-size:clamp(3.5rem,17vw,5.6rem)}
  .events-head{align-items:flex-start;flex-direction:column}
