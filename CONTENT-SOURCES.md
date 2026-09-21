@@ -49,10 +49,29 @@ The repository therefore includes an **original interim ABCN mark** for favicon/
 
 ## Photography
 
-The site uses remote Unsplash photography selected for business, culture and community context, with visible photographer credits on the story panels.
+The original stock/Unsplash photography has been removed from the live website.
 
-- Vitaly Gariev / Unsplash
-- Dwayne Joe / Unsplash
-- Ben Iwara / Unsplash
+The current visual system uses real public photography from Harmonie Essome's professional and community ecosystem:
 
-For production longevity, these can later be replaced with ABCN-owned event photography.
+- **Inspire Award / Frankfurt — Harmonie Essome public LinkedIn post**  
+  https://de.linkedin.com/posts/harmonieessome_inspireaward-womenempowerment-migrantwomen-activity-7397967100516118529-Xrt9
+- **24th Hessian Women Entrepreneurs' Day — Harmonie Essome public LinkedIn post**  
+  https://de.linkedin.com/posts/harmonieessome_unternehmerinnentag-femalefounders-networking-activity-7367216076260024320-lcs8
+- **Published founder portrait / interview — Wildix**  
+  https://blog.wildix.com/diversity-inclusion-across-continents-harmonie-essome/
+
+These images are used as public-source editorial assets and are not represented as ABCN-owned photography unless ABCN later confirms ownership/licensing. The source links are retained in the interface/documentation for provenance.
+
+## Instagram logo and palette retrieval status
+
+The official ABCN Instagram account remains the authoritative visual-brand source:
+https://www.instagram.com/afropeanbusinessnetwork/
+
+Instagram's public web response available to automated retrieval exposes the profile identity/description but does **not** currently return the profile artwork or original post media at dependable production quality. Because of that, this repository still does not claim the interim favicon/typographic mark is ABCN's historic official logo, and no palette is being falsely labelled as Instagram-extracted.
+
+For an exact logo/palette migration, use one of:
+1. the original ABCN logo file (SVG/PNG), or
+2. a screenshot/export of the Instagram profile/logo, or
+3. authenticated Instagram access where the original profile/post media is available.
+
+Once supplied, the palette should be sampled from the actual artwork and propagated through the CSS variables, favicon, navbar mark, social preview assets and image treatments.
