@@ -34,13 +34,26 @@ const lenses = [
 
 const images = {
   hero:
-    "https://images.unsplash.com/photo-1776039324982-449086984ceb?auto=format&fit=crop&fm=jpg&q=84&w=2200",
+    "https://media.licdn.com/dms/image/v2/D4E22AQFkUVVy4_as-A/feedshare-shrink_2048_1536/B4EZqoNSYsIUAw-/0/1763758652850?e=2147483647&t=Gxs4vL79u47gc_LVT7dUXq2EcYNBeM6TqFIdWVDG-3Y&v=beta",
   business:
-    "https://images.unsplash.com/photo-1758519291037-db9ec86cda69?auto=format&fit=crop&fm=jpg&q=84&w=1800",
+    "https://media.licdn.com/dms/image/v2/D4E22AQEtwNhRcPcQAw/feedshare-shrink_2048_1536/B4EZj2b7T.IMAw-/0/1756481187573?e=2147483647&t=Zj6mhK9LtyDLTcNrSsD8bQ47XalVNW_wR4ZvE_2CfAE&v=beta",
   culture:
-    "https://images.unsplash.com/photo-1773864930264-bb73c9714418?auto=format&fit=crop&fm=jpg&q=84&w=1800",
+    "https://media.licdn.com/dms/image/v2/D4E22AQGonV4tbIbn-w/feedshare-shrink_2048_1536/B4EZqoNSYyJgAw-/0/1763758652356?e=2147483647&t=pP94Ln9dYEaYTwQ52BWfY6vLfOlWTVzV3gsI7DNoxmA&v=beta",
   community:
-    "https://images.unsplash.com/photo-1777115213572-2097c1c9ebcc?auto=format&fit=crop&fm=jpg&q=84&w=1800",
+    "https://media.licdn.com/dms/image/v2/D4E22AQEOnrgATZ8iUQ/feedshare-shrink_2048_1536/B4EZqoNSYwHoAw-/0/1763758652630?e=2147483647&t=jVvL407JGbWyDgJXVdCNk0a8fgKvRoZSGmbxQhs_OPA&v=beta",
+  founder:
+    "https://blog.wildix.com/wp-content/uploads/2023/11/Exploring-Diversity-and-Inclusion-Across-Continents-Harmonie-Essome.webp",
+  join:
+    "https://media.licdn.com/dms/image/v2/D4E22AQFQvbogEK058Q/feedshare-shrink_800/B4EZqoNSZJGUAg-/0/1763758652388?e=2147483647&t=Xt-v1gDgkVIsGch-XTo4O9tnDKruabQJrE8Ki4QOt4w&v=beta",
+};
+
+const imageSources = {
+  inspire:
+    "https://de.linkedin.com/posts/harmonieessome_inspireaward-womenempowerment-migrantwomen-activity-7397967100516118529-Xrt9",
+  entrepreneurDay:
+    "https://de.linkedin.com/posts/harmonieessome_unternehmerinnentag-femalefounders-networking-activity-7367216076260024320-lcs8",
+  founder:
+    "https://blog.wildix.com/diversity-inclusion-across-continents-harmonie-essome/",
 };
 
 function Arrow({ down = false }: { down?: boolean }) {
@@ -193,7 +206,7 @@ export default function Home() {
 
         <div className="hero-visual reveal delay">
           <div className="hero-photo">
-            <img src={images.hero} alt="Two women speaking during a professional panel discussion" />
+            <img src={images.hero} alt="Community leadership event shared by Harmonie Essome" />
             <div className="photo-label">
               <span>THE NETWORK IN MOTION</span>
               <span>BUSINESS × CULTURE</span>
@@ -297,9 +310,9 @@ export default function Home() {
 
       <section className="stories" aria-label="Business culture and community">
         <article className="story">
-          <img src={images.business} alt="Professional working with a laptop" />
+          <img src={images.business} alt="Frankfurt women entrepreneurs event shared by Harmonie Essome" />
           <div className="story-shade" />
-          <span className="credit">Photo: Vitaly Gariev / Unsplash</span>
+          <a className="credit" href={imageSources.entrepreneurDay} target="_blank" rel="noreferrer">Harmonie Essome / LinkedIn</a>
           <div className="story-copy">
             <span>BUSINESS</span>
             <h3>Ambition with context.</h3>
@@ -307,9 +320,9 @@ export default function Home() {
           </div>
         </article>
         <article className="story">
-          <img src={images.culture} alt="Community gathering in Nairobi" />
+          <img src={images.culture} alt="Community event photograph shared by Harmonie Essome" />
           <div className="story-shade" />
-          <span className="credit">Photo: Dwayne Joe / Unsplash</span>
+          <a className="credit" href={imageSources.inspire} target="_blank" rel="noreferrer">Harmonie Essome / LinkedIn</a>
           <div className="story-copy">
             <span>CULTURE</span>
             <h3>Identity without translation.</h3>
@@ -317,9 +330,9 @@ export default function Home() {
           </div>
         </article>
         <article className="story">
-          <img src={images.community} alt="Two women embracing at an outdoor community event" />
+          <img src={images.community} alt="Frankfurt community event photograph shared by Harmonie Essome" />
           <div className="story-shade" />
-          <span className="credit">Photo: Ben Iwara / Unsplash</span>
+          <a className="credit" href={imageSources.inspire} target="_blank" rel="noreferrer">Harmonie Essome / LinkedIn</a>
           <div className="story-copy">
             <span>COMMUNITY</span>
             <h3>Connection that feels human.</h3>
@@ -364,7 +377,12 @@ export default function Home() {
             <span>AFRICA</span>
             <span>DUBAI</span>
           </div>
-          <div className="founder-monogram">HE</div>
+          <div className="founder-portrait">
+            <img src={images.founder} alt="Harmonie Essome" />
+            <a href={imageSources.founder} target="_blank" rel="noreferrer" className="founder-photo-credit">
+              Portrait source · Wildix
+            </a>
+          </div>
           <CompassMark />
         </div>
 
@@ -411,7 +429,12 @@ export default function Home() {
       </section>
 
       <section id="join" className="join">
-        <div className="join-bg" />
+        <div className="join-bg" style={{
+          backgroundImage:
+            "linear-gradient(90deg, rgba(18,20,17,.96), rgba(18,20,17,.58) 54%, rgba(18,20,17,.9)), url('" +
+            images.join +
+            "')",
+        }} />
         <div className="join-copy">
           <span>THE NEXT INTRODUCTION COULD CHANGE THE ROOM.</span>
           <h2>Come as you are.<br />Bring what you know.</h2>
