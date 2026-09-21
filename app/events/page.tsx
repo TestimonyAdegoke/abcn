@@ -13,7 +13,7 @@ export default function EventsPage() {
     neon.from("events").select("*").eq("status", "published").order("priority", { ascending: false })
       .then(({ data }) => {
         if (live && data?.length) setEvents(data.map((row) => normaliseEvent(row as Partial<EventRecord>)));
-      }).catch(() => {});
+      }, () => {});
     return () => { live = false; };
   }, []);
 
