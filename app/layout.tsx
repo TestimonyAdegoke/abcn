@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Newsreader } from "next/font/google";
 import "./globals.css";
+import "./benchmark-components.css";
 import GdprModal from "@/components/GdprModal";
 import CookieBanner from "@/components/CookieBanner";
 
