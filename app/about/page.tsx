@@ -90,7 +90,6 @@ export default function AboutPage() {
             className="about-brand-logo"
           />
           <div className="about-brand-text">
-            <span className="about-brand-name">ABCN</span>
             <span className="about-brand-sub">Afropean Business &amp; Culture Network</span>
           </div>
         </Link>

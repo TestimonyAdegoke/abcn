@@ -127,7 +127,6 @@ export default function Home() {
       <header className={"nav " + (scroll > 24 ? "nav-scrolled" : "")}>
         <a href="#top" className="brand" aria-label="ABCN home">
           <img src="/assets/abcn/abcn-logo.png" alt="ABCN Logo" className="brand-logo-img" />
-          <span className="brand-abcn">ABCN</span>
           <span className="brand-long">
             Afropean Business
             <br />&amp; Culture Network
@@ -144,20 +143,24 @@ export default function Home() {
           <a href="#join" onClick={() => setMenu(false)}>Join</a>
         </nav>
 
-        <NavExtras />
+        {/* Right Nav Cluster: Social Share, Language Switcher & CTA */}
+        <div className="nav-right">
+          <NavExtras />
 
-        <a className="nav-cta" href={instagram} target="_blank" rel="noreferrer">
-          Enter the network <Arrow />
-        </a>
+          <a className="nav-cta" href={instagram} target="_blank" rel="noreferrer">
+            <span>Enter the network</span>
+            <Arrow />
+          </a>
 
-        <button
-          className={"menu " + (menu ? "active" : "")}
-          aria-label="Toggle navigation"
-          onClick={() => setMenu((value) => !value)}
-        >
-          <span />
-          <span />
-        </button>
+          <button
+            className={"menu " + (menu ? "active" : "")}
+            aria-label="Toggle navigation"
+            onClick={() => setMenu((value) => !value)}
+          >
+            <span />
+            <span />
+          </button>
+        </div>
       </header>
 
       {/* Atmospheric Luxury Hero with Three.js 3D Particle Constellation */}
@@ -165,9 +168,10 @@ export default function Home() {
         {/* Interactive Three.js WebGL Particle Network */}
         <HeroScene />
 
+        {/* Glowing Atmospheric Lighting Orbs */}
+        <div className="hero-glow-amber" />
+        <div className="hero-glow-blue" />
         <div className="grain" />
-        <div className="orbit orbit-a" />
-        <div className="orbit orbit-b" />
 
         <div className="hero-copy">
           <div className="hero-anim-item">
@@ -188,15 +192,13 @@ export default function Home() {
           </div>
 
           <h1 className="hero-anim-item">
-            African roots.
+            <span className="hero-title-prefix">African roots.</span>
             <br />
-            <em>European horizons.</em>
+            <em className="hero-horizon-shimmer">European horizons.</em>
           </h1>
 
           <p className="hero-intro hero-anim-item">
-            ABCN is an inclusive platform dedicated to elevating Afropean diaspora
-            communities - connecting people, ideas and opportunity across business,
-            culture and belonging.
+            An inclusive executive network dedicated to elevating Afropean diaspora leaders - connecting visionary founders, creative voices, and institutional partners across business, culture, and bilateral innovation.
           </p>
 
           {/* Benchmark Hero KPIs Bar */}
@@ -208,7 +210,7 @@ export default function Home() {
             <div className="kpi-div" />
             <div className="kpi-item">
               <strong>10-15</strong>
-              <span>Cohort Size</span>
+              <span>Cohort Capacity</span>
             </div>
             <div className="kpi-div" />
             <div className="kpi-item">
@@ -223,11 +225,13 @@ export default function Home() {
           </div>
 
           <div className="hero-actions hero-anim-item">
-            <a href={instagram} target="_blank" rel="noreferrer" className="button primary">
-              Join the conversation <Arrow />
+            <a href="/events/fiali-frankfurt-2026#apply" className="hero-btn-primary">
+              <span>Apply for FIALI 2026</span>
+              <Arrow />
             </a>
-            <a href="/about" className="text-link">
-              Discover ABCN dossier <Arrow />
+            <a href="/about" className="hero-btn-glass">
+              <span>Discover ABCN dossier</span>
+              <Arrow />
             </a>
           </div>
 
@@ -244,21 +248,50 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="hero-visual reveal delay">
-          <div className="hero-photo">
-            <img src={images.hero} alt="Afropean female founders during Frankfurt innovation summit" />
-            <div className="photo-label">
-              <span>AUTHENTIC COMMUNITY IN MOTION</span>
-              <span>FRANKFURT · EUROPE · AFRICA</span>
+        {/* Dynamic Multi-Layered Visual Showcase (Benchmark Inspired) */}
+        <div className="hero-visual-showcase reveal delay">
+          {/* Main Hero Card */}
+          <div className="hero-main-card">
+            <img
+              src={images.hero}
+              alt="Afropean female founders during Frankfurt innovation summit"
+              className="hero-main-img"
+            />
+            <div className="hero-main-glass-tag">
+              <span className="city-pulse-dot" />
+              <div className="city-tag-text">
+                <strong>Frankfurt am Main</strong>
+                <span>Bilateral Corridor · Europe ↔ Africa</span>
+              </div>
+              <span className="city-tag-badge">Flagship 2026</span>
             </div>
           </div>
-          <div className="float-card community-card">
-            <strong style={{ color: "var(--gold)" }}>7.6K+</strong>
-            <span>public diaspora network</span>
+
+          {/* Floating Top-Right ABCN Emblem Badge */}
+          <div className="hero-float-emblem-badge">
+            <img
+              src="/assets/abcn/abcn-emblem.png"
+              alt="ABCN Global Emblem"
+              className="float-emblem-icon"
+            />
+            <div>
+              <strong>FIALI 2026</strong>
+              <span>Growth Lab &amp; Summit</span>
+            </div>
           </div>
-          <div className="float-card bridge-card">
-            <Bridge />
-            <span>Africa ↔ Europe</span>
+
+          {/* Floating Bottom-Left Accent Preview Card */}
+          <div className="hero-float-accent-card">
+            <img
+              src="/assets/fiali/female-founder-workshop.jpg"
+              alt="Cohort Workshop"
+              className="float-accent-thumb"
+            />
+            <div>
+              <span className="float-accent-kicker">★ INTENSIVE COHORT</span>
+              <strong>10-15 Founders</strong>
+              <small>€500 × 2 Startup Grants</small>
+            </div>
           </div>
         </div>
 
