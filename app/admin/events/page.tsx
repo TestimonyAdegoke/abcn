@@ -1,0 +1,291 @@
+"use client";
+
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { neon } from "@/lib/neon";
+import { EventRecord, EventStage, EventPartner, FIALI_FALLBACK, normaliseEvent } from "@/lib/events";
+
+type Mode = "checking" | "signed-out" | "needs-admin" | "admin";
+type Editable = EventRecord & { id?: string };
+
+const blankEvent = (): Editable => ({
+  slug: "",
+  title: "",
+  eyebrow: "",
+  short_description: "",
+  description: "",
+  long_description: "",
+  city: "",
+  country: "",
+  venue: "",
+  date_label: "",
+  start_at: null,
+  end_at: null,
+  status: "draft",
+  event_type: "",
+  organizer: "ABCN",
+  hero_image_url: "",
+  card_image_url: "",
+  registration_url: "",
+  featured: false,
+  priority: 0,
+  show_on_home: false,
+  theme: "",
+  accent_color: "#58AC8C",
+  deep_color: "#0F4C38",
+  light_color: "#F0F5F3",
+  highlights: [],
+  stages: [],
+  eligibility: [],
+  partners: [],
+  grants: {},
+  gallery: [],
+});
+
+const lines = (value: string) => value.split("\n").map((v) => v.trim()).filter(Boolean);
+const partnersFromText = (value: string): EventPartner[] =>
+  lines(value).map((row) => {
+    const [name, logo, website] = row.split("|").map((v) => v.trim());
+    return { name, ...(logo ? { logo } : {}), ...(website ? { website } : {}) };
+  });
+
+async function compressImage(file: File): Promise<string> {
+  if (!file.type.startsWith("image/")) throw new Error("Please choose an image file.");
+  const source = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("Could not read image."));
+    reader.readAsDataURL(file);
+  });
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const el = new Image();
+    el.onload = () => resolve(el);
+    el.onerror = () => reject(new Error("Could not decode image."));
+    el.src = source;
+  });
+  const max = 1600;
+  const scale = Math.min(1, max / Math.max(img.width, img.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(img.width * scale);
+  canvas.height = Math.round(img.height * scale);
+  canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const out = canvas.toDataURL("image/jpeg", .82);
+  if (out.length > 1_700_000) throw new Error("Image is still too large. Please use an image under about 1.2 MB.");
+  return out;
+}
+
+export default function EventsAdminPage() {
+  const [mode, setMode] = useState<Mode>("checking");
+  const [events, setEvents] = useState<Editable[]>([]);
+  const [form, setForm] = useState<Editable>(blankEvent());
+  const [selectedId, setSelectedId] = useState<string | undefined>();
+  const [authForm, setAuthForm] = useState({ name: "", email: "", password: "" });
+  const [claimToken, setClaimToken] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const stagesText = useMemo(() => JSON.stringify(form.stages || [], null, 2), [form.stages]);
+  const grantsText = useMemo(() => JSON.stringify(form.grants || {}, null, 2), [form.grants]);
+  const partnersText = useMemo(() => (form.partners || []).map((p) => [p.name, p.logo || "", p.website || ""].join(" | ")).join("\n"), [form.partners]);
+
+  async function refreshSession() {
+    const { data } = await neon.auth.getSession();
+    const user = (data as any)?.user || (data as any)?.session?.user;
+    if (!user) { setMode("signed-out"); return; }
+    const role = String(user.role || "");
+    if (role.includes("admin")) {
+      setMode("admin");
+      await loadEvents();
+    } else setMode("needs-admin");
+  }
+
+  async function loadEvents() {
+    const { data, error: queryError } = await neon.from("events").select("*").order("priority", { ascending: false });
+    if (queryError) { setError(queryError.message); return; }
+    const rows = (data || []).map((row) => normaliseEvent(row as Partial<EventRecord>));
+    setEvents(rows);
+  }
+
+  useEffect(() => { refreshSession().catch(() => setMode("signed-out")); }, []);
+
+  async function signIn(e: FormEvent) {
+    e.preventDefault(); setError(""); setMessage("");
+    const { error: authError } = await neon.auth.signIn.email({ email: authForm.email, password: authForm.password });
+    if (authError) { setError(authError.message || "Could not sign in."); return; }
+    await refreshSession();
+  }
+
+  async function signUp() {
+    setError(""); setMessage("");
+    const { error: authError } = await neon.auth.signUp.email({ name: authForm.name || "ABCN Admin", email: authForm.email, password: authForm.password });
+    if (authError) { setError(authError.message || "Could not create account."); return; }
+    setMessage("Account created. If you are not signed in automatically, use Sign in.");
+    await refreshSession();
+  }
+
+  async function claimAdmin() {
+    setError(""); setMessage("");
+    const { data, error: rpcError } = await neon.rpc("claim_cms_admin", { p_token: claimToken });
+    if (rpcError || !data) { setError(rpcError?.message || "That setup token is invalid or has already been used."); return; }
+    setMessage("Administrator access granted. Sign out and sign back in once so your refreshed session carries the admin role.");
+  }
+
+  async function signOut() {
+    await neon.auth.signOut();
+    setMode("signed-out"); setEvents([]); setForm(blankEvent());
+  }
+
+  function selectEvent(event: Editable) {
+    setSelectedId(event.id); setForm({ ...event }); setError(""); setMessage("");
+  }
+
+  function newEvent() {
+    setSelectedId(undefined); setForm(blankEvent()); setError(""); setMessage("");
+  }
+
+  function update<K extends keyof Editable>(key: K, value: Editable[K]) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  async function saveEvent() {
+    setSaving(true); setError(""); setMessage("");
+    try {
+      if (!form.title.trim() || !form.slug.trim()) throw new Error("Title and slug are required.");
+      const payload = { ...form };
+      delete payload.id;
+      if (selectedId) {
+        const { error: q } = await neon.from("events").update(payload).eq("id", selectedId).select();
+        if (q) throw q;
+        setMessage("Event updated.");
+      } else {
+        const { data, error: q } = await neon.from("events").insert(payload).select();
+        if (q) throw q;
+        const created = (data as any)?.[0];
+        if (created?.id) setSelectedId(created.id);
+        setMessage("Event created.");
+      }
+      await loadEvents();
+    } catch (err: any) { setError(err.message || "Could not save event."); }
+    finally { setSaving(false); }
+  }
+
+  async function removeEvent() {
+    if (!selectedId || !confirm("Delete this event permanently?")) return;
+    const { error: q } = await neon.from("events").delete().eq("id", selectedId);
+    if (q) { setError(q.message); return; }
+    newEvent(); setMessage("Event deleted."); await loadEvents();
+  }
+
+  async function handleImage(file?: File) {
+    if (!file) return;
+    try { update("hero_image_url", await compressImage(file)); }
+    catch (err: any) { setError(err.message); }
+  }
+
+  if (mode === "checking") return <main className="cms"><div className="cms-auth">Checking CMS session…</div></main>;
+
+  if (mode === "signed-out") return (
+    <main className="cms">
+      <header className="cms-top"><strong>ABCN / CMS</strong><span>Events administration</span></header>
+      <section className="cms-auth">
+        <h1>Events CMS</h1>
+        <p className="cms-sub">Sign in to manage ABCN events. The one-time administrator setup flow is available after authentication.</p>
+        {message && <div className="cms-status">{message}</div>}
+        {error && <div className="cms-status cms-error">{error}</div>}
+        <form onSubmit={signIn} className="cms-formgrid">
+          <label className="cms-full">Name <input value={authForm.name} onChange={(e)=>setAuthForm({...authForm,name:e.target.value})} placeholder="Only needed when creating an account" /></label>
+          <label className="cms-full">Email <input type="email" required value={authForm.email} onChange={(e)=>setAuthForm({...authForm,email:e.target.value})} /></label>
+          <label className="cms-full">Password <input type="password" required minLength={8} value={authForm.password} onChange={(e)=>setAuthForm({...authForm,password:e.target.value})} /></label>
+          <div className="cms-actions cms-full"><button type="submit">Sign in</button><button type="button" className="secondary" onClick={signUp}>Create account</button><Link href="/events">View events</Link></div>
+        </form>
+      </section>
+    </main>
+  );
+
+  if (mode === "needs-admin") return (
+    <main className="cms">
+      <header className="cms-top"><strong>ABCN / CMS</strong><span>One-time administrator setup</span></header>
+      <section className="cms-auth">
+        <h1>Claim CMS access</h1>
+        <p className="cms-sub">Your account is authenticated but does not yet have the administrator role. Enter the one-time setup token.</p>
+        {message && <div className="cms-status">{message}</div>}
+        {error && <div className="cms-status cms-error">{error}</div>}
+        <label>Administrator setup token<input value={claimToken} onChange={(e)=>setClaimToken(e.target.value)} /></label>
+        <div className="cms-actions"><button onClick={claimAdmin}>Claim administrator</button><button className="secondary" onClick={signOut}>Sign out</button></div>
+      </section>
+    </main>
+  );
+
+  return (
+    <main className="cms">
+      <header className="cms-top"><strong>ABCN / CMS</strong><span>Events · full CRUD</span></header>
+      <div className="cms-wrap">
+        <div className="cms-head">
+          <div><h1>Event control room.</h1><p className="cms-sub">Create, edit, publish, feature, prioritize and remove events. Featured homepage content is controlled independently from publication status.</p></div>
+          <div className="cms-actions"><Link href="/events">Public events ↗</Link><button className="secondary" onClick={signOut}>Sign out</button></div>
+        </div>
+        {message && <div className="cms-status">{message}</div>}
+        {error && <div className="cms-status cms-error">{error}</div>}
+
+        <div className="cms-grid">
+          <aside className="cms-list">
+            <div className="cms-listhead"><strong>Events</strong><button onClick={newEvent}>+ New</button></div>
+            {events.map((event) => (
+              <div key={event.id || event.slug} onClick={()=>selectEvent(event)} className={"cms-event " + (selectedId===event.id?"active":"")}>
+                <strong>{event.title}</strong>
+                <div className="cms-eventmeta">
+                  <span className={"cms-pill " + event.status}>{event.status}</span>
+                  {event.featured && <span className="cms-pill">featured</span>}
+                  {event.show_on_home && <span className="cms-pill">homepage</span>}
+                  <span>priority {event.priority}</span>
+                </div>
+              </div>
+            ))}
+          </aside>
+
+          <section className="cms-editor">
+            <h2>{selectedId ? "Edit event" : "Create event"}</h2>
+            <div className="cms-formgrid">
+              <label>Title<input value={form.title} onChange={(e)=>update("title",e.target.value)} /></label>
+              <label>Slug<input value={form.slug} onChange={(e)=>update("slug",e.target.value.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""))} /></label>
+              <label>Eyebrow / label<input value={form.eyebrow || ""} onChange={(e)=>update("eyebrow",e.target.value)} /></label>
+              <label>Event type<input value={form.event_type || ""} onChange={(e)=>update("event_type",e.target.value)} /></label>
+              <label className="cms-full">Short description<textarea value={form.short_description} onChange={(e)=>update("short_description",e.target.value)} /></label>
+              <label className="cms-full">Description<textarea value={form.description} onChange={(e)=>update("description",e.target.value)} /></label>
+              <label className="cms-full">Long description<textarea value={form.long_description || ""} onChange={(e)=>update("long_description",e.target.value)} /></label>
+              <label>City<input value={form.city || ""} onChange={(e)=>update("city",e.target.value)} /></label>
+              <label>Country<input value={form.country || ""} onChange={(e)=>update("country",e.target.value)} /></label>
+              <label>Venue<input value={form.venue || ""} onChange={(e)=>update("venue",e.target.value)} /></label>
+              <label>Date display<input value={form.date_label || ""} onChange={(e)=>update("date_label",e.target.value)} placeholder="e.g. 14 October 2026 · 18:00" /></label>
+              <label>Start date/time<input type="datetime-local" value={form.start_at ? form.start_at.slice(0,16) : ""} onChange={(e)=>update("start_at",e.target.value ? new Date(e.target.value).toISOString() : null)} /></label>
+              <label>End date/time<input type="datetime-local" value={form.end_at ? form.end_at.slice(0,16) : ""} onChange={(e)=>update("end_at",e.target.value ? new Date(e.target.value).toISOString() : null)} /></label>
+              <label>Organizer<input value={form.organizer || ""} onChange={(e)=>update("organizer",e.target.value)} /></label>
+              <label>Registration URL<input value={form.registration_url || ""} onChange={(e)=>update("registration_url",e.target.value)} /></label>
+              <label>Status<select value={form.status} onChange={(e)=>update("status",e.target.value as Editable["status"])}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label>
+              <label>Priority<input type="number" value={form.priority} onChange={(e)=>update("priority",Number(e.target.value))} /><span className="cms-help">Higher values appear first.</span></label>
+              <label className="cms-toggle"><input type="checkbox" checked={form.featured} onChange={(e)=>update("featured",e.target.checked)} /> Featured event</label>
+              <label className="cms-toggle"><input type="checkbox" checked={form.show_on_home} onChange={(e)=>update("show_on_home",e.target.checked)} /> Promote on homepage</label>
+
+              <div className="cms-divider cms-full" />
+              <label className="cms-full">Hero image URL<input value={form.hero_image_url || ""} onChange={(e)=>update("hero_image_url",e.target.value)} /><span className="cms-help">Use a URL, or upload an image below. Uploaded images are compressed and stored with the event.</span></label>
+              <label className="cms-full">Upload hero image<input type="file" accept="image/*" onChange={(e)=>handleImage(e.target.files?.[0])} /></label>
+              {form.hero_image_url && <div className="cms-preview cms-full"><img src={form.hero_image_url} alt="" /><span>Current hero image</span></div>}
+              <label className="cms-full">Card image URL<input value={form.card_image_url || ""} onChange={(e)=>update("card_image_url",e.target.value)} /></label>
+
+              <div className="cms-divider cms-full" />
+              <label>Accent colour<input type="color" value={form.accent_color || "#58AC8C"} onChange={(e)=>update("accent_color",e.target.value)} /></label>
+              <label>Deep colour<input type="color" value={form.deep_color || "#0F4C38"} onChange={(e)=>update("deep_color",e.target.value)} /></label>
+              <label className="cms-full">Highlights — one per line<textarea value={(form.highlights || []).join("\n")} onChange={(e)=>update("highlights",lines(e.target.value))} /></label>
+              <label className="cms-full">Eligibility — one per line<textarea value={(form.eligibility || []).join("\n")} onChange={(e)=>update("eligibility",lines(e.target.value))} /></label>
+              <label className="cms-full">Partners — Name | Logo URL | Website<textarea value={partnersText} onChange={(e)=>update("partners",partnersFromText(e.target.value))} /></label>
+              <label className="cms-full">Programme stages — JSON<textarea style={{minHeight:220}} value={stagesText} onChange={(e)=>{try{update("stages",JSON.parse(e.target.value) as EventStage[]);setError("")}catch{setError("Stages JSON is not valid yet.")}}} /></label>
+              <label className="cms-full">Grant / support — JSON<textarea value={grantsText} onChange={(e)=>{try{update("grants",JSON.parse(e.target.value));setError("")}catch{setError("Grant JSON is not valid yet.")}}} /></label>
+            </div>
+            <div className="cms-actions"><button onClick={saveEvent} disabled={saving}>{saving ? "Saving…" : selectedId ? "Save changes" : "Create event"}</button>{selectedId && <button className="danger" onClick={removeEvent}>Delete event</button>}<button className="secondary" onClick={()=>setForm({...FIALI_FALLBACK})}>Load FIALI template</button></div>
+          </section>
+        </div>
+      </div>
+    </main>
+  );
+}
