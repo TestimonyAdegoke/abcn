@@ -914,3 +914,45 @@ footer p {
     transition-duration: .01ms !important;
   }
 }
+
+.event-announcement{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:14px;
+  width:min(100%,720px);
+  margin-bottom:24px;
+  padding:12px 14px;
+  border:1px solid rgba(167,222,200,.35);
+  background:rgba(15,76,56,.28);
+  backdrop-filter:blur(10px);
+  transition:transform .25s ease,background .25s ease,border-color .25s ease;
+}
+.event-announcement:hover{
+  transform:translateY(-2px);
+  background:rgba(15,76,56,.42);
+  border-color:rgba(167,222,200,.6);
+}
+.event-announcement span{
+  padding:6px 8px;
+  background:#a7dec8;
+  color:#0f4c38;
+  font-size:.47rem;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+.event-announcement strong{
+  font-size:.72rem;
+  letter-spacing:.03em;
+}
+.event-announcement i{
+  font-style:normal;
+  color:rgba(255,255,255,.62);
+  font-size:.51rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+@media(max-width:650px){
+  .event-announcement{grid-template-columns:auto 1fr;gap:9px}
+  .event-announcement i{grid-column:1/-1}
+}
