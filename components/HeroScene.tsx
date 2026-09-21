@@ -142,7 +142,8 @@ export default function HeroScene() {
 
     window.addEventListener("resize", onResize);
 
-    let animId: number;
+    let animId = 0;
+    let running = false;
     const startTime = performance.now();
 
     const animate = () => {
@@ -162,10 +163,54 @@ export default function HeroScene() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    const start = () => {
+      if (running) return;
+      running = true;
+      animate();
+    };
+    const stop = () => {
+      if (!running) return;
+      running = false;
+      cancelAnimationFrame(animId);
+    };
+
+    // Respect reduced-motion: render a single static frame and never loop.
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    // Only burn GPU/battery while the hero is actually on screen. Previously the
+    // loop kept rendering even when the hero was thousands of pixels above the
+    // viewport.
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !motionQuery.matches) start();
+        else stop();
+      },
+      { threshold: 0.01 }
+    );
+    observer.observe(container);
+
+    const onMotionChange = () => {
+      if (motionQuery.matches) {
+        stop();
+        renderer.render(scene, camera);
+      }
+    };
+    motionQuery.addEventListener("change", onMotionChange);
+
+    // Tabs that are hidden throttle rAF anyway; stopping explicitly is cheaper.
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else if (!motionQuery.matches && container.getBoundingClientRect().bottom > 0) start();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    if (motionQuery.matches) renderer.render(scene, camera);
 
     return () => {
-      cancelAnimationFrame(animId);
+      stop();
+      observer.disconnect();
+      motionQuery.removeEventListener("change", onMotionChange);
+      document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("resize", onResize);
       renderer.dispose();
