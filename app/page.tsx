@@ -8,38 +8,43 @@ import Voices from "@/components/Voices";
 const instagram = "https://www.instagram.com/afropeanbusinessnetwork/";
 const founderInstagram = "https://www.instagram.com/harmonieessome/";
 
-const lenses = [
+// The concrete format names. These previously appeared as a second list
+// ("How we bring people together") describing the same three categories the
+// card grid already covered.
+const formats = [
   {
-    id: "business",
-    index: "01",
-    title: "Meet people who can actually help",
+    id: "business-circles",
+    tag: "Business",
+    title: "Business circles",
     copy:
-      "Meet founders, professionals and operators swapping practical knowledge and opening doors across borders.",
-    note: "Network · Opportunity · Knowledge",
+      "Founder-to-founder and professional conversations about markets, careers, capital and growth.",
+    image: "/assets/abcn/collaborators.png",
   },
   {
-    id: "culture",
-    index: "02",
-    title: "Bring your whole self",
+    id: "cultural-salons",
+    tag: "Culture",
+    title: "Cultural salons",
     copy:
-      "Room for heritage, creativity, language, food and style. The things that turn a contact list into a community.",
-    note: "Heritage · Expression · Belonging",
+      "Rooms for creativity, identity, food, design and storytelling - the lived Afropean experience.",
+    image: "/assets/abcn/innovators-summit.jpg",
   },
   {
-    id: "community",
-    index: "03",
-    title: "Build something that lasts",
+    id: "cross-border-rooms",
+    tag: "Community",
+    title: "Cross-border rooms",
     copy:
-      "Relationships across generations, industries and countries - built to outlast a single event.",
-    note: "People · Exchange · Collective growth",
+      "Introductions that connect African and European ecosystems around practical opportunity.",
+    image: "/assets/abcn/community-connection.jpg",
+  },
+  {
+    id: "member-stories",
+    tag: "Platform",
+    title: "Member stories",
+    copy:
+      "A visible platform for the people shaping Afropean business and culture.",
+    image: null,
   },
 ];
-
-const wwdImages: Record<string, string> = {
-  business: "/assets/abcn/collaborators.png",
-  culture: "/assets/abcn/innovators-summit.jpg",
-  community: "/assets/abcn/community-connection.jpg",
-};
 
 const images = {
   hero: "/assets/abcn/innovators-summit.jpg",
@@ -83,7 +88,6 @@ export default function Home() {
       <a className="skip-link" href="#top">Skip to main content</a>
       <div className="progress" style={{ width: progress + "%" }} />
 
-      {/* Modern Sticky Navigation */}
       <header className={"nav " + (scroll > 24 ? "nav-scrolled" : "")}>
         <a href="#top" className="brand" aria-label="ABCN home">
           <img src="/assets/abcn/abcn-logo.png" alt="ABCN Logo" className="brand-logo-img" />
@@ -171,7 +175,6 @@ export default function Home() {
 
 
 
-      {/* Redesigned & Restructured About Showcase */}
       <section id="about" className="about-restructured">
         <div className="about-kicker-row">
           <div className="about-kicker-badge">
@@ -257,41 +260,34 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="about-bottom-bar">
-          <a
-            href="/about"
-            className="button primary"
-            style={{ display: "inline-flex", alignItems: "center", gap: "10px" }}
-          >
-            Explore the full About story &amp; FAQs <Arrow />
-          </a>
-          <div style={{ display: "flex", gap: "24px", fontSize: "0.75rem", color: "#6a7670", fontWeight: 700 }}>
-            <span>7.6K+ on Instagram</span>
-            <span>·</span>
-            <span>Frankfurt Ecosystem</span>
-            <span>·</span>
-            <span>Cross-Border Impact</span>
-          </div>
-        </div>
+        {/* One plain link out. The stat row here repeated "7.6K+" from the
+            Join section and sat under a second CTA to the same page. */}
+        <a className="about-more" href="/about">
+          Read the full story <Arrow />
+        </a>
       </section>
 
-      {/* Three Lenses Interactive Ecosystem */}
       {/* Three plain cards, the pattern every reference site uses. This replaces
           a dark tabbed "lenses" widget and a separate 3-panel photo strip that
           explained the same three things - business, culture, community. */}
       <section id="network" className="section what-we-do">
         <div className="sec-head">
           <span className="pill">What we do</span>
-          <h2>Three ways to get involved</h2>
-          <p>Pick whichever you need today.</p>
+          <h2>Four ways we bring people together</h2>
+          <p>Regular formats across Frankfurt, Europe and Africa.</p>
         </div>
 
         <div className="wwd-grid">
-          {lenses.map((item, i) => (
-            <article className={"wwd-card" + (i === 1 ? " wwd-card-accent" : "")} key={item.id}>
-              <img src={wwdImages[item.id]} alt="" aria-hidden="true" className="wwd-img" />
+          {formats.map((item) => (
+            <article
+              className={"wwd-card" + (item.image ? "" : " wwd-card-accent")}
+              key={item.id}
+            >
+              {item.image && (
+                <img src={item.image} alt="" aria-hidden="true" className="wwd-img" />
+              )}
               <div className="wwd-body">
-                <span className="wwd-tag">{item.id}</span>
+                <span className="wwd-tag">{item.tag}</span>
                 <h3>{item.title}</h3>
                 <p>{item.copy}</p>
               </div>
@@ -300,36 +296,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Programmatic Formats Section */}
-      <section className="section sand formats">
-        <div className="section-no">03</div>
-        <div className="section-label">How it works</div>
-        <div className="formats-head">
-          <h2>How we bring people together</h2>
-          <p>
-            Four regular formats, across Frankfurt, Europe and Africa.
-          </p>
-        </div>
-
-        <div className="format-list">
-          {[
-            ["01", "Business circles", "Founder-to-founder and professional conversations around markets, careers, capital and growth."],
-            ["02", "Cultural salons", "Rooms for creativity, identity, food, design, storytelling and the lived Afropean experience."],
-            ["03", "Cross-border rooms", "Introductions and conversations that connect African and European ecosystems around practical opportunity."],
-            ["04", "Member stories", "A visible platform for the leaders and innovators shaping Afropean business and culture."],
-          ].map(([no, title, copy]) => (
-            // No arrow: these formats are not links, and an arrow plus a hover
-            // shift promised a destination that does not exist.
-            <div className="format-row" key={no}>
-              <span className="format-no">{no}</span>
-              <h3>{title}</h3>
-              <p>{copy}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Authentic Founder Spotlight Section with Real Portrait of Harmonie Essome */}
       <section id="founder" className="section founder">
         <div className="founder-visual">
           <div className="founder-portrait-frame">
@@ -338,9 +304,6 @@ export default function Home() {
               alt="Harmonie Essome - Tech CEO & Visionary behind ABCN"
               className="founder-photo"
             />
-            <div className="founder-orbit-badge">
-              <span>FRANKFURT · EUROPE · AFRICA · DUBAI</span>
-            </div>
           </div>
         </div>
 
@@ -353,15 +316,9 @@ export default function Home() {
           <p>
             As the Founder &amp; CEO of SoftXcloud GmbH and creator of multiple Afro-European initiatives, her vision is centered on transforming diaspora potential into long-term economic impact, workforce opportunities, and meaningful cross-cultural collaboration.
           </p>
-          <div className="founder-tags">
-            <span>TECH CEO</span><span>SOFTXCLOUD GMBH</span><span>AFRO-EUROPEAN BRIDGES</span><span>CITS26 BOARD</span>
-          </div>
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginTop: "12px" }}>
             <a className="founder-link" href="/about#visionary">
               Full visionary profile <Arrow />
-            </a>
-            <a className="founder-link" href={founderInstagram} target="_blank" rel="noreferrer">
-              Public profile <Arrow />
             </a>
           </div>
         </div>
@@ -372,7 +329,6 @@ export default function Home() {
       {/* Renders only once real, attributable member quotes exist. */}
       <Voices />
 
-      {/* Redesigned Manifesto Section */}
       {/* The "Manifesto" section was removed. A creed section is an agency
           template trope, its three pillars restated the network lenses, and it
           added a fourth dark slab to an already busy page. */}
@@ -407,25 +363,10 @@ export default function Home() {
             >
               Apply to FIALI 2026 →
             </a>
-            <a href="/about" className="text-link" style={{ color: "rgba(255,255,255,0.7)" }}>
-              Official About dossier <Arrow />
-            </a>
           </div>
 
-          <div className="join-metrics-row">
-            <div className="join-metric-item">
-              <strong>7.6K+</strong>
-              <span>Followers on Instagram</span>
-            </div>
-            <div className="join-metric-item">
-              <strong>10-15</strong>
-              <span>FIALI Founder Cohort</span>
-            </div>
-            <div className="join-metric-item">
-              <strong>2 Continents</strong>
-              <span>Europe ↔ Africa Unified</span>
-            </div>
-          </div>
+          {/* Metrics row removed: it repeated 7.6K+ and 10-15 from elsewhere
+              on the page. The FIALI facts strip is the one place numbers live. */}
         </div>
 
         {/* Brand surface: uses an ABCN asset, not a FIALI programme asset.
@@ -476,7 +417,7 @@ export default function Home() {
               <a href="/about">About</a>
               <a href="#network">The network</a>
               <a href="#founder">Founder</a>
-              <a href="#manifesto">Manifesto</a>
+              <a href="#network">What we do</a>
             </div>
             <div className="footer-col">
               <h4>Programmes</h4>
