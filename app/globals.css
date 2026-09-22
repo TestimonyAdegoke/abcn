@@ -141,6 +141,9 @@ img { display: block; max-width: 100%; }
   text-transform: none;
   font-weight: 600;
   color: #2f4238;
+  /* Sentence-case labels are two words now; without this "Our Story" and
+     "What We Do" break mid-phrase onto two lines in the bar. */
+  white-space: nowrap;
   transition: color .2s ease;
 }
 .nav-links a:hover {
@@ -1769,7 +1772,7 @@ footer {
 }
 .footer-meta { text-align: right; }
 
-@media (max-width: 1020px) {
+@media (max-width: 1100px) {
   .nav { grid-template-columns: 1fr auto; }
   .nav-cta { display: none; }
   .menu { display: block; }
@@ -2502,6 +2505,9 @@ footer {
   box-shadow: 0 18px 50px -26px rgba(18, 41, 31, .38);
   position: relative;
   top: 60px;
+  /* The next section is also position:relative, so as a later sibling it
+     painted over the overhanging strip and cut 60px off the photos. */
+  z-index: 5;
 }
 .hero-strip figure {
   margin: 0;
