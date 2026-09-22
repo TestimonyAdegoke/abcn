@@ -104,12 +104,12 @@ export default function EventDetailPage() {
         </Link>
         <nav className="events-navlinks event-anchor-nav">
           <a href="#about">About</a>
-          <a href="#journey">Journey</a>
+          <a href="#journey">Programme</a>
           <a href="#why-join">Why join</a>
-          {isFiali && <a href="#ecosystem">Ecosystem</a>}
+          {isFiali && <a href="#ecosystem">Partners</a>}
           {isFiali && <a href="#gallery">Gallery</a>}
           {event.grants?.title && <a href="#grants">Grants</a>}
-          <a href="#eligibility">Eligibility</a>
+          <a href="#eligibility">Who it’s for</a>
           {hasApplications && (
             <a className="nav-apply" href="#apply">
               {event.application_cta || "Apply"}
@@ -132,7 +132,6 @@ export default function EventDetailPage() {
             )}
             <span>{event.eyebrow || "ABCN Event"}</span>
           </div>
-          <p className="hero-date-line">{event.date_label || "Frankfurt · 2026 · Dates to be announced"}</p>
           <h1>
             {isFiali ? (
               <>
