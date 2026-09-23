@@ -4,6 +4,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Plus_Jakarta_Sans, Newsreader } from "next/font/google";
 import { routing } from "@/i18n/routing";
+import { siteUrl } from "@/lib/legal";
 import "../globals.css";
 import "../benchmark-components.css";
 import GdprModal from "@/components/GdprModal";
@@ -36,22 +37,47 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
 
+  const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
+
   return {
-    metadataBase: new URL("https://abcn.network"),
+    metadataBase: new URL(siteUrl),
+    applicationName: "ABCN",
     title: t("title"),
     description: t("description"),
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
     openGraph: {
       title: t("title"),
       description: t("ogDescription"),
       type: "website",
+      url: locale === "de" ? "/de" : "/",
+      siteName: "Afropean Business & Culture Network",
       locale: locale === "de" ? "de_DE" : "en_GB",
+      alternateLocale: locale === "de" ? ["en_GB"] : ["de_DE"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("ogDescription"),
     },
     alternates: {
+      canonical: locale === "de" ? "/de" : "/",
       languages: {
         en: "/",
         de: "/de",
+        "x-default": "/",
       },
     },
+    verification: googleVerification ? { google: googleVerification } : undefined,
   };
 }
 
@@ -68,9 +94,22 @@ export default async function LocaleLayout({
   // Required for static rendering of the locale segment.
   setRequestLocale(locale);
 
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Afropean Business & Culture Network",
+    alternateName: "ABCN",
+    url: siteUrl,
+    sameAs: ["https://www.instagram.com/afropeanbusinessnetwork/"],
+  };
+
   return (
     <html lang={locale} className={`${plusJakartaSans.variable} ${newsreader.variable}`}>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <NextIntlClientProvider>
           {children}
           <GdprModal />
