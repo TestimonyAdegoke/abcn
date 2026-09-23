@@ -674,13 +674,8 @@ export default function EventDetailPage() {
         <div style={{ display: "flex", gap: "20px", alignItems: "center", flexWrap: "wrap" }}>
           <Link href="/about">{te("footerAboutAbcn")}</Link>
           <Link href="/events">{te("footerAllEvents")}</Link>
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent("open-gdpr"))}
-            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit", fontSize: "0.78rem" }}
-          >
-            {te("footerPrivacy")}
-          </button>
+          <Link href={locale === "de" ? "/de/datenschutz" : "/privacy"}>{te("footerPrivacy")}</Link>
+          <Link href={locale === "de" ? "/de/impressum" : "/impressum"}>{locale === "de" ? "Impressum" : "Legal notice"}</Link>
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent("open-cookies"))}
