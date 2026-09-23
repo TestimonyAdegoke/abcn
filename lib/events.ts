@@ -176,6 +176,99 @@ export const FIALI_FALLBACK: EventRecord = {
   ],
 };
 
+
+/**
+ * German copy for the seeded FIALI programme.
+ *
+ * Used when the CMS row carries no *_de value for a field, so /de shows German
+ * programme content rather than English. A German value in the database always
+ * wins over this.
+ */
+export const FIALI_FALLBACK_DE: Partial<EventRecord> = {
+  title: "Female Innovation Afropean Leadership Initiative",
+  eyebrow: "FIALI · FRANKFURT 2026",
+  short_description:
+    "Stärkung internationaler Gründerinnen in Frankfurt durch intensive Geschäftsentwicklung, KI und Digitalisierung, Mentoring, Matchmaking und Zugang zum Ökosystem.",
+  description:
+    "Ein zweiteiliges Pilotprogramm, das 10-15 internationale Gründerinnen aus Frankfurt am Main zusammenbringt, um Geschäftsmodelle zu stärken und direkte Verbindungen in das Wirtschafts- und Innovationsökosystem der Stadt zu schaffen.",
+  long_description:
+    "FIALI macht unternehmerisches Potenzial sichtbar, stärkt Unternehmen durch praxisnahe Workshops und Expertenbegleitung und schafft konkrete Verbindungen zu Unternehmen, Investorinnen und Investoren, Business Angels und strategischen Partnern. Das Programm wird von Harmonie Essome geleitet und stellt afropäische Führung, inklusive Innovation und internationales Unternehmerinnentum in den Mittelpunkt.",
+  date_label: "Frankfurt · 2026 · Termine werden bekannt gegeben",
+  application_cta: "Für FIALI bewerben",
+  application_deadline:
+    "Bewerbungen werden laufend geprüft · begrenzter Jahrgang von 10-15 Gründerinnen",
+  highlights: [
+    "10-15 internationale Gründerinnen",
+    "Zweistufiges Pilotprogramm",
+    "KI & Digitalisierung",
+    "90-Tage-Wachstumsplanung",
+    "Pitches & Matchmaking",
+    "Zugang zu Unternehmen, Investoren und Business Angels",
+  ],
+  stages: [
+    {
+      stage: "Phase 1",
+      title: "Female Innovation Growth Lab",
+      description:
+        "Ein ganztägiger Intensiv-Workshop, begleitet von einer externen KI-Expertin und einem Startup-Spezialisten. Jede Teilnehmerin entwickelt einen individuellen 90-Tage-Wachstumsplan.",
+      items: [
+        "Geschäftsmodell-Entwicklung",
+        "Führung & Positionierung",
+        "KI & Digitalisierung",
+        "Go-to-Market-Strategie",
+        "Individueller 90-Tage-Wachstumsplan",
+      ],
+    },
+    {
+      stage: "Phase 2",
+      title: "Female Founder Business Networking Summit",
+      description:
+        "Ein exklusiver Abend, der die Gründerinnen des Jahrgangs direkt mit Frankfurter Unternehmen, Investorinnen und Investoren, Business Angels und institutionellen Innovatoren zusammenbringt.",
+      items: [
+        "Pitches der Gründerinnen",
+        "Business-Matchmaking",
+        "Impulsvorträge von Expertinnen und Experten",
+        "KI- & Innovations-Showcases",
+      ],
+    },
+  ],
+  eligibility: [
+    "Internationale Gründerinnen in Frankfurt und Rhein-Main",
+    "Afrikanischer / afropäischer Diaspora-Hintergrund ausdrücklich willkommen",
+    "Innovatives oder skalierbares Geschäftsmodell",
+    "Großes Interesse an KI und Digitalisierung",
+    "Wachstumspotenzial in Frankfurt",
+  ],
+  grants: {
+    count: 2,
+    amount_each: "500 €",
+    title: "Startup-Innovationszuschüsse",
+    description:
+      "Zwei Zuschüsse à 500 € unterstützen Gründerinnen in der Frühphase bei digitalen oder technischen Lösungen – etwa Prototyping, Produktentwicklung, Branding, Markteintritt, erstes Marketing und Vertrieb sowie förderfähige Gründungskosten.",
+  },
+  focus_areas: [
+    { title: "Geschäftsmodell-Entwicklung", description: "Modell, Nutzenversprechen und die kommerzielle Logik des Unternehmens schärfen." },
+    { title: "Führung & Positionierung", description: "Positionierung als Gründerin, Führungspräsenz und strategische Erzählung stärken." },
+    { title: "KI & Digitalisierung", description: "KI und digitale Werkzeuge in praktischen Hebel für Umsetzung und Wachstum verwandeln." },
+    { title: "Go-to-Market-Strategie", description: "Einen klareren Weg zu Kundinnen, Partnerschaften und Marktzugang entwickeln." },
+  ],
+  benefits: [
+    { title: "Ein 90-Tage-Wachstumsplan", description: "Verlassen Sie das Growth Lab mit einem konkreten individuellen Fahrplan für die nächste Phase." },
+    { title: "Fachliche Begleitung", description: "Fragen zu Geschäft, Positionierung, Digitalisierung und Wachstum mit Fachleuten durcharbeiten." },
+    { title: "Zugang zum Frankfurter Ökosystem", description: "Direkte Verbindungen zu Unternehmen, Investoren, Business Angels und strategischen Partnern aufbauen." },
+    { title: "Sichtbarkeit als Gründerin", description: "Ihr Unternehmen vor Menschen präsentieren, die relevante Türen öffnen können." },
+    { title: "KI, die jetzt nützt", description: "Konkrete Wege finden, KI und digitale Werkzeuge auf Ihr Geschäftsmodell anzuwenden." },
+    { title: "Chance auf einen Innovationszuschuss", description: "Förderfähige Gründerinnen können für einen von zwei Zuschüssen à 500 € berücksichtigt werden." },
+  ],
+};
+
+/** The seeded FIALI event in the requested language. */
+export function fallbackEvent(locale: string = "en"): EventRecord {
+  return locale === "de"
+    ? { ...FIALI_FALLBACK, ...FIALI_FALLBACK_DE }
+    : FIALI_FALLBACK;
+}
+
 /**
  * Event imagery must be curated. A CMS row was carrying a generic remote stock
  * URL as FIALI's hero image - it rendered a photograph of a man at the top of a
@@ -201,10 +294,19 @@ function curatedImage(
  * Every *_de column is nullable, so an untranslated event simply shows English
  * rather than a gap. See db/001_event_german_columns.sql.
  */
-function pick<T>(row: Record<string, unknown>, key: string, locale: string, fallback: T): T {
+function pick<T>(
+  row: Record<string, unknown>,
+  key: string,
+  locale: string,
+  fallback: T,
+  preferFallback = false
+): T {
   if (locale === "de") {
     const de = row[`${key}_de`];
     if (de !== null && de !== undefined && de !== "") return de as T;
+    // No German in the CMS. For the seeded FIALI programme we hold curated
+    // German copy, which reads better than falling through to English.
+    if (preferFallback) return fallback;
   }
   const en = row[key];
   return (en === null || en === undefined ? fallback : (en as T));
@@ -215,28 +317,34 @@ export function normaliseEvent(
   locale: string = "en"
 ): EventRecord {
   const r = row as Record<string, unknown>;
+  // German seed copy backs the English seed, so an untranslated CMS row still
+  // renders German programme content on /de.
+  const base: EventRecord =
+    locale === "de" ? { ...FIALI_FALLBACK, ...FIALI_FALLBACK_DE } : FIALI_FALLBACK;
+  // Only the seeded FIALI event has curated German copy to prefer.
+  const seeded = (row.slug || FIALI_FALLBACK.slug) === FIALI_FALLBACK.slug;
   return {
-    ...FIALI_FALLBACK,
+    ...base,
     ...row,
     hero_image_url: curatedImage(row.hero_image_url, FIALI_FALLBACK.hero_image_url),
     card_image_url: curatedImage(row.card_image_url, FIALI_FALLBACK.card_image_url),
     slug: row.slug || FIALI_FALLBACK.slug,
-    title: pick(r, "title", locale, FIALI_FALLBACK.title),
-    eyebrow: pick(r, "eyebrow", locale, FIALI_FALLBACK.eyebrow),
-    short_description: pick(r, "short_description", locale, ""),
-    description: pick(r, "description", locale, ""),
-    long_description: pick(r, "long_description", locale, null),
-    date_label: pick(r, "date_label", locale, null),
-    venue: pick(r, "venue", locale, null),
+    title: pick(r, "title", locale, base.title, seeded),
+    eyebrow: pick(r, "eyebrow", locale, base.eyebrow, seeded),
+    short_description: pick(r, "short_description", locale, "", seeded),
+    description: pick(r, "description", locale, "", seeded),
+    long_description: pick(r, "long_description", locale, null, seeded),
+    date_label: pick(r, "date_label", locale, null, seeded),
+    venue: pick(r, "venue", locale, null, seeded),
     status: row.status || "draft",
     featured: Boolean(row.featured),
     priority: Number(row.priority || 0),
     show_on_home: Boolean(row.show_on_home),
-    highlights: pick(r, "highlights", locale, [] as string[]),
-    stages: pick(r, "stages", locale, [] as EventStage[]),
-    eligibility: pick(r, "eligibility", locale, [] as string[]),
+    highlights: pick(r, "highlights", locale, [] as string[], seeded),
+    stages: pick(r, "stages", locale, [] as EventStage[], seeded),
+    eligibility: pick(r, "eligibility", locale, [] as string[], seeded),
     partners: Array.isArray(row.partners) ? row.partners : [],
-    grants: pick(r, "grants", locale, {} as EventGrant),
+    grants: pick(r, "grants", locale, {} as EventGrant, seeded),
     gallery: (() => {
       if (!Array.isArray(row.gallery)) return [];
       const curated = row.gallery.filter((src) => !REMOTE_STOCK.test(src));
@@ -244,9 +352,9 @@ export function normaliseEvent(
       return curated.length > 0 ? curated : FIALI_FALLBACK.gallery;
     })(),
     application_open: Boolean(row.application_open),
-    application_deadline: pick(r, "application_deadline", locale, null),
-    application_cta: pick(r, "application_cta", locale, "Apply now"),
-    focus_areas: pick(r, "focus_areas", locale, [] as EventContentCard[]),
-    benefits: pick(r, "benefits", locale, [] as EventContentCard[]),
+    application_deadline: pick(r, "application_deadline", locale, null, seeded),
+    application_cta: pick(r, "application_cta", locale, "Apply now", seeded),
+    focus_areas: pick(r, "focus_areas", locale, [] as EventContentCard[], seeded),
+    benefits: pick(r, "benefits", locale, [] as EventContentCard[], seeded),
   };
 }

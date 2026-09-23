@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 import { neon } from "@/lib/neon";
-import { EventRecord, FIALI_FALLBACK, normaliseEvent } from "@/lib/events";
+import { EventRecord, FIALI_FALLBACK, fallbackEvent, normaliseEvent } from "@/lib/events";
 import LogoMarquee from "@/components/LogoMarquee";
 import styles from "./FeaturedEventSpotlight.module.css";
 
 export default function FeaturedEventSpotlight() {
   const locale = useLocale();
-  const [event, setEvent] = useState<EventRecord>(FIALI_FALLBACK);
+  const [event, setEvent] = useState<EventRecord>(() => fallbackEvent(locale));
 
   useEffect(() => {
     let live = true;

@@ -1,65 +1,32 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import MultiStepApplication from "@/components/MultiStepApplication";
 import NavExtras from "@/components/NavExtras";
 import LogoMarquee from "@/components/LogoMarquee";
 import { neon } from "@/lib/neon";
-import { EventRecord, FIALI_FALLBACK, normaliseEvent } from "@/lib/events";
+import { EventRecord, FIALI_FALLBACK, fallbackEvent, normaliseEvent } from "@/lib/events";
 
-const FRANKFURT_VALUES = [
-  {
-    num: "01",
-    title: "Female Entrepreneurship",
-    description:
-      "Empowers diverse female leadership and drives sustainable business growth across Frankfurt and the wider Rhine-Main metropolitan region.",
-  },
-  {
-    num: "02",
-    title: "Global Ecosystem Advantage",
-    description:
-      "Leverages founders' international networks and intercultural skills to position Frankfurt as an open, globally connected startup destination.",
-  },
-  {
-    num: "03",
-    title: "Innovation & AI Competency",
-    description:
-      "Delivers hands-on digital skills and practical AI expertise so founders can innovate, automate and scale their operating models.",
-  },
-  {
-    num: "04",
-    title: "Visibility & Matchmaking",
-    description:
-      "Showcases founders directly to corporates, institutional partners, investors and business angels through curated networking rooms.",
-  },
-];
+const VALUE_KEYS = [1, 2, 3, 4];
 
-const GRANT_EXPENSES = [
-  "Prototyping & MVP build",
-  "Product development",
-  "Brand & identity design",
-  "Go-to-market testing",
-  "Initial marketing & sales",
-  "Essential incorporation expenses",
-];
+const GRANT_EXPENSE_KEYS = [1, 2, 3, 4, 5, 6];
 
-const ELIGIBILITY_CRITERIA = [
-  "Already incorporated or on the verge of doing so",
-  "Pursuing an innovative or scalable business model",
-  "Showing strong interest in digitalization and AI integration",
-  "Exhibiting high growth potential and international perspective",
-  "Aiming to build, launch or scale the business within Frankfurt / Rhine-Main",
-];
+const ELIGIBILITY_KEYS = [1, 2, 3, 4, 5];
 
 export default function EventDetailPage() {
   const locale = useLocale();
+  const te = useTranslations("event");
   const params = useParams<{ slug: string }>();
   const slug = params?.slug || FIALI_FALLBACK.slug;
-  const [event, setEvent] = useState<EventRecord>(
-    slug === FIALI_FALLBACK.slug ? FIALI_FALLBACK : { ...FIALI_FALLBACK, slug, title: "ABCN Event" }
+  // Locale-aware initial state: this is what server-rendered HTML contains,
+  // so a hard-coded English fallback made /de render English before hydration.
+  const [event, setEvent] = useState<EventRecord>(() =>
+    slug === FIALI_FALLBACK.slug
+      ? fallbackEvent(locale)
+      : { ...fallbackEvent(locale), slug, title: "ABCN Event" }
   );
   const [activeStage, setActiveStage] = useState<number | "all">("all");
   const [checkedCriteria, setCheckedCriteria] = useState<Record<number, boolean>>({});
@@ -105,13 +72,13 @@ export default function EventDetailPage() {
           ABCN <small>Afropean Business & Culture Network</small>
         </Link>
         <nav className="events-navlinks event-anchor-nav">
-          <a href="#about">About</a>
-          <a href="#journey">Programme</a>
-          <a href="#why-join">Why join</a>
-          {isFiali && <a href="#ecosystem">Partners</a>}
-          {isFiali && <a href="#gallery">Gallery</a>}
-          {event.grants?.title && <a href="#grants">Grants</a>}
-          <a href="#eligibility">Who it’s for</a>
+          <a href="#about">{te("navAbout")}</a>
+          <a href="#journey">{te("navProgramme")}</a>
+          <a href="#why-join">{te("navWhyJoin")}</a>
+          {isFiali && <a href="#ecosystem">{te("navPartners")}</a>}
+          {isFiali && <a href="#gallery">{te("navGallery")}</a>}
+          {event.grants?.title && <a href="#grants">{te("navGrants")}</a>}
+          <a href="#eligibility">{te("navWhoFor")}</a>
           {hasApplications && (
             <a className="nav-apply" href="#apply">
               {event.application_cta || "Apply"}
@@ -153,28 +120,28 @@ export default function EventDetailPage() {
               </a>
             ) : event.registration_url ? (
               <a className="benchmark-primary" href={event.registration_url} target="_blank" rel="noreferrer">
-                Register now →
+                {te("registerNow")}
               </a>
             ) : (
-              <span className="benchmark-primary disabled">Registration details coming soon</span>
+              <span className="benchmark-primary disabled">{te("registrationSoon")}</span>
             )}
             <a className="benchmark-secondary" href="#about">
-              Discover the programme ↓
+              {te("discoverProgramme")}
             </a>
           </div>
 
           <div className="benchmark-stats">
             <div>
               <strong>10-15</strong>
-              <span>founders cohort</span>
+              <span>{te("statCohort")}</span>
             </div>
             <div>
               <strong>02</strong>
-              <span>programme stages</span>
+              <span>{te("statStages")}</span>
             </div>
             <div>
               <strong>90 days</strong>
-              <span>growth roadmap</span>
+              <span>{te("statRoadmap")}</span>
             </div>
           </div>
         </div>
@@ -183,8 +150,8 @@ export default function EventDetailPage() {
           style={{ backgroundImage: `url("${event.hero_image_url || FIALI_FALLBACK.hero_image_url}")` }}
         >
           <div className="hero-image-caption">
-            <span>Frankfurt · Afropean leadership</span>
-            <strong>Build the venture. Expand the network.</strong>
+            <span>{te("heroCaption")}</span>
+            <strong>{te("heroCaptionStrong")}</strong>
           </div>
         </div>
       </section>
@@ -203,10 +170,10 @@ export default function EventDetailPage() {
       {/* About Section */}
       <section id="about" className="benchmark-section benchmark-about">
         <div className="benchmark-section-intro">
-          <span className="benchmark-kicker">About FIALI</span>
+          <span className="benchmark-kicker">{te("aboutKicker")}</span>
           <h2>
-            Build stronger.<br />
-            <em>Scale with context.</em>
+            {te("aboutTitle1")}<br />
+            <em>{te("aboutTitle2")}</em>
           </h2>
         </div>
         <div className="benchmark-about-copy">
@@ -220,7 +187,7 @@ export default function EventDetailPage() {
                   alt="Harmonie Essome - Programme Lead & Tech CEO"
                 />
                 <div className="leadership-caption">
-                  <span>Programme Lead</span>
+                  <span>{te("programmeLead")}</span>
                   <strong>Harmonie Essome</strong>
                 </div>
               </div>
@@ -230,8 +197,8 @@ export default function EventDetailPage() {
                   alt="Female Founder Vision & Strategy Session"
                 />
                 <div className="leadership-caption">
-                  <span>Cohort Mission</span>
-                  <strong>Afropean Female Leadership</strong>
+                  <span>{te("cohortMission")}</span>
+                  <strong>{te("afropeanFemaleLeadership")}</strong>
                 </div>
               </div>
             </div>
@@ -243,10 +210,10 @@ export default function EventDetailPage() {
       {event.focus_areas.length > 0 && (
         <section className="focus-section">
           <div className="focus-heading">
-            <span className="benchmark-kicker">Core curriculum</span>
+            <span className="benchmark-kicker">{te("curriculumKicker")}</span>
             <h2>
-              Four pillars.<br />
-              <em>One stronger venture.</em>
+              {te("curriculumTitle1")}<br />
+              <em>{te("curriculumTitle2")}</em>
             </h2>
           </div>
           <div className="focus-grid">
@@ -265,10 +232,10 @@ export default function EventDetailPage() {
       {event.stages.length > 0 && (
         <section id="journey" className="journey-section">
           <div className="journey-header">
-            <span className="benchmark-kicker light">The journey</span>
+            <span className="benchmark-kicker light">{te("journeyKicker")}</span>
             <h2>
-              Your FIALI<br />
-              <em>growth journey.</em>
+              {te("journeyTitle1")}<br />
+              <em>{te("journeyTitle2")}</em>
             </h2>
             <p>
               A carefully sequenced two-stage programme: first sharpen the business fundamentals and AI execution in an intensive lab, then put your venture in the room with Frankfurt’s investors, corporates and ecosystem leaders.
@@ -282,21 +249,21 @@ export default function EventDetailPage() {
               onClick={() => setActiveStage("all")}
               type="button"
             >
-              Full Journey (Stages 1 & 2)
+              {te("journeyAll2")}
             </button>
             <button
               className={`stage-tab ${activeStage === 0 ? "active" : ""}`}
               onClick={() => setActiveStage(0)}
               type="button"
             >
-              Stage 1: Growth Lab
+              {te("journeyStage1")}
             </button>
             <button
               className={`stage-tab ${activeStage === 1 ? "active" : ""}`}
               onClick={() => setActiveStage(1)}
               type="button"
             >
-              Stage 2: Networking Summit
+              {te("journeyStage2")}
             </button>
           </div>
 
@@ -346,10 +313,10 @@ export default function EventDetailPage() {
         <section id="ecosystem" className="values-section">
           <div className="values-heading">
             <div>
-              <span className="benchmark-kicker">Ecosystem impact</span>
+              <span className="benchmark-kicker">{te("valuesKicker")}</span>
               <h2>
-                Value addition for<br />
-                <em>the Frankfurt ecosystem.</em>
+                {te("valuesTitle1")}<br />
+                <em>{te("valuesTitle2")}</em>
               </h2>
             </div>
             <p style={{ maxWidth: "460px", color: "rgba(16,37,31,.7)", lineHeight: "1.65", margin: 0 }}>
@@ -357,12 +324,12 @@ export default function EventDetailPage() {
             </p>
           </div>
           <div className="values-grid">
-            {FRANKFURT_VALUES.map((item) => (
-              <article key={item.title} className="value-card">
-                <span className="num">{item.num} · PILLAR</span>
+            {VALUE_KEYS.map((n) => (
+              <article key={n} className="value-card">
+                <span className="num">{String(n).padStart(2, "0")} · {te("pillar")}</span>
                 <div>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
+                  <h3>{te(`value${n}Title`)}</h3>
+                  <p>{te(`value${n}Desc`)}</p>
                 </div>
               </article>
             ))}
@@ -375,10 +342,10 @@ export default function EventDetailPage() {
         <section id="gallery" className="fiali-gallery-section">
           <div className="gallery-head">
             <div>
-              <span className="benchmark-kicker">COHORT IN MOTION · AUTHENTIC MOMENTS</span>
+              <span className="benchmark-kicker">{te("galleryKicker")}</span>
               <h2>
-                Empowering international<br />
-                <em>female founders in Frankfurt.</em>
+                {te("galleryTitle1")}<br />
+                <em>{te("galleryTitle2")}</em>
               </h2>
             </div>
             <p>
@@ -393,8 +360,8 @@ export default function EventDetailPage() {
                 alt="Female Founders Networking Summit in Frankfurt"
               />
               <div className="fiali-gallery-info">
-                <span>STAGE 2 SUMMIT &amp; MATCHMAKING</span>
-                <strong>Founder Pitches &amp; Corporate Alliances</strong>
+                <span>{te("g1")}</span>
+                <strong>{te("g1b")}</strong>
               </div>
             </div>
 
@@ -404,8 +371,8 @@ export default function EventDetailPage() {
                 alt="Female Innovation Growth Lab Session"
               />
               <div className="fiali-gallery-info">
-                <span>STAGE 1 GROWTH LAB</span>
-                <strong>Hands-on AI &amp; Business Models</strong>
+                <span>{te("g2")}</span>
+                <strong>{te("g2b")}</strong>
               </div>
             </div>
 
@@ -415,8 +382,8 @@ export default function EventDetailPage() {
                 alt="Digitalization & Prototype Scaling"
               />
               <div className="fiali-gallery-info">
-                <span>DIGITALIZATION &amp; TOOLS</span>
-                <strong>Prototyping &amp; Market Scaling</strong>
+                <span>{te("g3")}</span>
+                <strong>{te("g3b")}</strong>
               </div>
             </div>
 
@@ -426,8 +393,8 @@ export default function EventDetailPage() {
                 alt="Vision & Market Positioning Session"
               />
               <div className="fiali-gallery-info">
-                <span>STRATEGIC POSITIONING</span>
-                <strong>Founder Narrative &amp; Leadership</strong>
+                <span>{te("g4")}</span>
+                <strong>{te("g4b")}</strong>
               </div>
             </div>
 
@@ -437,8 +404,8 @@ export default function EventDetailPage() {
                 alt="Frankfurt Founder Peer Collaboration"
               />
               <div className="fiali-gallery-info">
-                <span>COMMUNITY &amp; PEERS</span>
-                <strong>Frankfurt Founder Collaboration</strong>
+                <span>{te("g5")}</span>
+                <strong>{te("g5b")}</strong>
               </div>
             </div>
           </div>
@@ -449,10 +416,10 @@ export default function EventDetailPage() {
       {event.benefits.length > 0 && (
         <section id="why-join" className="benefits-section">
           <div className="benefits-heading">
-            <span className="benchmark-kicker">Tangible outcomes</span>
+            <span className="benchmark-kicker">{te("benefitsKicker")}</span>
             <h2>
-              What you gain from<br />
-              <em>the programme.</em>
+              {te("benefitsTitle1")}<br />
+              <em>{te("benefitsTitle2")}</em>
             </h2>
           </div>
           <div className="benefits-grid">
@@ -472,7 +439,7 @@ export default function EventDetailPage() {
         <section id="grants" className="grant-section">
           <div className="grant-benchmark-card">
             <div>
-              <span className="benchmark-kicker light">Founder support fund</span>
+              <span className="benchmark-kicker light">{te("grantsKicker")}</span>
               <strong className="grant-number">
                 {event.grants.count || 2} × {event.grants.amount_each || "€500"}
               </strong>
@@ -481,8 +448,8 @@ export default function EventDetailPage() {
               <h2>{event.grants.title}</h2>
               <p>{event.grants.description}</p>
               <div className="grant-expenses">
-                {GRANT_EXPENSES.map((exp) => (
-                  <span key={exp}>{exp}</span>
+                {GRANT_EXPENSE_KEYS.map((n) => (
+                  <span key={n}>{te(`grantExp${n}`)}</span>
                 ))}
               </div>
             </div>
@@ -494,10 +461,10 @@ export default function EventDetailPage() {
       {event.eligibility.length > 0 && (
         <section id="eligibility" className="eligibility-section">
           <div>
-            <span className="benchmark-kicker">Cohort criteria</span>
+            <span className="benchmark-kicker">{te("eligibilityKicker")}</span>
             <h2>
-              Built for founders<br />
-              <em>with room to scale.</em>
+              {te("eligibilityTitle1")}<br />
+              <em>{te("eligibilityTitle2")}</em>
             </h2>
             <p>
               {isFiali
@@ -508,13 +475,14 @@ export default function EventDetailPage() {
             {/* Interactive Self-Assessment Checklist */}
             <div className="eligibility-assessment">
               <div className="assessment-meter">
-                <strong>Cohort Fit Self-Assessment</strong>
+                <strong>{te("selfAssessment")}</strong>
                 <span>
-                  {checkedCount} of {ELIGIBILITY_CRITERIA.length} criteria met
+                  {te("criteriaMet", { checked: checkedCount, total: ELIGIBILITY_KEYS.length })}
                 </span>
               </div>
               <div className="assessment-items">
-                {ELIGIBILITY_CRITERIA.map((criterion, idx) => {
+                {ELIGIBILITY_KEYS.map((n, idx) => {
+                  const criterion = te(`elig${n}`);
                   const isChecked = Boolean(checkedCriteria[idx]);
                   return (
                     <div
@@ -539,7 +507,7 @@ export default function EventDetailPage() {
                     ? "Review the points above. Applications are assessed holistically on growth potential."
                     : "Select the criteria above that describe your venture to test your cohort fit."}
                 </p>
-                <a href="#apply">Go to application ↓</a>
+                <a href="#apply">{te("goToApplication")}</a>
               </div>
             </div>
           </div>
@@ -559,10 +527,10 @@ export default function EventDetailPage() {
       {hasApplications && (
         <section className="scarcity-band">
           <div>
-            <span>Limited cohort</span>
+            <span>{te("scarcityKicker")}</span>
             <h2>
               10-15 founders.<br />
-              <em>One focused room.</em>
+              <em>{te("scarcityTitle")}</em>
             </h2>
           </div>
           <div>
@@ -580,42 +548,17 @@ export default function EventDetailPage() {
       {isFiali && (
         <section id="faq" className="fiali-faq">
           <div className="fiali-faq-head">
-            <span className="benchmark-kicker">Before you apply</span>
+            <span className="benchmark-kicker">{te("faqKicker")}</span>
             <h2>
-              The questions<br />
-              <em>founders actually ask.</em>
+              {te("faqTitle1")}<br />
+              <em>{te("faqTitle2")}</em>
             </h2>
           </div>
           <div className="fiali-faq-grid">
-            {[
-              [
-                "Do I need to be incorporated already?",
-                "No. FIALI is open to founders who have already incorporated and to those on the verge of doing so. The grants can even cover essential incorporation costs.",
-              ],
-              [
-                "How many places are there?",
-                "Between 10 and 15. It is deliberately small - the point is a room where you are known, not an audience you sit in.",
-              ],
-              [
-                "What do I actually leave with?",
-                "An individual 90-day growth plan built during the Growth Lab, practical AI and digitalisation training, and a pitch in front of Frankfurt corporates, investors and business angels at the Summit.",
-              ],
-              [
-                "Is there funding attached?",
-                "Two Startup Innovation Grants of €500 each. They cover prototyping and product development, branding and market entry, first marketing and sales activity, and incorporation costs. Two founders are selected on the growth potential and innovation of their model.",
-              ],
-              [
-                "Do I need to be an AI company?",
-                "No, but you should have genuine interest in digitalisation and AI, and a business model that can scale. The programme is built around applying those tools to whatever you are building.",
-              ],
-              [
-                "Where do I need to be based?",
-                "Frankfurt and the Rhine-Main region. There is a particular focus on founders from the city's Afropean, immigrant and international diaspora communities.",
-              ],
-            ].map(([q, a]) => (
-              <div className="fiali-faq-item" key={q}>
-                <h3>{q}</h3>
-                <p>{a}</p>
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div className="fiali-faq-item" key={n}>
+                <h3>{te(`faq${n}Q`)}</h3>
+                <p>{te(`faq${n}A`)}</p>
               </div>
             ))}
           </div>
@@ -626,10 +569,10 @@ export default function EventDetailPage() {
       {hasApplications && (
         <section id="apply" className="application-section">
           <div className="application-intro">
-            <span className="benchmark-kicker">Express your interest</span>
+            <span className="benchmark-kicker">{te("applyKicker")}</span>
             <h2>
-              Join the FIALI<br />
-              <em>founder cohort.</em>
+              {te("applyTitle1")}<br />
+              <em>{te("applyTitle2")}</em>
             </h2>
             <p>
               Tell us about yourself, what you are building and where you want to go next. Places are intentionally limited to 10-15 founders so every participant receives high-touch guidance and direct ecosystem access.
@@ -637,15 +580,15 @@ export default function EventDetailPage() {
             <div className="application-facts">
               <div>
                 <strong>Frankfurt</strong>
-                <span>Rhine-Main location</span>
+                <span>{te("applyLocation")}</span>
               </div>
               <div>
                 <strong>10-15</strong>
-                <span>Founders cohort</span>
+                <span>{te("applyCohort")}</span>
               </div>
               <div>
                 <strong>2 stages</strong>
-                <span>Growth lab + summit</span>
+                <span>{te("applyStages")}</span>
               </div>
             </div>
             {isFiali && (
@@ -657,7 +600,7 @@ export default function EventDetailPage() {
                 />
                 <div>
                   <strong style={{ display: "block", fontSize: "0.88rem", color: "#10251f" }}>Harmonie Essome</strong>
-                  <span style={{ fontSize: "0.72rem", color: "rgba(16, 37, 31, 0.72)" }}>Lead, FIALI Frankfurt 2026 · Founder &amp; CEO, SoftXcloud GmbH</span>
+                  <span style={{ fontSize: "0.72rem", color: "rgba(16, 37, 31, 0.72)" }}>{te("leadRole")}</span>
                 </div>
               </div>
             )}
@@ -729,21 +672,21 @@ export default function EventDetailPage() {
           <span>Afropean Business &amp; Culture Network · Frankfurt 2026</span>
         </div>
         <div style={{ display: "flex", gap: "20px", alignItems: "center", flexWrap: "wrap" }}>
-          <Link href="/about">About ABCN</Link>
-          <Link href="/events">All ABCN events →</Link>
+          <Link href="/about">{te("footerAboutAbcn")}</Link>
+          <Link href="/events">{te("footerAllEvents")}</Link>
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent("open-gdpr"))}
             style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit", fontSize: "0.78rem" }}
           >
-            Privacy Policy &amp; GDPR
+            {te("footerPrivacy")}
           </button>
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent("open-cookies"))}
             style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit", fontSize: "0.78rem" }}
           >
-            Cookie Settings
+            {te("footerCookies")}
           </button>
         </div>
       </footer>
