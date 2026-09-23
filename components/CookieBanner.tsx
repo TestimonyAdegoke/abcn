@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
 
 export default function CookieBanner() {
+  const locale = useLocale();
+  const de = locale === "de";
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const accepted = localStorage.getItem("abcn_cookie_accepted");
-    if (!accepted) {
-      const timer = setTimeout(() => setIsVisible(true), 1500);
+    const seen = localStorage.getItem("abcn_cookie_notice_seen");
+    if (!seen) {
+      const timer = setTimeout(() => setIsVisible(true), 900);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -21,38 +24,32 @@ export default function CookieBanner() {
 
   if (!isVisible) return null;
 
-  const handleDismiss = () => {
-    localStorage.setItem("abcn_cookie_accepted", "true");
+  const dismiss = () => {
+    localStorage.setItem("abcn_cookie_notice_seen", "v1");
     setIsVisible(false);
   };
 
-  const handleDetails = () => {
+  const details = () => {
+    setIsVisible(false);
     window.dispatchEvent(new CustomEvent("open-gdpr"));
   };
 
   return (
-    <div className="cookie-float-bar">
+    <div className="cookie-float-bar" role="region" aria-label={de ? "Cookie- und Datenschutzhinweis" : "Cookie and privacy notice"}>
       <div className="cookie-text">
-        <span>🍪</span>
+        <span aria-hidden="true">◉</span>
         <p>
-          We use only strictly necessary session cookies for security and language preference.
-          <strong> Zero third-party ad tracking.</strong>
+          {de
+            ? "Diese Website verwendet derzeit nur technisch notwendige Browser-/Sitzungsfunktionen. Nicht erforderliche Analyse- oder Marketing-Technologien sind nicht aktiviert."
+            : "This site currently uses only technically necessary browser/session functionality. Optional analytics or marketing technologies are not enabled."}
         </p>
       </div>
       <div className="cookie-btns">
-        <button
-          type="button"
-          onClick={handleDetails}
-          className="cookie-btn-info"
-        >
-          Details
+        <button type="button" onClick={details} className="cookie-btn-info">
+          {de ? "Details" : "Details"}
         </button>
-        <button
-          type="button"
-          onClick={handleDismiss}
-          className="cookie-btn-ok"
-        >
-          Got it
+        <button type="button" onClick={dismiss} className="cookie-btn-ok">
+          {de ? "Verstanden" : "Got it"}
         </button>
       </div>
     </div>
