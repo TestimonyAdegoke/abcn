@@ -15,6 +15,7 @@ export default function FeaturedEventSpotlight() {
 
   useEffect(() => {
     let live = true;
+    setEvent(fallbackEvent(locale));
     neon
       .from("events")
       .select("*")
@@ -29,7 +30,7 @@ export default function FeaturedEventSpotlight() {
         () => {}
       );
     return () => { live = false; };
-  }, []);
+  }, [locale]);
 
   const isFiali = event.slug === FIALI_FALLBACK.slug;
   const factItems = isFiali
@@ -49,8 +50,10 @@ export default function FeaturedEventSpotlight() {
       </div>
       <div className={styles.grid}>
         <h2 className={styles.title}>
-          {isFiali ? (
+          {isFiali && locale === "en" ? (
             <>Female Innovation<br /><em>Afropean Leadership</em><br />Initiative</>
+          ) : isFiali && locale === "de" ? (
+            <>Innovations- &amp;<br /><em>Führungsinitiative</em><br />für afropäische Frauen</>
           ) : (
             event.title
           )}
@@ -59,7 +62,9 @@ export default function FeaturedEventSpotlight() {
           <p>{event.short_description}</p>
           <div className={styles.actions}>
             {event.application_open ? (
-              <Link className={styles.primary} href={"/events/" + event.slug + "#apply"}>{event.application_cta || t("applyNow")} →</Link>
+              <Link className={styles.primary} href={"/events/" + event.slug + "#apply"}>
+                {locale === "de" && isFiali ? t("applyNow") : (event.application_cta || t("applyNow"))} →
+              </Link>
             ) : (
               <Link className={styles.primary} href={"/events/" + event.slug}>{isFiali ? t("explore") : t("exploreGeneric")} →</Link>
             )}
