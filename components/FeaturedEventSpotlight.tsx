@@ -109,7 +109,7 @@ export default function FeaturedEventSpotlight() {
         <div style={{ marginTop: "44px", position: "relative", zIndex: 2 }}>
           <LogoMarquee
             logos={event.partners}
-            theme="light"
+            theme="dark"
             speed="normal"
             label={t("partnerLabel")}
             tagline={event.venue || event.city || t("partnerTagline")}
