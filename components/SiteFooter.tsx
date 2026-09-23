@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 
 const instagram = "https://www.instagram.com/afropeanbusinessnetwork/";
@@ -20,6 +20,7 @@ function Arrow() {
  */
 export default function SiteFooter() {
   const t = useTranslations("footer");
+  const locale = useLocale();
 
   return (
     <footer>
@@ -49,7 +50,7 @@ export default function SiteFooter() {
           </div>
           <div className="footer-col">
             <h4>{t("legal")}</h4>
-            <Link href="/privacy">{t("privacy")}</Link>
+            <Link href={locale === "de" ? "/datenschutz" : "/privacy"}>{t("privacy")}</Link>
             <Link href="/impressum">{t("impressum")}</Link>
             <button
               type="button"
