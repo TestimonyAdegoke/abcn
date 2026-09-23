@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useLocale } from "next-intl";
 import { neon } from "@/lib/neon";
 
 type Props = {
@@ -44,6 +45,8 @@ const initialData: FormData = {
 };
 
 export default function MultiStepApplication({ eventId, eventSlug, eventTitle }: Props) {
+  const locale = useLocale();
+  const privacyHref = locale === "de" ? "/de/datenschutz" : "/privacy";
   const [step, setStep] = useState<number>(1);
   const [formData, setFormData] = useState<FormData>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -80,7 +83,7 @@ export default function MultiStepApplication({ eventId, eventSlug, eventTitle }:
       }
     } else if (currentStep === 4) {
       if (!formData.consent) {
-        err.consent = "You must confirm your consent to submit.";
+        err.consent = "Please confirm that you have read the privacy notice before submitting.";
       }
     }
     setErrors(err);
@@ -527,15 +530,16 @@ export default function MultiStepApplication({ eventId, eventSlug, eventTitle }:
                     onChange={(e) => updateField("consent", e.target.checked)}
                   />
                   <span>
-                    I confirm that the details provided are accurate and agree to the{" "}
-                    <button
-                      type="button"
-                      onClick={() => window.dispatchEvent(new CustomEvent("open-gdpr"))}
+                    I confirm that the details provided are accurate and that I have read the{" "}
+                    <a
+                      href={privacyHref}
+                      target="_blank"
+                      rel="noreferrer"
                       style={{ color: "#E09000", textDecoration: "underline", background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit" }}
                     >
-                      GDPR Data Protection Policy
-                    </button>
-                    . Applications are reviewed on a rolling basis for the 10-15 cohort.
+                      privacy notice / Datenschutzerklärung
+                    </a>
+                    . My information will be used to review and administer this application. This acknowledgement is not consent to unrelated marketing.
                   </span>
                 </label>
                 {errors.consent && <div className="wizard-err">{errors.consent}</div>}
