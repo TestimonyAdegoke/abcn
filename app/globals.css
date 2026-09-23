@@ -2,11 +2,11 @@
   /* Light-first palette. The site previously alternated near-black slabs,
      which read as busy and "AI landing page". The reference sites are cream
      and pale mint with a single deep-green slab for contrast. */
-  --ink: #12211b;            /* body text: soft near-black, not pure black */
+  --ink: #142235;            /* body text: soft near-black, not pure black */
   --paper: #fbf8f2;          /* page base: warm cream */
   --sand: #f2ede2;           /* alternating band */
   --cream: #f6f1e6;
-  --mist: #eef4ef;           /* pale mint, for the hero */
+  --mist: #eef3f8;           /* pale mint, for the hero */
 
   /* One deep green for contrast slabs */
   --forest: #071b33;
@@ -19,7 +19,7 @@
   --orange: #e2b978;
 
   --fiali-green: #0b2a4a;
-  --mint: #7ee0be;
+  --mint: #9fc2e7;
   --blue: #5b79d6;
   --green: #071b33;
 
@@ -128,7 +128,7 @@ img { display: block; max-width: 100%; }
   line-height: 1.25;
   letter-spacing: .06em;
   text-transform: uppercase;
-  color: #5b6b63;
+  color: #68778a;
   font-weight: 600;
 }
 .nav-links { display: flex; align-items: center; gap: 28px; }
@@ -140,7 +140,7 @@ img { display: block; max-width: 100%; }
   letter-spacing: 0;
   text-transform: none;
   font-weight: 600;
-  color: #2f4238;
+  color: #33465c;
   /* Sentence-case labels are two words now; without this "Our Story" and
      "What We Do" break mid-phrase onto two lines in the bar. */
   white-space: nowrap;
@@ -238,7 +238,7 @@ a:hover .arrow.down { transform: rotate(90deg) translateX(4px); }
   background:
     radial-gradient(circle at 82% 24%, rgba(224, 144, 0, 0.18) 0%, transparent 48%),
     radial-gradient(circle at 15% 75%, rgba(2, 49, 139, 0.22) 0%, transparent 52%),
-    radial-gradient(circle at 50% 100%, rgba(0, 79, 30, 0.25) 0%, transparent 60%),
+    radial-gradient(circle at 50% 100%, rgba(11, 42, 74, 0.25) 0%, transparent 60%),
     #05080f;
   color: white;
   position: relative;
@@ -415,16 +415,16 @@ a:hover .arrow.down { transform: rotate(90deg) translateX(4px); }
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #25D366;
-  box-shadow: 0 0 10px #25D366;
+  background: #4F8CC9;
+  box-shadow: 0 0 10px #4F8CC9;
   flex-shrink: 0;
   animation: pulseGreen 2s infinite;
 }
 
 @keyframes pulseGreen {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(37, 211, 102, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(79, 140, 201, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(79, 140, 201, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(79, 140, 201, 0); }
 }
 
 .city-tag-text strong {
@@ -771,15 +771,15 @@ h2 {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(0, 79, 30, 0.08);
-  border: 1px solid rgba(0, 79, 30, 0.18);
+  background: rgba(11, 42, 74, 0.08);
+  border: 1px solid rgba(11, 42, 74, 0.18);
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 0.8rem;
   letter-spacing: 0.16em;
   font-weight: 800;
   text-transform: uppercase;
-  color: var(--brand-forest, #004f1e);
+  color: var(--brand-forest, #0b2a4a);
 }
 
 .about-split-head {
@@ -800,7 +800,7 @@ h2 {
 
 .about-split-head h2 em {
   font-style: italic;
-  color: var(--brand-forest, #004f1e);
+  color: var(--brand-forest, #0b2a4a);
   font-weight: 400;
 }
 
@@ -822,8 +822,8 @@ h2 {
   background: #ffffff;
   border-radius: 24px;
   padding: 44px 40px;
-  border: 1px solid rgba(0, 79, 30, 0.12);
-  box-shadow: 0 24px 50px -15px rgba(0, 79, 30, 0.08);
+  border: 1px solid rgba(11, 42, 74, 0.12);
+  box-shadow: 0 24px 50px -15px rgba(11, 42, 74, 0.08);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -837,7 +837,7 @@ h2 {
   left: 0;
   bottom: 0;
   width: 5px;
-  background: linear-gradient(to bottom, #004f1e, #e09000, #b01010);
+  background: linear-gradient(to bottom, #0b2a4a, #e09000, #b01010);
   border-top-left-radius: 24px;
   border-bottom-left-radius: 24px;
 }
@@ -900,7 +900,7 @@ h2 {
 
 .about-pillar-card:hover {
   transform: translateX(6px);
-  border-color: rgba(0, 79, 30, 0.3);
+  border-color: rgba(11, 42, 74, 0.3);
   box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.06);
 }
 
@@ -908,7 +908,7 @@ h2 {
   font-size: 1.1rem;
   font-weight: 900;
   letter-spacing: -0.04em;
-  color: var(--brand-forest, #004f1e);
+  color: var(--brand-forest, #0b2a4a);
   padding-top: 2px;
 }
 
@@ -1276,7 +1276,7 @@ h2 {
   padding: 104px max(7vw, calc((100% - var(--measure)) / 2)) 84px;
   background:
     radial-gradient(circle at 85% 20%, rgba(224, 144, 0, 0.12), transparent 45%),
-    radial-gradient(circle at 15% 85%, rgba(0, 79, 30, 0.22), transparent 50%),
+    radial-gradient(circle at 15% 85%, rgba(11, 42, 74, 0.22), transparent 50%),
     linear-gradient(150deg, #070b11 0%, #0b1713 50%, #070908 100%);
   color: #ffffff;
   display: flex;
@@ -1466,7 +1466,7 @@ h2 {
   width: 600px;
   height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 79, 30, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(11, 42, 74, 0.3) 0%, transparent 70%);
   filter: blur(80px);
   pointer-events: none;
 }
@@ -1945,7 +1945,7 @@ footer {
 .event-announcement span{
   padding:5px 11px;
   border-radius:9999px;
-  background:#7ee0be;
+  background:#9fc2e7;
   color:#071510;
   font-size:0.75rem;
   font-weight:900;
@@ -2380,7 +2380,7 @@ footer {
 /* One card picks up the deep green, as in the Biztop reference.
    These must come after the base .wwd-card rules and carry higher
    specificity: declared earlier at equal specificity, .wwd-card h3's
-   var(--ink) won and painted the title #12211b on a #071b33 card. */
+   var(--ink) won and painted the title #142235 on a #071b33 card. */
 .wwd-card.wwd-card-accent {
   background: var(--forest);
   border-color: transparent;
@@ -2494,7 +2494,7 @@ footer {
 }
 .btn .arrow { width: 17px; height: 17px; }
 .btn-primary { background: var(--forest); color: #fff; }
-.btn-primary .btn-dot { background: var(--gold); color: #12211b; }
+.btn-primary .btn-dot { background: var(--gold); color: #142235; }
 .btn-primary:hover { background: var(--forest-soft); }
 .btn-ghost {
   background: #fff;
