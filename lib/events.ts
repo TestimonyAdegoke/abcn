@@ -110,9 +110,9 @@ export const FIALI_FALLBACK: EventRecord = {
   priority: 100,
   show_on_home: true,
   theme: "fiali",
-  accent_color: "#58AC8C",
-  deep_color: "#0F4C38",
-  light_color: "#F0F5F3",
+  accent_color: "#5F8FC0",
+  deep_color: "#0B2A4A",
+  light_color: "#F1F5FA",
   highlights: [
     "10-15 international female founders",
     "Two-stage pilot programme",
