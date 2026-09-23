@@ -319,7 +319,7 @@ export default function EventDetailPage() {
                 <em>{te("valuesTitle2")}</em>
               </h2>
             </div>
-            <p style={{ maxWidth: "460px", color: "rgba(16,37,31,.7)", lineHeight: "1.65", margin: 0 }}>
+            <p style={{ maxWidth: "460px", color: "rgba(19,37,58,.7)", lineHeight: "1.65", margin: 0 }}>
               FIALI strengthens Frankfurt as a premier international hub for diverse, high-growth entrepreneurship, connecting the diaspora with Germany’s financial capital.
             </p>
           </div>
@@ -596,10 +596,10 @@ export default function EventDetailPage() {
                 <img
                   src="/assets/abcn/harmonie-essome.png"
                   alt="Harmonie Essome"
-                  style={{ width: "52px", height: "52px", borderRadius: "50%", objectFit: "cover", objectPosition: "top", border: "2px solid #58ac8c" }}
+                  style={{ width: "52px", height: "52px", borderRadius: "50%", objectFit: "cover", objectPosition: "top", border: "2px solid #5f8fc0" }}
                 />
                 <div>
-                  <strong style={{ display: "block", fontSize: "0.88rem", color: "#10251f" }}>Harmonie Essome</strong>
+                  <strong style={{ display: "block", fontSize: "0.88rem", color: "#13253a" }}>Harmonie Essome</strong>
                   <span style={{ fontSize: "0.72rem", color: "rgba(16, 37, 31, 0.72)" }}>{te("leadRole")}</span>
                 </div>
               </div>
