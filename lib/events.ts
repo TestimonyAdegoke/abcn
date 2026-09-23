@@ -206,7 +206,7 @@ export const FIALI_FALLBACK: EventRecord = {
  * wins over this.
  */
 export const FIALI_FALLBACK_DE: Partial<EventRecord> = {
-  title: "Female Innovation Afropean Leadership Initiative",
+  title: "Innovations- und Führungsinitiative für afropäische Frauen",
   eyebrow: "FIALI · FRANKFURT 2026",
   short_description:
     "Stärkung internationaler Gründerinnen in Frankfurt durch intensive Geschäftsentwicklung, KI und Digitalisierung, Mentoring, Matchmaking und Zugang zum Ökosystem.",
