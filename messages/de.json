@@ -121,11 +121,12 @@
     "fiali": "FIALI 2026",
     "apply": "Bewerben",
     "legal": "Rechtliches",
-    "privacy": "Datenschutz & DSGVO",
-    "cookies": "Cookie-Einstellungen",
+    "privacy": "Datenschutzerklärung",
+    "cookies": "Cookie- & Datenschutzeinstellungen",
     "copyright": "© {year} Afropean Business & Culture Network",
     "creed": "Afrikanische Wurzeln · Europäische Horizonte",
-    "compliance": "DSGVO-konform"
+    "compliance": "Datenschutzorientiert · EU/DE Launch-Vorbereitung",
+    "impressum": "Impressum"
   },
   "spotlight": {
     "kicker": "Im Fokus · ABCN präsentiert",
@@ -217,8 +218,8 @@
     "leadRole": "Leitung, FIALI Frankfurt 2026 · Gründerin &amp; CEO, SoftXcloud GmbH",
     "footerAboutAbcn": "Über ABCN",
     "footerAllEvents": "Alle ABCN-Veranstaltungen →",
-    "footerPrivacy": "Datenschutz &amp; DSGVO",
-    "footerCookies": "Cookie-Einstellungen",
+    "footerPrivacy": "Datenschutzerklärung",
+    "footerCookies": "Cookie- & Datenschutzeinstellungen",
     "value1Title": "Unternehmerinnentum",
     "value1Desc": "Stärkt vielfältige weibliche Führung und fördert nachhaltiges Unternehmenswachstum in Frankfurt und der Region Rhein-Main.",
     "value2Title": "Globaler Ökosystem-Vorteil",
