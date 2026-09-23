@@ -196,25 +196,47 @@ function curatedImage(
   return value;
 }
 
-export function normaliseEvent(row: Partial<EventRecord>): EventRecord {
+/**
+ * Picks the German variant of a field when one exists, else the English one.
+ * Every *_de column is nullable, so an untranslated event simply shows English
+ * rather than a gap. See db/001_event_german_columns.sql.
+ */
+function pick<T>(row: Record<string, unknown>, key: string, locale: string, fallback: T): T {
+  if (locale === "de") {
+    const de = row[`${key}_de`];
+    if (de !== null && de !== undefined && de !== "") return de as T;
+  }
+  const en = row[key];
+  return (en === null || en === undefined ? fallback : (en as T));
+}
+
+export function normaliseEvent(
+  row: Partial<EventRecord>,
+  locale: string = "en"
+): EventRecord {
+  const r = row as Record<string, unknown>;
   return {
     ...FIALI_FALLBACK,
     ...row,
     hero_image_url: curatedImage(row.hero_image_url, FIALI_FALLBACK.hero_image_url),
     card_image_url: curatedImage(row.card_image_url, FIALI_FALLBACK.card_image_url),
     slug: row.slug || FIALI_FALLBACK.slug,
-    title: row.title || FIALI_FALLBACK.title,
-    short_description: row.short_description || "",
-    description: row.description || "",
+    title: pick(r, "title", locale, FIALI_FALLBACK.title),
+    eyebrow: pick(r, "eyebrow", locale, FIALI_FALLBACK.eyebrow),
+    short_description: pick(r, "short_description", locale, ""),
+    description: pick(r, "description", locale, ""),
+    long_description: pick(r, "long_description", locale, null),
+    date_label: pick(r, "date_label", locale, null),
+    venue: pick(r, "venue", locale, null),
     status: row.status || "draft",
     featured: Boolean(row.featured),
     priority: Number(row.priority || 0),
     show_on_home: Boolean(row.show_on_home),
-    highlights: Array.isArray(row.highlights) ? row.highlights : [],
-    stages: Array.isArray(row.stages) ? row.stages : [],
-    eligibility: Array.isArray(row.eligibility) ? row.eligibility : [],
+    highlights: pick(r, "highlights", locale, [] as string[]),
+    stages: pick(r, "stages", locale, [] as EventStage[]),
+    eligibility: pick(r, "eligibility", locale, [] as string[]),
     partners: Array.isArray(row.partners) ? row.partners : [],
-    grants: row.grants && typeof row.grants === "object" ? row.grants : {},
+    grants: pick(r, "grants", locale, {} as EventGrant),
     gallery: (() => {
       if (!Array.isArray(row.gallery)) return [];
       const curated = row.gallery.filter((src) => !REMOTE_STOCK.test(src));
@@ -222,9 +244,9 @@ export function normaliseEvent(row: Partial<EventRecord>): EventRecord {
       return curated.length > 0 ? curated : FIALI_FALLBACK.gallery;
     })(),
     application_open: Boolean(row.application_open),
-    application_deadline: row.application_deadline || null,
-    application_cta: row.application_cta || "Apply now",
-    focus_areas: Array.isArray(row.focus_areas) ? row.focus_areas : [],
-    benefits: Array.isArray(row.benefits) ? row.benefits : [],
+    application_deadline: pick(r, "application_deadline", locale, null),
+    application_cta: pick(r, "application_cta", locale, "Apply now"),
+    focus_areas: pick(r, "focus_areas", locale, [] as EventContentCard[]),
+    benefits: pick(r, "benefits", locale, [] as EventContentCard[]),
   };
 }

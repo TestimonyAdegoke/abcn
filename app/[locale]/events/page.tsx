@@ -1,19 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import LogoMarquee from "@/components/LogoMarquee";
 import { neon } from "@/lib/neon";
 import { EventRecord, FIALI_FALLBACK, normaliseEvent } from "@/lib/events";
 
 export default function EventsPage() {
+  const locale = useLocale();
   const [events, setEvents] = useState<EventRecord[]>([FIALI_FALLBACK]);
 
   useEffect(() => {
     let live = true;
     neon.from("events").select("*").eq("status", "published").order("priority", { ascending: false })
       .then(({ data }) => {
-        if (live && data?.length) setEvents(data.map((row) => normaliseEvent(row as Partial<EventRecord>)));
+        if (live && data?.length) setEvents(data.map((row) => normaliseEvent(row as Partial<EventRecord>, locale)));
       }, () => {});
     return () => { live = false; };
   }, []);

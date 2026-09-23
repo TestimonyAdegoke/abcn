@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function NavExtras() {
   const [shareUrl, setShareUrl] = useState("https://abcn.network");
@@ -72,6 +73,8 @@ export default function NavExtras() {
           </svg>
         </a>
       </div>
+
+      <LanguageSwitcher />
     </div>
   );
 }

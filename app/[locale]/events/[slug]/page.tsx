@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import MultiStepApplication from "@/components/MultiStepApplication";
@@ -54,6 +55,7 @@ const ELIGIBILITY_CRITERIA = [
 ];
 
 export default function EventDetailPage() {
+  const locale = useLocale();
   const params = useParams<{ slug: string }>();
   const slug = params?.slug || FIALI_FALLBACK.slug;
   const [event, setEvent] = useState<EventRecord>(
@@ -72,7 +74,7 @@ export default function EventDetailPage() {
       .limit(1)
       .then(
         ({ data }) => {
-          if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>));
+          if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>, locale));
         },
         () => {}
       );

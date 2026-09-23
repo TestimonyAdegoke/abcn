@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { neon } from "@/lib/neon";
 import { EventRecord, FIALI_FALLBACK, normaliseEvent } from "@/lib/events";
@@ -8,6 +9,7 @@ import LogoMarquee from "@/components/LogoMarquee";
 import styles from "./FeaturedEventSpotlight.module.css";
 
 export default function FeaturedEventSpotlight() {
+  const locale = useLocale();
   const [event, setEvent] = useState<EventRecord>(FIALI_FALLBACK);
 
   useEffect(() => {
@@ -21,7 +23,7 @@ export default function FeaturedEventSpotlight() {
       .limit(1)
       .then(
         ({ data }) => {
-          if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>));
+          if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>, locale));
         },
         () => {}
       );

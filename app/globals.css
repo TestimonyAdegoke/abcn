@@ -2572,3 +2572,46 @@ footer {
 
 /* Four cards wrap to 2x2 on mid widths; the accent card carries no photo. */
 .wwd-card.wwd-card-accent .wwd-body { padding: 40px 26px; }
+
+/* --- EN / DE language switcher --- */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(18, 41, 31, .07);
+  border: 1px solid rgba(18, 33, 27, .10);
+}
+.lang-btn {
+  border: 0;
+  cursor: pointer;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: transparent;
+  color: #55675e;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 1;
+  transition: background .18s ease, color .18s ease;
+}
+.lang-btn:hover:not(.active) { color: var(--ink); }
+.lang-btn.active {
+  background: var(--forest);
+  color: #ffffff;
+}
+.lang-btn:disabled { cursor: default; }
+
+/* On dark surfaces (the event microsite header) */
+.event-nav-benchmark .lang-switch,
+.founder .lang-switch {
+  background: rgba(255, 255, 255, .12);
+  border-color: rgba(255, 255, 255, .18);
+}
+.event-nav-benchmark .lang-btn,
+.founder .lang-btn { color: rgba(255, 255, 255, .8); }
+
+@media (max-width: 650px) {
+  .lang-btn { padding: 5px 9px; font-size: 0.74rem; }
+}
