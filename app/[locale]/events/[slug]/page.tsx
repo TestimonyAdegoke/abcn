@@ -16,6 +16,37 @@ const GRANT_EXPENSE_KEYS = [1, 2, 3, 4, 5, 6];
 
 const ELIGIBILITY_KEYS = [1, 2, 3, 4, 5];
 
+function renderEventTitle(title: string) {
+  if (!title) return null;
+  if (title.includes("\n")) {
+    return title.split("\n").map((line, i, arr) => (
+      <span key={i}>
+        {line}
+        {i < arr.length - 1 && <br />}
+      </span>
+    ));
+  }
+  if (/Female Innovation/i.test(title) && /Afropean Leadership/i.test(title)) {
+    return (
+      <>
+        Female Innovation<br />
+        <em>Afropean Leadership</em><br />
+        Initiative
+      </>
+    );
+  }
+  if (/Führungsinitiative/i.test(title)) {
+    return (
+      <>
+        Innovations- &amp;<br />
+        <em>Führungsinitiative</em><br />
+        für afropäische Frauen
+      </>
+    );
+  }
+  return title;
+}
+
 export default function EventDetailPage() {
   const locale = useLocale();
   const te = useTranslations("event");
@@ -97,31 +128,23 @@ export default function EventDetailPage() {
       <section className="benchmark-hero">
         <div className="benchmark-hero-copy">
           <div className="benchmark-brand-row">
-            {isFiali && (
+            {event.partners?.[0]?.logo ? (
+              <img
+                src={event.partners[0].logo}
+                alt={event.partners[0].name || "Logo"}
+                style={{ height: "42px", width: "auto" }}
+              />
+            ) : isFiali ? (
               <img
                 src="/assets/fiali/logos/abcn.png"
                 alt="ABCN Logo"
                 style={{ height: "42px", width: "auto" }}
               />
-            )}
+            ) : null}
             <span>{event.eyebrow || "ABCN Event"}</span>
           </div>
           <h1>
-            {isFiali && locale === "en" ? (
-              <>
-                Female Innovation<br />
-                <em>Afropean Leadership</em><br />
-                Initiative
-              </>
-            ) : isFiali && locale === "de" ? (
-              <>
-                Innovations- &amp;<br />
-                <em>Führungsinitiative</em><br />
-                für afropäische Frauen
-              </>
-            ) : (
-              event.title
-            )}
+            {renderEventTitle(event.title)}
           </h1>
           <p className="benchmark-lead">{event.short_description}</p>
           <div className="benchmark-actions">
@@ -143,16 +166,20 @@ export default function EventDetailPage() {
 
           <div className="benchmark-stats">
             <div>
-              <strong>10-15</strong>
+              <strong>
+                {event.highlights?.find(h => /\d+[-–]\d+/.test(h))?.match(/\d+[-–]\d+/)?.[0] || "10-15"}
+              </strong>
               <span>{te("statCohort")}</span>
             </div>
             <div>
-              <strong>02</strong>
+              <strong>{String(event.stages?.length || 2).padStart(2, "0")}</strong>
               <span>{te("statStages")}</span>
             </div>
             <div>
-              <strong>90 days</strong>
-              <span>{te("statRoadmap")}</span>
+              <strong>
+                {event.grants?.amount_each ? `${event.grants.count || 2}x ${event.grants.amount_each}` : "90 days"}
+              </strong>
+              <span>{event.grants?.amount_each ? (locale === "de" ? "Zuschüsse" : "Grants") : te("statRoadmap")}</span>
             </div>
           </div>
         </div>
@@ -168,13 +195,13 @@ export default function EventDetailPage() {
       </section>
 
       {/* Infinite Scrolling Logo Marquee for Verified Partner Ecosystem */}
-      {isFiali && (
+      {event.partners && event.partners.length > 0 && (
         <LogoMarquee
           logos={event.partners}
           theme="light"
           speed="normal"
-          label="FIALI Partner Ecosystem & Collaborators"
-          tagline="Frankfurt 2026"
+          label={event.eyebrow || "Partner Ecosystem & Collaborators"}
+          tagline={event.venue || event.city || "Frankfurt 2026"}
         />
       )}
 
