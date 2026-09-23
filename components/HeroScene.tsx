@@ -34,7 +34,7 @@ export default function HeroScene() {
     const colors = new Float32Array(particleCount * 3);
 
     const goldColor = new THREE.Color("#E2B978");
-    const mintColor = new THREE.Color("#7EE0BE");
+    const mintColor = new THREE.Color("#9FC2E7");
     const softWhite = new THREE.Color("#FAF8F5");
 
     for (let i = 0; i < particleCount; i++) {
