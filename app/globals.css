@@ -2351,12 +2351,6 @@ footer {
   display: flex;
   flex-direction: column;
 }
-/* One card picks up the deep green, as in the Biztop reference. */
-.wwd-card-accent { background: var(--forest); border-color: transparent; }
-.wwd-card-accent h3 { color: #fff; }
-.wwd-card-accent p { color: rgba(255,255,255,.74); }
-.wwd-card-accent .wwd-tag { background: rgba(255,255,255,.14); color: #fff; }
-
 .wwd-img { width: 100%; height: 190px; object-fit: cover; }
 .wwd-body { padding: 26px 26px 30px; }
 .wwd-tag {
@@ -2381,6 +2375,24 @@ footer {
   font-size: 0.97rem;
   line-height: 1.65;
   color: #55675e;
+}
+
+/* One card picks up the deep green, as in the Biztop reference.
+   These must come after the base .wwd-card rules and carry higher
+   specificity: declared earlier at equal specificity, .wwd-card h3's
+   var(--ink) won and painted the title #12211b on a #12291f card. */
+.wwd-card.wwd-card-accent {
+  background: var(--forest);
+  border-color: transparent;
+  /* No image, so the body would sit at the top of a stretched grid row and
+     leave a large void beneath. Centre it instead. */
+  justify-content: center;
+}
+.wwd-card.wwd-card-accent h3 { color: #ffffff; }
+.wwd-card.wwd-card-accent p { color: rgba(255, 255, 255, .78); }
+.wwd-card.wwd-card-accent .wwd-tag {
+  background: rgba(255, 255, 255, .16);
+  color: #ffffff;
 }
 
 /* Join is now a light band, so its dark-slab styles need re-pointing. */
@@ -2559,4 +2571,4 @@ footer {
 .about-more:hover { border-bottom-color: var(--gold); }
 
 /* Four cards wrap to 2x2 on mid widths; the accent card carries no photo. */
-.wwd-card-accent .wwd-body { padding-top: 34px; }
+.wwd-card.wwd-card-accent .wwd-body { padding: 40px 26px; }
