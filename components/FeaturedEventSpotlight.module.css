@@ -1,16 +1,16 @@
 .wrap {
-  --event-dark: #0f4c38;
-  --event-mid: #1f684f;
-  --event-accent: #58ac8c;
-  --event-mint: #a7dec8;
-  --event-light: #f0f5f3;
+  --event-dark: #0b2a4a;
+  --event-mid: #123f6d;
+  --event-accent: #5f8fc0;
+  --event-mint: #b9cfe8;
+  --event-light: #f1f5fa;
   position: relative;
   overflow: hidden;
   padding: 92px 7vw 88px;
   color: white;
   background:
-    radial-gradient(circle at 88% 18%, rgba(167,222,200,.33), transparent 28%),
-    radial-gradient(circle at 76% 75%, rgba(88,172,140,.28), transparent 34%),
+    radial-gradient(circle at 88% 18%, rgba(185,207,232,.33), transparent 28%),
+    radial-gradient(circle at 76% 75%, rgba(95,143,192,.28), transparent 34%),
     linear-gradient(132deg, var(--event-dark), var(--event-mid));
 }
 .wrap::before,
@@ -68,7 +68,7 @@
   font-size: 0.8rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase;
   transition: transform .25s ease, background .25s ease, color .25s ease;
 }
-.primary { background: var(--event-mint); color: #0c3e2f; }
+.primary { background: var(--event-mint); color: #0b2a4a; }
 .secondary { color: white; }
 .primary:hover, .secondary:hover { transform: translateY(-3px); }
 .secondary:hover { background: rgba(255,255,255,.08); }
@@ -118,13 +118,13 @@
   position:relative;z-index:2;margin-top:48px;padding:15px 18px;background:rgba(255,255,255,.94);
   display:grid;grid-template-columns:240px 1fr;gap:25px;align-items:center;color:var(--event-dark)
 }
-.eventMark{display:flex;flex-direction:column;gap:4px;padding-right:22px;border-right:1px solid rgba(15,76,56,.18)}
+.eventMark{display:flex;flex-direction:column;gap:4px;padding-right:22px;border-right:1px solid rgba(11,42,74,.18)}
 .eventMark span{font-size:1.55rem;font-weight:950;letter-spacing:-.055em}
-.eventMark small{font-size:0.75rem;line-height:1.35;letter-spacing:.11em;text-transform:uppercase;color:rgba(15,76,56,.63)}
+.eventMark small{font-size:0.75rem;line-height:1.35;letter-spacing:.11em;text-transform:uppercase;color:rgba(11,42,74,.63)}
 .partnerBand img{display:block;width:100%;height:68px;object-fit:contain;object-position:left center}
 @media(max-width:700px){
   .partnerBand{grid-template-columns:1fr;padding:16px}
-  .eventMark{border-right:0;border-bottom:1px solid rgba(15,76,56,.18);padding:0 0 12px}
+  .eventMark{border-right:0;border-bottom:1px solid rgba(11,42,74,.18);padding:0 0 12px}
   .partnerBand img{height:auto;max-height:78px}
 }
 
