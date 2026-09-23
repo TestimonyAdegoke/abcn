@@ -51,7 +51,7 @@ export default function AboutPage() {
           <img src="/assets/abcn/abcn-logo.png" alt="ABCN Logo" className="brand-logo-img" />
           <span className="brand-long">
             Afropean Business
-            <br />&amp; Culture Network
+            <br />& Culture Network
           </span>
         </Link>
 

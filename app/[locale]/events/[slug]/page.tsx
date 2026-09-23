@@ -38,7 +38,7 @@ function renderEventTitle(title: string) {
   if (/Führungsinitiative/i.test(title)) {
     return (
       <>
-        Innovations- &amp;<br />
+        Innovations- &<br />
         <em>Führungsinitiative</em><br />
         für afropäische Frauen
       </>
@@ -648,6 +648,8 @@ export default function EventDetailPage() {
               eventId={event.id}
               eventSlug={event.slug}
               eventTitle={event.title}
+              grants={event.grants}
+              applicationDeadline={event.application_deadline}
             />
           </div>
         </section>
@@ -707,7 +709,7 @@ export default function EventDetailPage() {
       <footer className="events-footer benchmark-footer">
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           <strong>ABCN</strong>
-          <span>Afropean Business &amp; Culture Network · Frankfurt 2026</span>
+          <span>Afropean Business & Culture Network · Frankfurt 2026</span>
         </div>
         <div style={{ display: "flex", gap: "20px", alignItems: "center", flexWrap: "wrap" }}>
           <Link href="/about">{te("footerAboutAbcn")}</Link>

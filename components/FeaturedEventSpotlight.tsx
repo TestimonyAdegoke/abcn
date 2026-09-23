@@ -30,7 +30,7 @@ function renderEventTitle(title: string) {
   if (/Führungsinitiative/i.test(title)) {
     return (
       <>
-        Innovations- &amp;<br />
+        Innovations- &<br />
         <em>Führungsinitiative</em><br />
         für afropäische Frauen
       </>
