@@ -54,7 +54,7 @@
 }
 
 .nav-social-link.wa:hover {
-  color: #25D366;
+  color: #4F8CC9;
 }
 
 .nav-social-link.li:hover {
@@ -100,7 +100,7 @@
 .gdpr-accent-bar {
   height: 5px;
   width: 100%;
-  background: linear-gradient(90deg, #004F1E, #02318B, #E09000, #B01010);
+  background: linear-gradient(90deg, #0B2A4A, #02318B, #E09000, #B01010);
 }
 
 .gdpr-close-btn {
@@ -397,7 +397,7 @@
 .wizard-stripe {
   height: 5px;
   width: 100%;
-  background: linear-gradient(90deg, #004F1E, #02318B, #E09000, #B01010);
+  background: linear-gradient(90deg, #0B2A4A, #02318B, #E09000, #B01010);
 }
 
 .wizard-content {
@@ -438,8 +438,8 @@
 }
 
 .wizard-step-indicator.done {
-  color: #25D366;
-  border-bottom-color: #25D366;
+  color: #4F8CC9;
+  border-bottom-color: #4F8CC9;
   cursor: pointer;
 }
 
