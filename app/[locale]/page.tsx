@@ -183,7 +183,7 @@ export default function Home() {
 
             <div className="about-quote-foot">
               <span>{t("foundingMandate")}</span>
-              <strong style={{ color: "var(--brand-forest, #004f1e)" }}>Inclusive Diaspora Platform 🌍</strong>
+              <strong style={{ color: "var(--brand-forest, #0b2a4a)" }}>Inclusive Diaspora Platform 🌍</strong>
             </div>
           </div>
 
