@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
+import { Link } from "@/i18n/routing";
 
 export default function GdprModal() {
+  const locale = useLocale();
+  const de = locale === "de";
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"collect" | "process" | "rights">("collect");
-  const [consentChecked, setConsentChecked] = useState(false);
 
   useEffect(() => {
     const handleOpen = () => setIsOpen(true);
@@ -15,10 +18,25 @@ export default function GdprModal() {
 
   if (!isOpen) return null;
 
-  const handleAccept = () => {
-    localStorage.setItem("abcn_gdpr_consent", "true");
-    setIsOpen(false);
-  };
+  const labels = de
+    ? {
+        title: "Datenschutz auf einen Blick",
+        subtitle: "Transparente Übersicht · vollständige Erklärung mit Platzhaltern verfügbar",
+        collect: "01. Erhobene Daten",
+        process: "02. Verarbeitung",
+        rights: "03. Ihre Rechte",
+        close: "Schließen",
+        full: "Datenschutzerklärung öffnen",
+      }
+    : {
+        title: "Privacy at a glance",
+        subtitle: "Transparent overview · full notice with placeholders available",
+        collect: "01. Data collected",
+        process: "02. Processing",
+        rights: "03. Your rights",
+        close: "Close",
+        full: "Open full privacy notice",
+      };
 
   return (
     <div
@@ -29,45 +47,32 @@ export default function GdprModal() {
     >
       <div className="gdpr-dialog">
         <div className="gdpr-accent-bar" />
-
         <button
           onClick={() => setIsOpen(false)}
           className="gdpr-close-btn"
-          aria-label="Close"
+          aria-label={labels.close}
         >
           ✕
         </button>
 
         <div className="gdpr-body">
           <div className="gdpr-header">
-            <div className="gdpr-icon">🛡️</div>
+            <div className="gdpr-icon">◉</div>
             <div className="gdpr-title">
-              <h2 id="gdpr-modal-title">Data Protection Notice</h2>
-              <p>GDPR / DSGVO Compliant · AES-256-GCM Encryption</p>
+              <h2 id="gdpr-modal-title">{labels.title}</h2>
+              <p>{labels.subtitle}</p>
             </div>
           </div>
 
           <div className="gdpr-tabs-nav">
-            <button
-              type="button"
-              onClick={() => setActiveTab("collect")}
-              className={`gdpr-tab-btn ${activeTab === "collect" ? "active" : ""}`}
-            >
-              01. Collection
+            <button type="button" onClick={() => setActiveTab("collect")} className={"gdpr-tab-btn " + (activeTab === "collect" ? "active" : "")}>
+              {labels.collect}
             </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("process")}
-              className={`gdpr-tab-btn ${activeTab === "process" ? "active" : ""}`}
-            >
-              02. Processing
+            <button type="button" onClick={() => setActiveTab("process")} className={"gdpr-tab-btn " + (activeTab === "process" ? "active" : "")}>
+              {labels.process}
             </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("rights")}
-              className={`gdpr-tab-btn ${activeTab === "rights" ? "active" : ""}`}
-            >
-              03. Your Rights
+            <button type="button" onClick={() => setActiveTab("rights")} className={"gdpr-tab-btn " + (activeTab === "rights" ? "active" : "")}>
+              {labels.rights}
             </button>
           </div>
 
@@ -75,72 +80,57 @@ export default function GdprModal() {
             {activeTab === "collect" && (
               <div>
                 <p>
-                  We collect your personal details exclusively to coordinate the{" "}
-                  <strong>Afropean Business &amp; Culture Network (ABCN)</strong> programming and the{" "}
-                  <strong>FIALI 2026 Innovation Initiative</strong> in Frankfurt am Main.
+                  {de
+                    ? "Beim normalen Websitebesuch fallen technische Zugriffsdaten an. Wenn Sie sich für FIALI oder eine andere Veranstaltung bewerben, verarbeiten wir zusätzlich die Angaben, die Sie im Bewerbungsformular eingeben."
+                    : "A normal website visit generates technical access data. If you apply to FIALI or another event, we also process the information you submit in the application form."}
                 </p>
                 <p className="gdpr-note">
-                  Data collected: Full name, executive title, business email, venture URL, innovation stage, and tech focus areas.
+                  {de
+                    ? "Die aktuellen Formulare erfassen u. a. Kontakt-, Rollen-, Venture-, Motivations- und Programminformationen. Es werden derzeit keine Drittanbieter-Werbe- oder Analyse-Skripte absichtlich geladen."
+                    : "Current forms collect contact, role, venture, motivation and programme information. The application does not currently intentionally load third-party advertising or analytics scripts."}
                 </p>
               </div>
             )}
+
             {activeTab === "process" && (
               <div>
                 <p>
-                  Your information is processed to review cohort applications, confirm attendance,
-                  facilitate curated 1:1 meetings with investors, and allocate startup innovation grants.
+                  {de
+                    ? "Bewerbungsdaten werden zur Prüfung, Kommunikation, Kohortenplanung und internen Statusverwaltung verarbeitet. Die endgültigen Angaben zum Verantwortlichen, zur Rechtsgrundlage, Aufbewahrung und zu internationalen Übermittlungen sind in der Datenschutzerklärung als Platzhalter markiert, bis die Organisationsdaten vorliegen."
+                    : "Application data is processed for review, communication, cohort planning and internal status management. Final controller, legal-basis, retention and international-transfer details are clearly marked as placeholders in the privacy notice until the organisation details are supplied."}
                 </p>
                 <p className="gdpr-note">
-                  Legal basis: Explicit consent according to Art. 6(1)(a) GDPR/DSGVO. We never sell, rent, or monetize your information.
+                  {de
+                    ? "Eine Bestätigung, dass die Datenschutzhinweise gelesen wurden, ist keine pauschale Werbeeinwilligung."
+                    : "Acknowledging the privacy notice is not treated as blanket marketing consent."}
                 </p>
               </div>
             )}
+
             {activeTab === "rights" && (
               <div>
                 <p>
-                  Under the European General Data Protection Regulation (GDPR), you possess full rights to access, rectify, export, or permanently delete your stored data at any time.
+                  {de
+                    ? "Nach Maßgabe der DSGVO können insbesondere Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch und Beschwerde bei einer Aufsichtsbehörde bestehen."
+                    : "Subject to the GDPR's conditions, individuals may have rights of access, rectification, erasure, restriction, portability, objection and complaint to a supervisory authority."}
                 </p>
                 <p className="gdpr-note">
-                  Direct privacy officer contact:{" "}
-                  <a
-                    href="mailto:harmonie.essome@softxcloud.net"
-                    style={{ color: "#E09000", textDecoration: "underline", fontWeight: 600 }}
-                  >
-                    harmonie.essome@softxcloud.net
-                  </a>
+                  {de
+                    ? "Der endgültige Datenschutzkontakt und die zuständige Aufsichtsbehörde werden ergänzt, sobald die Rechts- und Organisationsdaten bestätigt sind."
+                    : "The final privacy contact and competent supervisory authority will be added when the legal and organisation details are confirmed."}
                 </p>
               </div>
             )}
           </div>
 
           <div className="gdpr-footer">
-            <label className="gdpr-consent-label">
-              <input
-                type="checkbox"
-                checked={consentChecked}
-                onChange={(e) => setConsentChecked(e.target.checked)}
-              />
-              <span>
-                I have read and agree to the data protection terms and consent to processing my information for ABCN &amp; FIALI initiatives.
-              </span>
-            </label>
-
             <div className="gdpr-actions">
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="gdpr-btn-dismiss"
-              >
-                Dismiss
+              <button type="button" onClick={() => setIsOpen(false)} className="gdpr-btn-dismiss">
+                {labels.close}
               </button>
-              <button
-                type="button"
-                disabled={!consentChecked}
-                onClick={handleAccept}
-                className="gdpr-btn-accept"
-              >
-                Accept &amp; Continue
-              </button>
+              <Link href="/privacy" className="gdpr-btn-accept" onClick={() => setIsOpen(false)}>
+                {labels.full}
+              </Link>
             </div>
           </div>
         </div>
