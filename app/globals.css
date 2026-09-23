@@ -1165,20 +1165,22 @@ h2 {
 }
 
 .founder {
-  background: var(--green);
-  color: white;
+  background: #f6f3eb;
+  color: #0f172a;
   display: grid;
   grid-template-columns: .88fr 1.12fr;
   gap: 8vw;
   align-items: center;
   overflow: hidden;
+  border-top: 1px solid rgba(15,23,42,.06);
+  border-bottom: 1px solid rgba(15,23,42,.06);
 }
 .founder::after {
   content: "";
   position: absolute;
   width: 520px;
   height: 520px;
-  border: 1px solid rgba(255,255,255,.1);
+  border: 1px solid rgba(15,23,42,.06);
   border-radius: 50%;
   right: -270px;
   bottom: -270px;
@@ -1199,25 +1201,29 @@ h2 {
   place-items: center;
   border-radius: 50%;
   padding-right: .08em;
-  background: var(--cream);
-  color: var(--green);
+  background: #ffffff;
+  color: #0f172a;
   font-family: Georgia, serif;
   font-size: clamp(5rem, 9vw, 9rem);
   letter-spacing: -.13em;
+  box-shadow: 0 10px 30px rgba(0,0,0,.04);
+  border: 1px solid rgba(15,23,42,.08);
 }
 .founder-orbit {
   position: absolute;
   inset: 6%;
-  border: 1px solid rgba(255,255,255,.25);
+  border: 1px solid rgba(15,23,42,.15);
   border-radius: 50%;
   animation: spin 28s linear infinite;
 }
 .founder-orbit span {
   position: absolute;
   padding: 5px 8px;
-  background: var(--green);
+  background: #f6f3eb;
+  color: #0f172a;
   font-size: 0.75rem;
   letter-spacing: .17em;
+  font-weight: 700;
 }
 .founder-orbit span:nth-child(1) { left: 45%; top: -9px; }
 .founder-orbit span:nth-child(2) { right: -20px; top: 49%; }
@@ -1231,29 +1237,31 @@ h2 {
   bottom: 10%;
   width: 78px;
   fill: none;
-  stroke: white;
+  stroke: #0f172a;
   stroke-width: 1.2;
-  opacity: .7;
+  opacity: .35;
 }
 .founder-copy { position: relative; z-index: 2; max-width: 760px; }
-.founder-copy h2 { margin-top: 28px; }
-.founder-copy h2 em { color: var(--cream); }
+.founder-copy h2 { margin-top: 28px; color: #0f172a; }
+.founder-copy h2 em { color: #b45309; }
 .founder-copy p {
   max-width: 660px;
-  color: rgba(255,255,255,.68);
+  color: rgba(15,23,42,.7);
   line-height: 1.72;
   font-size: 1rem;
 }
 .founder-lead {
   margin-top: 42px;
-  color: white !important;
+  color: #0f172a !important;
   font-size: 1.3rem !important;
   line-height: 1.48 !important;
   letter-spacing: -.02em;
 }
 .founder-tags { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 34px; }
 .founder-tags span {
-  border: 1px solid rgba(255,255,255,.3);
+  border: 1px solid rgba(15,23,42,.15);
+  background: #ffffff;
+  color: #334155;
   padding: 8px 10px;
   font-size: 0.78rem;
   letter-spacing: .15em;
@@ -1263,10 +1271,11 @@ h2 {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  color: rgba(255,255,255,.65);
+  color: #0f172a;
   font-size: 0.78rem;
   letter-spacing: .14em;
   text-transform: uppercase;
+  font-weight: 700;
 }
 
 /* Redesigned Manifesto Section */
