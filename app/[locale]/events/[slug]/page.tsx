@@ -33,6 +33,11 @@ export default function EventDetailPage() {
 
   useEffect(() => {
     let live = true;
+    setEvent(
+      slug === FIALI_FALLBACK.slug
+        ? fallbackEvent(locale)
+        : { ...fallbackEvent(locale), slug, title: "ABCN Event" }
+    );
     neon
       .from("events")
       .select("*")
@@ -48,7 +53,7 @@ export default function EventDetailPage() {
     return () => {
       live = false;
     };
-  }, [slug]);
+  }, [slug, locale]);
 
   const isFiali = event.slug === FIALI_FALLBACK.slug;
   const hasApplications = Boolean(event.application_open);
@@ -102,11 +107,17 @@ export default function EventDetailPage() {
             <span>{event.eyebrow || "ABCN Event"}</span>
           </div>
           <h1>
-            {isFiali ? (
+            {isFiali && locale === "en" ? (
               <>
                 Female Innovation<br />
                 <em>Afropean Leadership</em><br />
                 Initiative
+              </>
+            ) : isFiali && locale === "de" ? (
+              <>
+                Innovations- &amp;<br />
+                <em>Führungsinitiative</em><br />
+                für afropäische Frauen
               </>
             ) : (
               event.title

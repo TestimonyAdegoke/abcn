@@ -324,13 +324,15 @@ function pick<T>(
 ): T {
   if (locale === "de") {
     const de = row[`${key}_de`];
-    if (de !== null && de !== undefined && de !== "") return de as T;
+    if (de !== null && de !== undefined && de !== "" && !(Array.isArray(de) && de.length === 0)) return de as T;
     // No German in the CMS. For the seeded FIALI programme we hold curated
     // German copy, which reads better than falling through to English.
     if (preferFallback) return fallback;
   }
   const en = row[key];
-  return (en === null || en === undefined ? fallback : (en as T));
+  if (en === null || en === undefined || en === "") return fallback;
+  if (preferFallback && Array.isArray(en) && en.length === 0) return fallback;
+  return en as T;
 }
 
 export function normaliseEvent(
@@ -352,20 +354,20 @@ export function normaliseEvent(
     slug: row.slug || FIALI_FALLBACK.slug,
     title: pick(r, "title", locale, base.title, seeded),
     eyebrow: pick(r, "eyebrow", locale, base.eyebrow, seeded),
-    short_description: pick(r, "short_description", locale, "", seeded),
-    description: pick(r, "description", locale, "", seeded),
-    long_description: pick(r, "long_description", locale, null, seeded),
-    date_label: pick(r, "date_label", locale, null, seeded),
-    venue: pick(r, "venue", locale, null, seeded),
+    short_description: pick(r, "short_description", locale, base.short_description, seeded),
+    description: pick(r, "description", locale, base.description, seeded),
+    long_description: pick(r, "long_description", locale, base.long_description, seeded),
+    date_label: pick(r, "date_label", locale, base.date_label, seeded),
+    venue: pick(r, "venue", locale, base.venue, seeded),
     status: row.status || "draft",
     featured: Boolean(row.featured),
     priority: Number(row.priority || 0),
     show_on_home: Boolean(row.show_on_home),
-    highlights: pick(r, "highlights", locale, [] as string[], seeded),
-    stages: pick(r, "stages", locale, [] as EventStage[], seeded),
-    eligibility: pick(r, "eligibility", locale, [] as string[], seeded),
+    highlights: pick(r, "highlights", locale, base.highlights || [], seeded),
+    stages: pick(r, "stages", locale, base.stages || [], seeded),
+    eligibility: pick(r, "eligibility", locale, base.eligibility || [], seeded),
     partners: Array.isArray(row.partners) ? row.partners : [],
-    grants: pick(r, "grants", locale, {} as EventGrant, seeded),
+    grants: pick(r, "grants", locale, base.grants, seeded),
     gallery: (() => {
       if (!Array.isArray(row.gallery)) return [];
       const curated = row.gallery.filter((src) => !REMOTE_STOCK.test(src));
@@ -373,9 +375,9 @@ export function normaliseEvent(
       return curated.length > 0 ? curated : FIALI_FALLBACK.gallery;
     })(),
     application_open: Boolean(row.application_open),
-    application_deadline: pick(r, "application_deadline", locale, null, seeded),
-    application_cta: pick(r, "application_cta", locale, "Apply now", seeded),
-    focus_areas: pick(r, "focus_areas", locale, [] as EventContentCard[], seeded),
-    benefits: pick(r, "benefits", locale, [] as EventContentCard[], seeded),
+    application_deadline: pick(r, "application_deadline", locale, base.application_deadline, seeded),
+    application_cta: pick(r, "application_cta", locale, base.application_cta || (locale === "de" ? "Jetzt bewerben" : "Apply now"), seeded),
+    focus_areas: pick(r, "focus_areas", locale, base.focus_areas || [], seeded),
+    benefits: pick(r, "benefits", locale, base.benefits || [], seeded),
   };
 }

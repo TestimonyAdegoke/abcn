@@ -5,20 +5,21 @@ import { useLocale } from "next-intl";
 import Link from "next/link";
 import LogoMarquee from "@/components/LogoMarquee";
 import { neon } from "@/lib/neon";
-import { EventRecord, FIALI_FALLBACK, normaliseEvent } from "@/lib/events";
+import { EventRecord, FIALI_FALLBACK, fallbackEvent, normaliseEvent } from "@/lib/events";
 
 export default function EventsPage() {
   const locale = useLocale();
-  const [events, setEvents] = useState<EventRecord[]>([FIALI_FALLBACK]);
+  const [events, setEvents] = useState<EventRecord[]>([fallbackEvent(locale)]);
 
   useEffect(() => {
     let live = true;
+    setEvents([fallbackEvent(locale)]);
     neon.from("events").select("*").eq("status", "published").order("priority", { ascending: false })
       .then(({ data }) => {
         if (live && data?.length) setEvents(data.map((row) => normaliseEvent(row as Partial<EventRecord>, locale)));
       }, () => {});
     return () => { live = false; };
-  }, []);
+  }, [locale]);
 
   return (
     <main className="events-shell">
