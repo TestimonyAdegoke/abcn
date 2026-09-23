@@ -46,6 +46,17 @@ const blankEvent = (): Editable => ({
   accent_color: "#58AC8C",
   deep_color: "#0F4C38",
   light_color: "#F0F5F3",
+  title_de: "",
+  eyebrow_de: "",
+  short_description_de: "",
+  description_de: "",
+  long_description_de: "",
+  date_label_de: "",
+  venue_de: "",
+  application_cta_de: "",
+  application_deadline_de: "",
+  highlights_de: [],
+  eligibility_de: [],
   highlights: [],
   stages: [],
   eligibility: [],
@@ -319,6 +330,27 @@ export default function EventsAdminPage() {
               <label>Application CTA<input value={form.application_cta || ""} onChange={(e)=>update("application_cta",e.target.value)} placeholder="Apply now" /></label>
               <label className="cms-full">Application timing / scarcity message<input value={form.application_deadline || ""} onChange={(e)=>update("application_deadline",e.target.value)} placeholder="Applications reviewed on a rolling basis · limited places" /></label>
 
+
+              <div className="cms-divider cms-full" />
+              <div className="cms-full cms-section-head">
+                <strong>Deutsche Übersetzung / German translation</strong>
+                <span className="cms-help">
+                  Optional, and per field. Anything left blank falls back to the
+                  English value above, so a partly translated event still works
+                  on /de. Requires db/001_event_german_columns.sql to have been run.
+                </span>
+              </div>
+              <label>Titel (DE)<input value={form.title_de || ""} onChange={(e)=>update("title_de",e.target.value)} /></label>
+              <label>Eyebrow / Label (DE)<input value={form.eyebrow_de || ""} onChange={(e)=>update("eyebrow_de",e.target.value)} /></label>
+              <label className="cms-full">Kurzbeschreibung (DE)<textarea value={form.short_description_de || ""} onChange={(e)=>update("short_description_de",e.target.value)} /></label>
+              <label className="cms-full">Beschreibung (DE)<textarea value={form.description_de || ""} onChange={(e)=>update("description_de",e.target.value)} /></label>
+              <label className="cms-full">Ausführliche Beschreibung (DE)<textarea value={form.long_description_de || ""} onChange={(e)=>update("long_description_de",e.target.value)} /></label>
+              <label>Datumsanzeige (DE)<input value={form.date_label_de || ""} onChange={(e)=>update("date_label_de",e.target.value)} /></label>
+              <label>Veranstaltungsort (DE)<input value={form.venue_de || ""} onChange={(e)=>update("venue_de",e.target.value)} /></label>
+              <label>Bewerbungs-Button (DE)<input value={form.application_cta_de || ""} onChange={(e)=>update("application_cta_de",e.target.value)} placeholder="Jetzt bewerben" /></label>
+              <label className="cms-full">Bewerbungshinweis (DE)<input value={form.application_deadline_de || ""} onChange={(e)=>update("application_deadline_de",e.target.value)} /></label>
+              <label className="cms-full">Highlights (DE) - eine pro Zeile<textarea value={(form.highlights_de || []).join("\n")} onChange={(e)=>update("highlights_de",lines(e.target.value))} /></label>
+              <label className="cms-full">Teilnahmekriterien (DE) - eine pro Zeile<textarea value={(form.eligibility_de || []).join("\n")} onChange={(e)=>update("eligibility_de",lines(e.target.value))} /></label>
               <div className="cms-divider cms-full" />
               <label className="cms-full">Hero image URL<input value={form.hero_image_url || ""} onChange={(e)=>update("hero_image_url",e.target.value)} /><span className="cms-help">Use a URL, or upload an image below. Uploaded images are compressed and stored with the event.</span></label>
               <label className="cms-full">Upload hero image<input type="file" accept="image/*" onChange={(e)=>handleImage(e.target.files?.[0])} /></label>

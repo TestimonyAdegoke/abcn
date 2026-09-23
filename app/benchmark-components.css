@@ -656,3 +656,15 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Admin CMS: section heading inside the event form */
+.cms-section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.cms-section-head strong {
+  font-size: 0.95rem;
+  letter-spacing: -.01em;
+}

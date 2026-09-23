@@ -140,7 +140,11 @@
     "fact3Value": "AI & Digital",
     "fact3Label": "Practical founder tools",
     "fact4Value": "Frankfurt",
-    "fact4Label": "Ecosystem & capital access"
+    "fact4Label": "Ecosystem & capital access",
+    "ariaLabel": "Featured event",
+    "dateFallback": "Frankfurt · 2026",
+    "exploreGeneric": "Explore event",
+    "partnerTagline": "Frankfurt 2026"
   },
   "event": {
     "navAbout": "About",

@@ -140,7 +140,11 @@
     "fact3Value": "KI & Digital",
     "fact3Label": "Praktische Werkzeuge",
     "fact4Value": "Frankfurt",
-    "fact4Label": "Ökosystem & Kapitalzugang"
+    "fact4Label": "Ökosystem & Kapitalzugang",
+    "ariaLabel": "Veranstaltung im Fokus",
+    "dateFallback": "Frankfurt · 2026",
+    "exploreGeneric": "Veranstaltung entdecken",
+    "partnerTagline": "Frankfurt 2026"
   },
   "event": {
     "navAbout": "Überblick",

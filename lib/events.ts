@@ -61,6 +61,27 @@ export type EventRecord = {
   application_cta?: string | null;
   focus_areas: EventContentCard[];
   benefits: EventContentCard[];
+
+  /**
+   * German translations. Every field is optional: normaliseEvent falls back to
+   * the English column per field, so a partially translated event still works.
+   * Columns created by db/001_event_german_columns.sql.
+   */
+  title_de?: string | null;
+  eyebrow_de?: string | null;
+  short_description_de?: string | null;
+  description_de?: string | null;
+  long_description_de?: string | null;
+  date_label_de?: string | null;
+  venue_de?: string | null;
+  application_cta_de?: string | null;
+  application_deadline_de?: string | null;
+  highlights_de?: string[] | null;
+  eligibility_de?: string[] | null;
+  stages_de?: EventStage[] | null;
+  grants_de?: EventGrant | null;
+  focus_areas_de?: EventContentCard[] | null;
+  benefits_de?: EventContentCard[] | null;
 };
 
 export const FIALI_FALLBACK: EventRecord = {
