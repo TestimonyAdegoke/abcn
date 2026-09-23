@@ -49,13 +49,8 @@ export default function SiteFooter() {
           </div>
           <div className="footer-col">
             <h4>{t("legal")}</h4>
-            <button
-              type="button"
-              className="footer-linkbtn"
-              onClick={() => window.dispatchEvent(new CustomEvent("open-gdpr"))}
-            >
-              {t("privacy")}
-            </button>
+            <Link href="/privacy">{t("privacy")}</Link>
+            <Link href="/impressum">{t("impressum")}</Link>
             <button
               type="button"
               className="footer-linkbtn"
