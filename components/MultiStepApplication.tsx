@@ -161,14 +161,14 @@ export default function MultiStepApplication({ eventId, eventSlug, eventTitle }:
           width: "68px",
           height: "68px",
           borderRadius: "50%",
-          background: "rgba(37, 211, 102, 0.15)",
-          color: "#25D366",
+          background: "rgba(79, 140, 201, 0.15)",
+          color: "#4F8CC9",
           fontSize: "32px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           margin: "0 auto 16px",
-          border: "1px solid rgba(37, 211, 102, 0.3)"
+          border: "1px solid rgba(79, 140, 201, 0.3)"
         }}>
           ✓
         </div>
@@ -176,9 +176,9 @@ export default function MultiStepApplication({ eventId, eventSlug, eventTitle }:
           display: "inline-block",
           padding: "4px 14px",
           borderRadius: "999px",
-          background: "rgba(37, 211, 102, 0.1)",
-          border: "1px solid rgba(37, 211, 102, 0.3)",
-          color: "#25D366",
+          background: "rgba(79, 140, 201, 0.1)",
+          border: "1px solid rgba(79, 140, 201, 0.3)",
+          color: "#4F8CC9",
           fontSize: "0.68rem",
           fontWeight: 800,
           letterSpacing: "0.1em",
