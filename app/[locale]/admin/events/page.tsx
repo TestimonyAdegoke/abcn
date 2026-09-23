@@ -43,9 +43,9 @@ const blankEvent = (): Editable => ({
   priority: 0,
   show_on_home: false,
   theme: "",
-  accent_color: "#58AC8C",
-  deep_color: "#0F4C38",
-  light_color: "#F0F5F3",
+  accent_color: "#5F8FC0",
+  deep_color: "#0B2A4A",
+  light_color: "#F1F5FA",
   title_de: "",
   eyebrow_de: "",
   short_description_de: "",
@@ -358,8 +358,8 @@ export default function EventsAdminPage() {
               <label className="cms-full">Card image URL<input value={form.card_image_url || ""} onChange={(e)=>update("card_image_url",e.target.value)} /></label>
 
               <div className="cms-divider cms-full" />
-              <label>Accent colour<input type="color" value={form.accent_color || "#58AC8C"} onChange={(e)=>update("accent_color",e.target.value)} /></label>
-              <label>Deep colour<input type="color" value={form.deep_color || "#0F4C38"} onChange={(e)=>update("deep_color",e.target.value)} /></label>
+              <label>Accent colour<input type="color" value={form.accent_color || "#5F8FC0"} onChange={(e)=>update("accent_color",e.target.value)} /></label>
+              <label>Deep colour<input type="color" value={form.deep_color || "#0B2A4A"} onChange={(e)=>update("deep_color",e.target.value)} /></label>
               <label className="cms-full">Highlights - one per line<textarea value={(form.highlights || []).join("\n")} onChange={(e)=>update("highlights",lines(e.target.value))} /></label>
               <label className="cms-full">Focus areas - Title | Description<textarea value={focusText} onChange={(e)=>update("focus_areas",cardsFromText(e.target.value))} /></label>
               <label className="cms-full">Benefits / Why join - Title | Description<textarea value={benefitsText} onChange={(e)=>update("benefits",cardsFromText(e.target.value))} /></label>
