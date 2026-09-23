@@ -9,8 +9,8 @@
   --mist: #eef4ef;           /* pale mint, for the hero */
 
   /* One deep green for contrast slabs */
-  --forest: #12291f;
-  --forest-soft: #1c3b2c;
+  --forest: #071b33;
+  --forest-soft: #0d2d52;
 
   /* Accent: ABCN gold */
   --gold: #E09000;
@@ -18,10 +18,10 @@
   --gold-soft: #e2b978;
   --orange: #e2b978;
 
-  --fiali-green: #0f4c38;
+  --fiali-green: #0b2a4a;
   --mint: #7ee0be;
   --blue: #5b79d6;
-  --green: #12291f;
+  --green: #071b33;
 
   --measure: 1240px;
 
@@ -2245,7 +2245,7 @@ footer {
   font-size: clamp(2.2rem, 4.2vw, 3.8rem);
   line-height: 1;
   letter-spacing: -.04em;
-  color: #10251f;
+  color: #13253a;
 }
 .fiali-faq-grid {
   margin-top: 52px;
@@ -2263,7 +2263,7 @@ footer {
   margin: 0 0 12px;
   font-size: 1.05rem;
   line-height: 1.35;
-  color: #0f4c38;
+  color: #0b2a4a;
 }
 .fiali-faq-item p {
   margin: 0;
@@ -2380,7 +2380,7 @@ footer {
 /* One card picks up the deep green, as in the Biztop reference.
    These must come after the base .wwd-card rules and carry higher
    specificity: declared earlier at equal specificity, .wwd-card h3's
-   var(--ink) won and painted the title #12211b on a #12291f card. */
+   var(--ink) won and painted the title #12211b on a #071b33 card. */
 .wwd-card.wwd-card-accent {
   background: var(--forest);
   border-color: transparent;
