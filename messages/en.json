@@ -2,7 +2,13 @@
   "meta": {
     "title": "ABCN - Afropean Business & Culture Network",
     "description": "An inclusive platform dedicated to elevating Afropean diaspora communities through business, culture, connection and cross-border opportunity.",
-    "ogDescription": "African roots. European horizons. Business, culture and community in motion."
+    "ogDescription": "African roots. European horizons. Business, culture and community in motion.",
+    "aboutTitle": "About ABCN - Afropean Business & Culture Network",
+    "aboutDescription": "Afropean Business and Culture Network (ABCN) is an inclusive platform elevating Afropean diaspora communities by celebrating their cultures and connecting their businesses across Germany and Europe.",
+    "aboutOgDescription": "Bridging African heritage and European opportunity through business, culture and collaborative leadership.",
+    "eventsTitle": "Events & Programmes | ABCN",
+    "eventsDescription": "Founder programmes, cultural rooms and cross-border gatherings from the Afropean Business & Culture Network in Frankfurt and across Europe.",
+    "eventsOgDescription": "Where connection becomes momentum: ABCN founder programmes and gatherings across Germany and Europe."
   },
   "nav": {
     "ourStory": "Our Story",
@@ -197,8 +203,11 @@
     "g5b": "Frankfurt Founder Collaboration",
     "benefitsKicker": "Tangible outcomes",
     "benefitsTitle1": "What you gain from",
-    "benefitsTitle2": "the programme.",
     "grantsKicker": "Founder support fund",
+    "partnersKicker": "Ecosystem & Supporters",
+    "partnersTitle1": "Partners &",
+    "partnersTitle2": "ecosystem network.",
+    "partnersDesc": "FIALI is delivered in strategic collaboration with community champions, innovation networks and partners bridging Frankfurt with the international diaspora.",
     "eligibilityKicker": "Cohort criteria",
     "eligibilityTitle1": "Built for founders",
     "eligibilityTitle2": "with room to scale.",

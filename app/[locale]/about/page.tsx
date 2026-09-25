@@ -5,6 +5,7 @@ import { Link } from "@/i18n/routing";
 import NavExtras from "@/components/NavExtras";
 import SiteFooter from "@/components/SiteFooter";
 import "./about.css";
+import Img from "@/components/Img";
 
 const instagram = "https://www.instagram.com/afropeanbusinessnetwork/";
 
@@ -48,7 +49,7 @@ export default function AboutPage() {
 
       <header className="nav nav-scrolled">
         <Link href="/" className="brand" aria-label={tn("home")}>
-          <img src="/assets/abcn/abcn-logo.png" alt="ABCN Logo" className="brand-logo-img" />
+          <Img src="/assets/abcn/abcn-logo.png" alt="ABCN Logo" className="brand-logo-img" />
           <span className="brand-long">
             Afropean Business
             <br />& Culture Network
@@ -57,10 +58,10 @@ export default function AboutPage() {
 
         <nav className="nav-links">
           <Link href="/about">{tn("ourStory")}</Link>
-          <Link href="/#network">{tn("whatWeDo")}</Link>
+          <Link href={{ pathname: "/", hash: "network" }}>{tn("whatWeDo")}</Link>
           <Link href="/events">{tn("events")}</Link>
-          <a href="#founder">{tn("ourFounder")}</a>
-          <Link href="/#join">{tn("joinUs")}</Link>
+          <Link href={{ pathname: "/", hash: "founder" }}>{tn("ourFounder")}</Link>
+          <Link href={{ pathname: "/", hash: "join" }}>{tn("joinUs")}</Link>
         </nav>
 
         <div className="nav-right">
@@ -92,7 +93,7 @@ export default function AboutPage() {
           {t("statement")}
         </blockquote>
         <div className="about-statement-mark">
-          <img src="/assets/abcn/abcn-emblem.png" alt="" aria-hidden="true" />
+          <Img src="/assets/abcn/abcn-emblem.png" alt="" aria-hidden="true" />
           <span>
             <strong>{t("foundingMandate")}</strong>
             <small>{t("place")}</small>
@@ -111,7 +112,7 @@ export default function AboutPage() {
         <div className="wwd-grid wwd-grid-3">
           {mandateKeys.map((item) => (
             <article className="wwd-card" key={item.id}>
-              <img src={item.image} alt="" aria-hidden="true" className="wwd-img" />
+              <Img src={item.image} alt="" aria-hidden="true" className="wwd-img" />
               <div className="wwd-body">
                 <span className="wwd-tag">{t(`${item.id}Tag`)}</span>
                 <h3>{t(`${item.id}Title`)}</h3>
@@ -142,7 +143,7 @@ export default function AboutPage() {
       <section id="founder" className="section founder">
         <div className="founder-visual">
           <div className="founder-portrait-frame">
-            <img
+            <Img
               src="/assets/abcn/harmonie-essome-official.jpg"
               alt={tf("founderPhotoAlt")}
               className="founder-photo"

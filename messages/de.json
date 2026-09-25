@@ -2,7 +2,13 @@
   "meta": {
     "title": "ABCN - Afropean Business & Culture Network",
     "description": "Eine inklusive Plattform, die afropäische Diaspora-Gemeinschaften stärkt – durch Wirtschaft, Kultur, Begegnung und grenzüberschreitende Chancen.",
-    "ogDescription": "Afrikanische Wurzeln. Europäische Horizonte. Wirtschaft, Kultur und Gemeinschaft in Bewegung."
+    "ogDescription": "Afrikanische Wurzeln. Europäische Horizonte. Wirtschaft, Kultur und Gemeinschaft in Bewegung.",
+    "aboutTitle": "Über ABCN - Afropean Business & Culture Network",
+    "aboutDescription": "Das Afropean Business and Culture Network (ABCN) ist eine inklusive Plattform, die afropäische Diaspora-Gemeinschaften stärkt, ihre Kulturen sichtbar macht und ihre Unternehmen in Deutschland und Europa vernetzt.",
+    "aboutOgDescription": "Afrikanisches Erbe und europäische Chancen verbinden - durch Wirtschaft, Kultur und gemeinsame Führung.",
+    "eventsTitle": "Veranstaltungen & Programme | ABCN",
+    "eventsDescription": "Gründerinnenprogramme, kulturelle Räume und grenzüberschreitende Begegnungen des Afropean Business & Culture Network in Frankfurt und ganz Europa.",
+    "eventsOgDescription": "Wo Verbindung zu Momentum wird: ABCN-Programme und Begegnungen in Deutschland und Europa."
   },
   "nav": {
     "ourStory": "Über uns",
@@ -197,8 +203,11 @@
     "g5b": "Frankfurter Gründerinnen-Kooperation",
     "benefitsKicker": "Konkrete Ergebnisse",
     "benefitsTitle1": "Was Ihnen",
-    "benefitsTitle2": "das Programm bringt.",
     "grantsKicker": "Förderfonds für Gründerinnen",
+    "partnersKicker": "Ökosystem & Unterstützer",
+    "partnersTitle1": "Partner &",
+    "partnersTitle2": "Ökosystem-Netzwerk.",
+    "partnersDesc": "FIALI wird in strategischer Zusammenarbeit mit Community-Partnern, Innovationsnetzwerken und Förderern realisiert, die Frankfurt mit der internationalen Diaspora verbinden.",
     "eligibilityKicker": "Kriterien für den Jahrgang",
     "eligibilityTitle1": "Für Gründerinnen",
     "eligibilityTitle2": "mit Wachstumspotenzial.",

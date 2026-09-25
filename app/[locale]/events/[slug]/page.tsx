@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { openConsentPreferences } from "@/lib/consent";
 import { useParams } from "next/navigation";
 import MultiStepApplication from "@/components/MultiStepApplication";
 import NavExtras from "@/components/NavExtras";
 import LogoMarquee from "@/components/LogoMarquee";
 import { neon } from "@/lib/neon";
 import { EventRecord, FIALI_FALLBACK, fallbackEvent, normaliseEvent } from "@/lib/events";
+import Img from "@/components/Img";
 
 const VALUE_KEYS = [1, 2, 3, 4];
 
@@ -111,9 +113,11 @@ export default function EventDetailPage() {
           <a href="#about">{te("navAbout")}</a>
           <a href="#journey">{te("navProgramme")}</a>
           <a href="#why-join">{te("navWhyJoin")}</a>
-          {isFiali && <a href="#ecosystem">{te("navPartners")}</a>}
-          {isFiali && <a href="#gallery">{te("navGallery")}</a>}
           {event.grants?.title && <a href="#grants">{te("navGrants")}</a>}
+          {event.partners && event.partners.length > 0 && (
+            <a href="#partners">{te("navPartners")}</a>
+          )}
+          {isFiali && <a href="#gallery">{te("navGallery")}</a>}
           <a href="#eligibility">{te("navWhoFor")}</a>
           {hasApplications && (
             <a className="nav-apply" href="#apply">
@@ -129,13 +133,13 @@ export default function EventDetailPage() {
         <div className="benchmark-hero-copy">
           <div className="benchmark-brand-row">
             {event.partners?.[0]?.logo ? (
-              <img
+              <Img
                 src={event.partners[0].logo}
                 alt={event.partners[0].name || "Logo"}
                 style={{ height: "42px", width: "auto" }}
               />
             ) : isFiali ? (
-              <img
+              <Img
                 src="/assets/fiali/logos/abcn.png"
                 alt="ABCN Logo"
                 style={{ height: "42px", width: "auto" }}
@@ -183,10 +187,16 @@ export default function EventDetailPage() {
             </div>
           </div>
         </div>
-        <div
-          className="benchmark-hero-image"
-          style={{ backgroundImage: `url("${event.hero_image_url || FIALI_FALLBACK.hero_image_url}")` }}
-        >
+        <div className="benchmark-hero-image">
+          {/* Was a CSS background, which no browser can preload, resize or
+              serve as AVIF. As a real image it is the page's LCP candidate. */}
+          <Img
+            src={event.hero_image_url || FIALI_FALLBACK.hero_image_url || ""}
+            alt={event.title}
+            fill
+            priority
+            sizes="(max-width: 900px) 100vw, 50vw"
+          />
           <div className="hero-image-caption">
             <span>{te("heroCaption")}</span>
             <strong>{te("heroCaptionStrong")}</strong>
@@ -220,7 +230,7 @@ export default function EventDetailPage() {
           {isFiali && (
             <div className="about-leadership-frame">
               <div className="leadership-photo-card">
-                <img
+                <Img
                   src="/assets/abcn/harmonie-essome.png"
                   alt="Harmonie Essome - Programme Lead & Tech CEO"
                 />
@@ -230,7 +240,7 @@ export default function EventDetailPage() {
                 </div>
               </div>
               <div className="leadership-photo-card">
-                <img
+                <Img
                   src="/assets/fiali/female-founder-vision.jpg"
                   alt="Female Founder Vision & Strategy Session"
                 />
@@ -311,7 +321,7 @@ export default function EventDetailPage() {
                 <div>
                   {isFiali && (
                     <div className="stage-image-preview">
-                      <img
+                      <Img
                         src={stage.stage.includes("1") ? "/assets/fiali/growth-lab-session.jpg" : "/assets/fiali/female-founders-summit.jpg"}
                         alt={stage.title}
                       />
@@ -342,6 +352,106 @@ export default function EventDetailPage() {
                 </div>
               </article>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* Why Join Benefits Section */}
+      {event.benefits.length > 0 && (
+        <section id="why-join" className="benefits-section">
+          <div className="benefits-heading">
+            <span className="benchmark-kicker">{te("benefitsKicker")}</span>
+            <h2>
+              {te("benefitsTitle1")}<br />
+              <em>{te("benefitsTitle2")}</em>
+            </h2>
+          </div>
+          <div className="benefits-grid">
+            {event.benefits.map((benefit, index) => (
+              <article key={benefit.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{benefit.title}</h3>
+                <p>{benefit.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Startup Innovation Grant Feature Card */}
+      {event.grants?.title && (
+        <section id="grants" className="grant-section">
+          <div className="grant-benchmark-card">
+            <div>
+              <span className="benchmark-kicker light">{te("grantsKicker")}</span>
+              <strong className="grant-number">
+                {event.grants.count || 2} × {event.grants.amount_each || "€500"}
+              </strong>
+            </div>
+            <div>
+              <h2>{event.grants.title}</h2>
+              <p>{event.grants.description}</p>
+              <div className="grant-expenses">
+                {GRANT_EXPENSE_KEYS.map((n) => (
+                  <span key={n}>{te(`grantExp${n}`)}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Partner Ecosystem & Supporters Section */}
+      {event.partners && event.partners.length > 0 && (
+        <section id="partners" className="partners-section">
+          <div className="partners-heading">
+            <span className="benchmark-kicker">{te("partnersKicker")}</span>
+            <h2>
+              {te("partnersTitle1")}<br />
+              <em>{te("partnersTitle2")}</em>
+            </h2>
+            <p className="partners-lead">
+              {te("partnersDesc")}
+            </p>
+          </div>
+
+          <div className="partner-cards-grid">
+            {event.partners.map((partner) => (
+              <div key={partner.name} className="partner-card-item">
+                <div className="partner-card-logo-wrap">
+                  {partner.logo ? (
+                    <Img
+                      src={partner.logo}
+                      alt={partner.name}
+                      className="partner-card-logo"
+                    />
+                  ) : (
+                    <strong>{partner.name}</strong>
+                  )}
+                </div>
+                <h4 className="partner-card-name">{partner.name}</h4>
+                {partner.website && (
+                  <a
+                    href={partner.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="partner-card-link"
+                  >
+                    Website ↗
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: "48px" }}>
+            <LogoMarquee
+              logos={event.partners}
+              theme="light"
+              speed="normal"
+              label={event.eyebrow || "Partner Ecosystem & Collaborators"}
+              tagline={event.venue || event.city || "Frankfurt 2026"}
+            />
           </div>
         </section>
       )}
@@ -393,7 +503,7 @@ export default function EventDetailPage() {
 
           <div className="fiali-gallery-grid">
             <div className="fiali-gallery-card featured">
-              <img
+              <Img
                 src="/assets/fiali/female-founders-summit.jpg"
                 alt="Female Founders Networking Summit in Frankfurt"
               />
@@ -404,7 +514,7 @@ export default function EventDetailPage() {
             </div>
 
             <div className="fiali-gallery-card">
-              <img
+              <Img
                 src="/assets/fiali/growth-lab-session.jpg"
                 alt="Female Innovation Growth Lab Session"
               />
@@ -415,7 +525,7 @@ export default function EventDetailPage() {
             </div>
 
             <div className="fiali-gallery-card">
-              <img
+              <Img
                 src="/assets/fiali/female-founder-workshop.jpg"
                 alt="Digitalization & Prototype Scaling"
               />
@@ -426,7 +536,7 @@ export default function EventDetailPage() {
             </div>
 
             <div className="fiali-gallery-card">
-              <img
+              <Img
                 src="/assets/fiali/female-founder-vision.jpg"
                 alt="Vision & Market Positioning Session"
               />
@@ -437,58 +547,13 @@ export default function EventDetailPage() {
             </div>
 
             <div className="fiali-gallery-card">
-              <img
+              <Img
                 src="/assets/abcn/collaborators.png"
                 alt="Frankfurt Founder Peer Collaboration"
               />
               <div className="fiali-gallery-info">
                 <span>{te("g5")}</span>
                 <strong>{te("g5b")}</strong>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Why Join Benefits Section */}
-      {event.benefits.length > 0 && (
-        <section id="why-join" className="benefits-section">
-          <div className="benefits-heading">
-            <span className="benchmark-kicker">{te("benefitsKicker")}</span>
-            <h2>
-              {te("benefitsTitle1")}<br />
-              <em>{te("benefitsTitle2")}</em>
-            </h2>
-          </div>
-          <div className="benefits-grid">
-            {event.benefits.map((benefit, index) => (
-              <article key={benefit.title}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <h3>{benefit.title}</h3>
-                <p>{benefit.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Startup Innovation Grant Feature Card */}
-      {event.grants?.title && (
-        <section id="grants" className="grant-section">
-          <div className="grant-benchmark-card">
-            <div>
-              <span className="benchmark-kicker light">{te("grantsKicker")}</span>
-              <strong className="grant-number">
-                {event.grants.count || 2} × {event.grants.amount_each || "€500"}
-              </strong>
-            </div>
-            <div>
-              <h2>{event.grants.title}</h2>
-              <p>{event.grants.description}</p>
-              <div className="grant-expenses">
-                {GRANT_EXPENSE_KEYS.map((n) => (
-                  <span key={n}>{te(`grantExp${n}`)}</span>
-                ))}
               </div>
             </div>
           </div>
@@ -631,7 +696,7 @@ export default function EventDetailPage() {
             </div>
             {isFiali && (
               <div style={{ marginTop: "28px", display: "flex", alignItems: "center", gap: "16px", background: "rgba(15, 76, 56, 0.08)", padding: "16px 20px", borderRadius: "14px", border: "1px solid rgba(15, 76, 56, 0.15)" }}>
-                <img
+                <Img
                   src="/assets/abcn/harmonie-essome.png"
                   alt="Harmonie Essome"
                   style={{ width: "52px", height: "52px", borderRadius: "50%", objectFit: "cover", objectPosition: "top", border: "2px solid #5f8fc0" }}
@@ -664,11 +729,11 @@ export default function EventDetailPage() {
         <div style={{ display: "flex", gap: "20px", alignItems: "center", flexWrap: "wrap" }}>
           <Link href="/about">{te("footerAboutAbcn")}</Link>
           <Link href="/events">{te("footerAllEvents")}</Link>
-          <Link href={locale === "de" ? "/de/datenschutz" : "/privacy"}>{te("footerPrivacy")}</Link>
-          <Link href={locale === "de" ? "/de/impressum" : "/impressum"}>{locale === "de" ? "Impressum" : "Legal notice"}</Link>
+          <Link href="/privacy">{te("footerPrivacy")}</Link>
+          <Link href="/impressum">{locale === "de" ? "Impressum" : "Legal notice"}</Link>
           <button
             type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent("open-cookies"))}
+            onClick={openConsentPreferences}
             style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, font: "inherit", fontSize: "0.78rem" }}
           >
             {te("footerCookies")}
