@@ -41,6 +41,16 @@ type ApplicationRow = {
   submitted_at: string;
 };
 
+const SECTIONS: { id: EditorTab; label: string; shortLabel: string; num: string }[] = [
+  { id: "core", label: "Core & Publishing", shortLabel: "Core", num: "01" },
+  { id: "location", label: "Date & Location", shortLabel: "Schedule", num: "02" },
+  { id: "content", label: "Narrative & Editorial", shortLabel: "Editorial", num: "03" },
+  { id: "media", label: "Media & Aesthetics", shortLabel: "Media", num: "04" },
+  { id: "stages", label: "Programme & Grants", shortLabel: "Stages", num: "05" },
+  { id: "german", label: "German Translation", shortLabel: "German (DE)", num: "06" },
+  { id: "applicants", label: "Event Applicants", shortLabel: "Applicants", num: "07" },
+];
+
 const blankEvent = (): Editable => ({
   slug: "",
   title: "",
@@ -156,6 +166,7 @@ export default function EventsAdminPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  // Application Pipeline State
   const [applications, setApplications] = useState<ApplicationRow[]>([]);
   const [allApplications, setAllApplications] = useState<ApplicationRow[]>([]);
   const [applicationsLoading, setApplicationsLoading] = useState(false);
@@ -163,6 +174,10 @@ export default function EventsAdminPage() {
   const [pipelineStatusFilter, setPipelineStatusFilter] = useState<string>("all");
   const [pipelineSearch, setPipelineSearch] = useState("");
   const [selectedApplicant, setSelectedApplicant] = useState<ApplicationRow | null>(null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+
+  // Deletion Confirm Modal State
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const [rawJsonMode, setRawJsonMode] = useState(false);
 
@@ -206,7 +221,7 @@ export default function EventsAdminPage() {
       } else {
         setMode("needs-admin");
       }
-    } catch (err) {
+    } catch {
       setMode("signed-out");
     }
   }
@@ -340,6 +355,7 @@ export default function EventsAdminPage() {
     showToast("Signed out.");
   }
 
+  // Event Selection & CRUD
   function selectEvent(event: Editable) {
     setSelectedId(event.id);
     setForm({ ...event });
@@ -352,6 +368,24 @@ export default function EventsAdminPage() {
     setApplications([]);
     setEditorTab("core");
     showToast("Ready to draft a new event.");
+  }
+
+  function duplicateCurrentEvent() {
+    if (!form.title) return;
+    const clone: Editable = {
+      ...form,
+      id: undefined,
+      title: `${form.title} (Copy)`,
+      slug: `${form.slug || "event"}-copy-${Math.floor(1000 + Math.random() * 9000)}`,
+      status: "draft",
+      featured: false,
+      show_on_home: false,
+    };
+    setForm(clone);
+    setSelectedId(undefined);
+    setApplications([]);
+    setEditorTab("core");
+    showToast(`Created duplicate draft of "${form.title}". Click Save to publish.`);
   }
 
   function update<K extends keyof Editable>(key: K, value: Editable[K]) {
@@ -381,7 +415,7 @@ export default function EventsAdminPage() {
       let savedItem: any = null;
 
       if (selectedId) {
-        // Try direct API route PUT
+        // Direct API route PUT
         const res = await fetch("/api/admin/events", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -423,7 +457,7 @@ export default function EventsAdminPage() {
         if (savedItem?.id) {
           setSelectedId(savedItem.id);
         }
-        showToast("New event published/created.");
+        showToast("New event created.");
       }
 
       await loadEvents();
@@ -434,8 +468,8 @@ export default function EventsAdminPage() {
     }
   }
 
-  async function removeEvent() {
-    if (!selectedId || !confirm("Are you sure you want to delete this event permanently?")) return;
+  async function confirmAndRemoveEvent() {
+    if (!selectedId) return;
     try {
       const res = await fetch(`/api/admin/events?id=${encodeURIComponent(selectedId)}`, {
         method: "DELETE",
@@ -444,6 +478,7 @@ export default function EventsAdminPage() {
         const { error: q } = await neon.from("events").delete().eq("id", selectedId);
         if (q) throw q;
       }
+      setConfirmDeleteId(null);
       newEvent();
       showToast("Event deleted permanently.");
       await loadEvents();
@@ -452,6 +487,29 @@ export default function EventsAdminPage() {
     }
   }
 
+  // Quick Status Toggle on Event
+  async function quickSetEventStatus(eventId: string, newStatus: Editable["status"]) {
+    try {
+      const res = await fetch("/api/admin/events", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: eventId, status: newStatus }),
+      });
+      if (res.ok) {
+        setEvents((prev) =>
+          prev.map((e) => (e.id === eventId ? { ...e, status: newStatus } : e))
+        );
+        if (selectedId === eventId) {
+          setForm((prev) => ({ ...prev, status: newStatus }));
+        }
+        showToast(`Event status updated to ${newStatus}.`);
+      }
+    } catch (err: any) {
+      showToast(err.message || "Failed to update status", "error");
+    }
+  }
+
+  // Application Pipeline Status & Notes Update
   async function updateApplicationStatus(id: string, status: string, notes?: string) {
     try {
       const res = await fetch("/api/admin/applications", {
@@ -465,15 +523,17 @@ export default function EventsAdminPage() {
       }
 
       setApplications((rows) =>
-        rows.map((row) => (row.id === id ? { ...row, status, ...(notes ? { admin_notes: notes } : {}) } : row))
+        rows.map((row) => (row.id === id ? { ...row, status, ...(notes !== undefined ? { admin_notes: notes } : {}) } : row))
       );
       setAllApplications((rows) =>
-        rows.map((row) => (row.id === id ? { ...row, status, ...(notes ? { admin_notes: notes } : {}) } : row))
+        rows.map((row) => (row.id === id ? { ...row, status, ...(notes !== undefined ? { admin_notes: notes } : {}) } : row))
       );
       if (selectedApplicant?.id === id) {
-        setSelectedApplicant((prev) => (prev ? { ...prev, status, ...(notes ? { admin_notes: notes } : {}) } : null));
+        setSelectedApplicant((prev) =>
+          prev ? { ...prev, status, ...(notes !== undefined ? { admin_notes: notes } : {}) } : null
+        );
       }
-      showToast(`Applicant status changed to ${status}.`);
+      showToast(`Applicant status updated to ${status}.`);
     } catch (err: any) {
       showToast(err.message || "Could not update status", "error");
     }
@@ -497,13 +557,91 @@ export default function EventsAdminPage() {
     }
   }
 
+  // Export CSV Helper
+  function exportApplicantsCSV(list: ApplicationRow[], filenamePrefix = "abcn-applicants") {
+    if (!list.length) {
+      showToast("No applicants to export.", "error");
+      return;
+    }
+    const headers = [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone",
+      "Role",
+      "Company",
+      "Stage",
+      "City",
+      "Country",
+      "Status",
+      "Submitted Date",
+      "Motivation",
+      "Admin Notes",
+    ];
+    const rows = list.map((a) => [
+      `"${(a.first_name || "").replace(/"/g, '""')}"`,
+      `"${(a.last_name || "").replace(/"/g, '""')}"`,
+      `"${(a.email || "").replace(/"/g, '""')}"`,
+      `"${(a.phone || "").replace(/"/g, '""')}"`,
+      `"${(a.role_title || "").replace(/"/g, '""')}"`,
+      `"${(a.company_name || "").replace(/"/g, '""')}"`,
+      `"${(a.venture_stage || "").replace(/"/g, '""')}"`,
+      `"${(a.city || "").replace(/"/g, '""')}"`,
+      `"${(a.country || "").replace(/"/g, '""')}"`,
+      `"${(a.status || "").replace(/"/g, '""')}"`,
+      `"${new Date(a.submitted_at).toISOString()}"`,
+      `"${(a.motivation || "").replace(/"/g, '""')}"`,
+      `"${(a.admin_notes || "").replace(/"/g, '""')}"`,
+    ]);
+    const csvContent =
+      "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", encodedUri);
+    downloadAnchor.setAttribute("download", `${filenamePrefix}-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    document.body.removeChild(downloadAnchor);
+    showToast(`Exported ${list.length} applicants to CSV spreadsheet.`);
+  }
+
+  // Copy Email List Helper
+  function copyEmailList(list: ApplicationRow[], format: "comma" | "named" | "newline" = "comma") {
+    if (!list.length) {
+      showToast("No applicants in current filter.", "error");
+      return;
+    }
+    let text = "";
+    if (format === "named") {
+      text = list.map((a) => `"${a.first_name} ${a.last_name}" <${a.email}>`).join(", ");
+    } else if (format === "newline") {
+      text = list.map((a) => a.email).join("\n");
+    } else {
+      text = list.map((a) => a.email).join(", ");
+    }
+    navigator.clipboard.writeText(text);
+    showToast(`Copied ${list.length} email addresses to clipboard!`);
+    setShowEmailModal(false);
+  }
+
+  // Trigger group mailto
+  function openGroupEmail(list: ApplicationRow[]) {
+    if (!list.length) {
+      showToast("No applicants to email.", "error");
+      return;
+    }
+    const bcc = list.map((a) => a.email).join(",");
+    const subject = encodeURIComponent("ABCN Innovation & Leadership Programme Update");
+    window.open(`mailto:contact@afropeanbusiness.com?bcc=${bcc}&subject=${subject}`, "_blank");
+  }
+
   async function handleImage(file?: File) {
     if (!file) return;
     try {
       showToast("Compressing and preparing image...");
       const compressed = await compressImage(file);
       update("hero_image_url", compressed);
-      showToast("Hero image uploaded & ready to save.");
+      showToast("Hero image uploaded & ready to save to database.");
     } catch (err: any) {
       showToast(err.message || "Failed to process image", "error");
     }
@@ -534,6 +672,25 @@ export default function EventsAdminPage() {
     update(key, current);
   }
 
+  // Next / Previous Section Navigators
+  const currentSectionIdx = useMemo(() => {
+    return SECTIONS.findIndex((s) => s.id === editorTab);
+  }, [editorTab]);
+
+  function goToNextSection() {
+    if (currentSectionIdx < SECTIONS.length - 1) {
+      setEditorTab(SECTIONS[currentSectionIdx + 1].id);
+      window.scrollTo({ top: 180, behavior: "smooth" });
+    }
+  }
+
+  function goToPrevSection() {
+    if (currentSectionIdx > 0) {
+      setEditorTab(SECTIONS[currentSectionIdx - 1].id);
+      window.scrollTo({ top: 180, behavior: "smooth" });
+    }
+  }
+
   // Filtered Events
   const filteredEvents = useMemo(() => {
     return events.filter((ev) => {
@@ -559,6 +716,19 @@ export default function EventsAdminPage() {
       return matchEvent && matchStatus && matchSearch;
     });
   }, [allApplications, pipelineEventFilter, pipelineStatusFilter, pipelineSearch]);
+
+  // Filtered Event Applications (for selected event)
+  const filteredEventApplications = useMemo(() => {
+    return applications.filter((app) => {
+      const matchStatus = pipelineStatusFilter === "all" || app.status === pipelineStatusFilter;
+      const matchSearch =
+        !pipelineSearch ||
+        `${app.first_name} ${app.last_name}`.toLowerCase().includes(pipelineSearch.toLowerCase()) ||
+        app.email.toLowerCase().includes(pipelineSearch.toLowerCase()) ||
+        (app.company_name && app.company_name.toLowerCase().includes(pipelineSearch.toLowerCase()));
+      return matchStatus && matchSearch;
+    });
+  }, [applications, pipelineStatusFilter, pipelineSearch]);
 
   // Metric KPIs
   const totalEventsCount = events.length;
@@ -811,7 +981,7 @@ export default function EventsAdminPage() {
         </div>
 
         {/* =========================================================================
-            VIEW 1: EVENTS MANAGER
+            VIEW 1: EVENTS MANAGER (FULL CRUD)
             ========================================================================= */}
         {mainTab === "events" && (
           <div className="cms-main-grid">
@@ -904,6 +1074,17 @@ export default function EventsAdminPage() {
                       View Live ↗
                     </a>
                   )}
+
+                  {selectedId && (
+                    <button
+                      onClick={duplicateCurrentEvent}
+                      className="cms-btn cms-btn-secondary"
+                      title="Duplicate this event into a new draft"
+                    >
+                      Duplicate Event
+                    </button>
+                  )}
+
                   <button
                     onClick={() => setForm({ ...FIALI_FALLBACK })}
                     className="cms-btn cms-btn-secondary"
@@ -911,11 +1092,16 @@ export default function EventsAdminPage() {
                   >
                     Load FIALI Template
                   </button>
+
                   {selectedId && (
-                    <button onClick={removeEvent} className="cms-btn cms-btn-danger">
+                    <button
+                      onClick={() => setConfirmDeleteId(selectedId)}
+                      className="cms-btn cms-btn-danger"
+                    >
                       Delete Event
                     </button>
                   )}
+
                   <button
                     onClick={saveEvent}
                     disabled={saving}
@@ -926,52 +1112,21 @@ export default function EventsAdminPage() {
                 </div>
               </div>
 
-              {/* Sub-Tabs Navigation */}
+              {/* Sub-Tabs Navigation (NO HORIZONTAL SCROLLER - RESPONSIVE PILLS) */}
               <div className="cms-sub-tabs">
-                <button
-                  className={`cms-sub-tab ${editorTab === "core" ? "active" : ""}`}
-                  onClick={() => setEditorTab("core")}
-                >
-                  01 Core & Publishing
-                </button>
-                <button
-                  className={`cms-sub-tab ${editorTab === "location" ? "active" : ""}`}
-                  onClick={() => setEditorTab("location")}
-                >
-                  02 Date & Location
-                </button>
-                <button
-                  className={`cms-sub-tab ${editorTab === "content" ? "active" : ""}`}
-                  onClick={() => setEditorTab("content")}
-                >
-                  03 Narrative & Editorial
-                </button>
-                <button
-                  className={`cms-sub-tab ${editorTab === "media" ? "active" : ""}`}
-                  onClick={() => setEditorTab("media")}
-                >
-                  04 Media & Aesthetics
-                </button>
-                <button
-                  className={`cms-sub-tab ${editorTab === "stages" ? "active" : ""}`}
-                  onClick={() => setEditorTab("stages")}
-                >
-                  05 Programme & Grants
-                </button>
-                <button
-                  className={`cms-sub-tab ${editorTab === "german" ? "active" : ""}`}
-                  onClick={() => setEditorTab("german")}
-                >
-                  06 German (DE) Translation
-                </button>
-                {selectedId && (
+                {SECTIONS.map((sec) => (
                   <button
-                    className={`cms-sub-tab ${editorTab === "applicants" ? "active" : ""}`}
-                    onClick={() => setEditorTab("applicants")}
+                    key={sec.id}
+                    className={`cms-sub-tab ${editorTab === sec.id ? "active" : ""}`}
+                    onClick={() => setEditorTab(sec.id)}
                   >
-                    07 Applicants ({applications.length})
+                    <span style={{ opacity: 0.6, fontSize: "0.7rem" }}>{sec.num}</span>
+                    <span>{sec.label}</span>
+                    {sec.id === "applicants" && applications.length > 0 && (
+                      <span className="cms-sub-tab-badge">{applications.length}</span>
+                    )}
                   </button>
-                )}
+                ))}
               </div>
 
               {/* Form Body */}
@@ -1085,7 +1240,15 @@ export default function EventsAdminPage() {
                     </div>
 
                     {/* Promotion & Application Toggles */}
-                    <div className="cms-col-full" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", marginTop: "1rem" }}>
+                    <div
+                      className="cms-col-full"
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                        gap: "1rem",
+                        marginTop: "1rem",
+                      }}
+                    >
                       <div className="cms-switch-row">
                         <div className="cms-switch-info">
                           <strong>Featured Event</strong>
@@ -1350,8 +1513,28 @@ export default function EventsAdminPage() {
                 {editorTab === "media" && (
                   <div className="cms-form-grid">
                     <div className="cms-field cms-col-full">
-                      <label>Hero Image (Upload or URL)</label>
-                      <div className="cms-image-upload-zone" onClick={() => document.getElementById("hero-file")?.click()}>
+                      <div
+                        style={{
+                          padding: "10px 14px",
+                          background: "rgba(59,130,246,0.08)",
+                          border: "1px solid rgba(59,130,246,0.2)",
+                          borderRadius: "var(--cms-radius-sm)",
+                          marginBottom: "0.5rem",
+                        }}
+                      >
+                        <strong style={{ color: "#93C5FD", fontSize: "0.82rem" }}>
+                          ℹ️ Where do uploaded images go?
+                        </strong>
+                        <p className="cms-hint" style={{ marginTop: "3px" }}>
+                          Uploaded image files are compressed automatically in your browser and stored securely directly inside your <strong>Neon PostgreSQL database</strong> as high-efficiency optimized image data. You can also specify any existing local asset (e.g. <code>/assets/fiali/...</code>) or external CDN link below.
+                        </p>
+                      </div>
+
+                      <label>Hero Image (Upload or specify URL)</label>
+                      <div
+                        className="cms-image-upload-zone"
+                        onClick={() => document.getElementById("hero-file")?.click()}
+                      >
                         <input
                           id="hero-file"
                           type="file"
@@ -1360,9 +1543,9 @@ export default function EventsAdminPage() {
                           onChange={(e) => handleImage(e.target.files?.[0])}
                         />
                         <div style={{ fontSize: "1.8rem", marginBottom: "0.5rem" }}>🖼️</div>
-                        <strong>Click or drag to upload a high-resolution hero image</strong>
+                        <strong>Click or drag to upload an image from your device</strong>
                         <p className="cms-hint" style={{ marginTop: "4px" }}>
-                          Images are automatically compressed client-side before storage.
+                          High-resolution JPEG/PNG files are automatically scaled and compressed for instant loading.
                         </p>
                       </div>
 
@@ -1510,7 +1693,15 @@ export default function EventsAdminPage() {
                 {/* TAB 6: GERMAN LOCALIZATION */}
                 {editorTab === "german" && (
                   <div className="cms-form-grid">
-                    <div className="cms-col-full" style={{ padding: "12px", background: "rgba(229,184,105,0.08)", border: "1px solid rgba(229,184,105,0.2)", borderRadius: "var(--cms-radius-sm)" }}>
+                    <div
+                      className="cms-col-full"
+                      style={{
+                        padding: "12px",
+                        background: "rgba(229,184,105,0.08)",
+                        border: "1px solid rgba(229,184,105,0.2)",
+                        borderRadius: "var(--cms-radius-sm)",
+                      }}
+                    >
                       <strong style={{ color: "var(--cms-gold)", fontSize: "0.85rem", display: "block" }}>
                         Deutsche Übersetzung / German Localization
                       </strong>
@@ -1610,6 +1801,27 @@ export default function EventsAdminPage() {
                         </h3>
                         <span className="cms-hint">Candidates registered specifically for this event.</span>
                       </div>
+
+                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                        <button
+                          onClick={() => copyEmailList(applications, "comma")}
+                          className="cms-btn cms-btn-secondary"
+                        >
+                          📋 Copy Email List
+                        </button>
+                        <button
+                          onClick={() => exportApplicantsCSV(applications, `abcn-${form.slug}-applicants`)}
+                          className="cms-btn cms-btn-secondary"
+                        >
+                          📥 Export CSV
+                        </button>
+                        <button
+                          onClick={() => openGroupEmail(applications)}
+                          className="cms-btn cms-btn-gold"
+                        >
+                          ✉️ Email All
+                        </button>
+                      </div>
                     </div>
 
                     {applicationsLoading ? (
@@ -1683,12 +1895,64 @@ export default function EventsAdminPage() {
                   </div>
                 )}
               </div>
+
+              {/* ---------------- WIZARD PREVIOUS / NEXT FOOTER ---------------- */}
+              <div className="cms-editor-footer-nav">
+                <button
+                  type="button"
+                  onClick={goToPrevSection}
+                  disabled={currentSectionIdx === 0}
+                  className="cms-btn cms-btn-secondary"
+                >
+                  ← Previous: {currentSectionIdx > 0 ? SECTIONS[currentSectionIdx - 1].shortLabel : "Start"}
+                </button>
+
+                <div className="cms-footer-step-indicator">
+                  <div className="cms-step-dots">
+                    {SECTIONS.map((sec, idx) => (
+                      <span
+                        key={sec.id}
+                        className={`cms-step-dot ${
+                          idx === currentSectionIdx ? "active" : idx < currentSectionIdx ? "completed" : ""
+                        }`}
+                        title={sec.label}
+                        onClick={() => setEditorTab(sec.id)}
+                        style={{ cursor: "pointer" }}
+                      />
+                    ))}
+                  </div>
+                  <span>
+                    Section {currentSectionIdx + 1} of {SECTIONS.length} · {SECTIONS[currentSectionIdx].label}
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", gap: "8px" }}>
+                  {currentSectionIdx < SECTIONS.length - 1 ? (
+                    <button
+                      type="button"
+                      onClick={goToNextSection}
+                      className="cms-btn cms-btn-primary"
+                    >
+                      Next: {SECTIONS[currentSectionIdx + 1].shortLabel} →
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={saveEvent}
+                      disabled={saving}
+                      className="cms-btn cms-btn-primary"
+                    >
+                      {saving ? "Saving…" : "Save All Changes ✓"}
+                    </button>
+                  )}
+                </div>
+              </div>
             </section>
           </div>
         )}
 
         {/* =========================================================================
-            VIEW 2: DEDICATED FOUNDER PIPELINE REVIEW
+            VIEW 2: DEDICATED FOUNDER PIPELINE REVIEW & EMAIL LIST BUILDER
             ========================================================================= */}
         {mainTab === "pipeline" && (
           <div className="cms-pipeline-wrap">
@@ -1698,11 +1962,39 @@ export default function EventsAdminPage() {
                   Founder Pipeline & Candidate Review
                 </h2>
                 <span className="cms-hint">
-                  Review applicant profiles, motivation letters, venture stages, and advance candidates through the evaluation funnel.
+                  Review applicant profiles, motivation letters, venture stages, evaluate cohort fit, and generate email lists.
                 </span>
               </div>
 
-              <div className="cms-pipeline-controls">
+              {/* Email List Actions */}
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                <button
+                  onClick={() => setShowEmailModal(true)}
+                  className="cms-btn cms-btn-primary"
+                  title="Generate email list of current candidates"
+                >
+                  📋 Generate Email List ({filteredPipeline.length})
+                </button>
+                <button
+                  onClick={() => exportApplicantsCSV(filteredPipeline, "abcn-pipeline-export")}
+                  className="cms-btn cms-btn-secondary"
+                  title="Download CSV spreadsheet"
+                >
+                  📥 Export CSV
+                </button>
+                <button
+                  onClick={() => openGroupEmail(filteredPipeline)}
+                  className="cms-btn cms-btn-gold"
+                  title="Open mailto client with candidates in BCC"
+                >
+                  ✉️ Email Cohort
+                </button>
+              </div>
+            </div>
+
+            {/* Pipeline Filtering Toolbar */}
+            <div className="cms-pipeline-toolbar">
+              <div className="cms-pipeline-actions-left">
                 <input
                   type="text"
                   placeholder="Search founder, venture or email…"
@@ -1715,6 +2007,7 @@ export default function EventsAdminPage() {
                     borderRadius: "var(--cms-radius-sm)",
                     color: "#fff",
                     fontSize: "0.85rem",
+                    minWidth: "260px",
                   }}
                 />
 
@@ -1723,26 +2016,27 @@ export default function EventsAdminPage() {
                   onChange={(e) => setPipelineEventFilter(e.target.value)}
                   className="cms-status-select"
                 >
-                  <option value="all">All Programmes</option>
+                  <option value="all">All Programmes ({allApplications.length})</option>
                   {events.map((e) => (
                     <option key={e.id} value={e.id}>
                       {e.title}
                     </option>
                   ))}
                 </select>
+              </div>
 
-                <select
-                  value={pipelineStatusFilter}
-                  onChange={(e) => setPipelineStatusFilter(e.target.value)}
-                  className="cms-status-select"
-                >
-                  <option value="all">All Statuses</option>
-                  <option value="submitted">Submitted</option>
-                  <option value="reviewing">In Review</option>
-                  <option value="shortlisted">Shortlisted</option>
-                  <option value="accepted">Accepted</option>
-                  <option value="declined">Declined</option>
-                </select>
+              <div className="cms-pipeline-actions-right">
+                <div className="cms-filter-pills" style={{ background: "transparent", border: "none", padding: 0 }}>
+                  {["all", "submitted", "reviewing", "shortlisted", "accepted", "declined"].map((st) => (
+                    <button
+                      key={st}
+                      className={`cms-filter-btn ${pipelineStatusFilter === st ? "active" : ""}`}
+                      onClick={() => setPipelineStatusFilter(st)}
+                    >
+                      {st === "all" ? "All Statuses" : st.charAt(0).toUpperCase() + st.slice(1)}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -1887,7 +2181,14 @@ export default function EventsAdminPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
                 <div>
                   <span className="cms-hint">Email</span>
-                  <div style={{ fontWeight: 600 }}>{selectedApplicant.email}</div>
+                  <div style={{ fontWeight: 600 }}>
+                    <a
+                      href={`mailto:${selectedApplicant.email}`}
+                      style={{ color: "var(--cms-accent)", textDecoration: "none" }}
+                    >
+                      {selectedApplicant.email} ✉
+                    </a>
+                  </div>
                 </div>
                 <div>
                   <span className="cms-hint">Phone</span>
@@ -1979,6 +2280,105 @@ export default function EventsAdminPage() {
 
                 <button onClick={() => setSelectedApplicant(null)} className="cms-btn cms-btn-primary">
                   Done
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ---------------- Email List Export Modal ---------------- */}
+        {showEmailModal && (
+          <div className="cms-email-modal-overlay">
+            <div className="cms-email-modal-card">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  marginBottom: "1rem",
+                }}
+              >
+                <div>
+                  <h3 style={{ margin: "0 0 4px", fontSize: "1.3rem", fontWeight: 800 }}>
+                    Export / Copy Candidate Email List
+                  </h3>
+                  <span className="cms-hint">
+                    Select a format to copy {filteredPipeline.length} candidate emails for your mailing list or email client.
+                  </span>
+                </div>
+                <button onClick={() => setShowEmailModal(false)} className="cms-icon-btn">
+                  ✕
+                </button>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", margin: "1.5rem 0" }}>
+                <button
+                  onClick={() => copyEmailList(filteredPipeline, "comma")}
+                  className="cms-btn cms-btn-secondary"
+                  style={{ justifyContent: "flex-start", padding: "12px 16px" }}
+                >
+                  📋 Copy Comma-Separated Emails (BCC Format)
+                  <span style={{ marginLeft: "auto", opacity: 0.6, fontSize: "0.75rem" }}>
+                    email1@..., email2@...
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => copyEmailList(filteredPipeline, "named")}
+                  className="cms-btn cms-btn-secondary"
+                  style={{ justifyContent: "flex-start", padding: "12px 16px" }}
+                >
+                  👤 Copy Named Recipients Format
+                  <span style={{ marginLeft: "auto", opacity: 0.6, fontSize: "0.75rem" }}>
+                    &quot;Jane Doe&quot; &lt;email@...&gt;
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => copyEmailList(filteredPipeline, "newline")}
+                  className="cms-btn cms-btn-secondary"
+                  style={{ justifyContent: "flex-start", padding: "12px 16px" }}
+                >
+                  📄 Copy Line-by-Line (Newsletter Import)
+                  <span style={{ marginLeft: "auto", opacity: 0.6, fontSize: "0.75rem" }}>
+                    One per line
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => exportApplicantsCSV(filteredPipeline, "abcn-pipeline-export")}
+                  className="cms-btn cms-btn-primary"
+                  style={{ justifyContent: "center", padding: "12px 16px", marginTop: "0.5rem" }}
+                >
+                  📥 Download Full CSV Spreadsheet
+                </button>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <button onClick={() => setShowEmailModal(false)} className="cms-btn cms-btn-secondary">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ---------------- Deletion Confirm Modal ---------------- */}
+        {confirmDeleteId && (
+          <div className="cms-email-modal-overlay">
+            <div className="cms-email-modal-card" style={{ maxWidth: "460px" }}>
+              <h3 style={{ margin: "0 0 8px", fontSize: "1.3rem", fontWeight: 800, color: "var(--cms-danger)" }}>
+                Permanently Delete Event?
+              </h3>
+              <p style={{ fontSize: "0.88rem", color: "var(--cms-text-secondary)", lineHeight: 1.5 }}>
+                Are you sure you want to permanently delete <strong>{form.title}</strong>? This action cannot be undone and will also remove any related founder application records.
+              </p>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "1.5rem" }}>
+                <button onClick={() => setConfirmDeleteId(null)} className="cms-btn cms-btn-secondary">
+                  Cancel
+                </button>
+                <button onClick={confirmAndRemoveEvent} className="cms-btn cms-btn-danger">
+                  Yes, Delete Event
                 </button>
               </div>
             </div>
