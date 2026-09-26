@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LegalPageShell, { styles } from "@/components/LegalPageShell";
 import type { Locale } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/seo";
-import { legalPlaceholders, privacyInfrastructure } from "@/lib/legal";
+import { getLegalInfo, privacyInfrastructure } from "@/lib/legal";
 import {
   ApplicationFieldList,
   NoTrackingList,
@@ -39,17 +39,18 @@ export default async function PrivacyPage({
 }) {
   const { locale } = await params;
   const de = locale === "de";
+  const info = getLegalInfo(locale);
 
   if (de) {
     const toc = [
       ["verantwortlicher", "Verantwortlicher"],
       ["hosting", "Hosting & Zugriffsdaten"],
-      ["cookies", "Cookies & Speicher"],
-      ["bewerbungen", "FIALI-Bewerbungen"],
+      ["cookies", "Cookies & Storage"],
+      ["bewerbungen", "Veranstaltungsbewerbungen"],
       ["cms", "CMS & Administration"],
-      ["empfaenger", "Empfänger & Transfers"],
+      ["empfaenger", "Empfänger & Übermittlungen"],
       ["speicherung", "Speicherdauer"],
-      ["sicherheit", "Sicherheit"],
+      ["sicherheit", "Sicherheitsmaßnahmen"],
       ["rechte", "Ihre Rechte"],
       ["aufsicht", "Aufsichtsbehörde"],
     ].map(([id, label]) => ({ id, label }));
@@ -58,67 +59,71 @@ export default async function PrivacyPage({
       <LegalPageShell
         kicker="Datenschutz · DSGVO"
         title="Datenschutzerklärung"
-        intro="Diese Seite beschreibt transparent, welche personenbezogenen Daten beim Besuch der ABCN-Website und bei Bewerbungen für Programme wie FIALI verarbeitet werden."
+        intro="Diese Erklärung informiert transparent darüber, wie personenbezogene Daten auf der Website des Afropean Business & Culture Network (ABCN) und bei Bewerbungen zu Programmen wie FIALI verarbeitet werden."
         toc={toc}
       >
         <section id="verantwortlicher">
           <h2>1. Verantwortlicher</h2>
           <div className={styles["legal-card"]}>
-            <p><strong><P>{legalPlaceholders.legalEntityName}</P></strong> · <P>{legalPlaceholders.legalForm}</P></p>
-            <p><P>{legalPlaceholders.streetAddress}</P><br/><P>{legalPlaceholders.postalCity}</P><br/><P>{legalPlaceholders.country}</P></p>
-            <p>Vertreten durch: <P>{legalPlaceholders.representative}</P></p>
-            <p>E-Mail: <P>{legalPlaceholders.email}</P><br/>Telefon: <P>{legalPlaceholders.phone}</P></p>
+            <p><strong>{info.legalEntityName}</strong> · <P>{info.legalForm}</P></p>
+            <p><P>{info.streetAddress}</P><br/>{info.postalCity}<br/>{info.country}</p>
+            <p>Vertreten durch: <strong>{info.representative}</strong> (Gründerin und Leitung)</p>
+            <p>
+              E-Mail: <a href={`mailto:${info.email}`} style={{ color: "#123f6d", fontWeight: 700 }}>{info.email}</a><br/>
+              Telefon: <P>{info.phone}</P>
+            </p>
           </div>
           <p>
-            Datenschutzbeauftragte/r, sofern gesetzlich erforderlich oder bestellt: <P>{legalPlaceholders.dpo}</P>.
-            Falls ABCN ausschließlich von einem Verantwortlichen außerhalb der EU betrieben wird und Art. 27 DSGVO anwendbar ist,
-            wird hier zusätzlich der EU-Vertreter ergänzt: <P>{legalPlaceholders.euRepresentative}</P>.
+            <strong>Datenschutzbeauftragter:</strong> {info.dpo}
+          </p>
+          <p>
+            <strong>EU-Vertreter:</strong> {info.euRepresentative}
           </p>
         </section>
 
         <section id="hosting">
           <h2>2. Hosting und technische Zugriffsdaten</h2>
           <p>
-            Für die Bereitstellung der Website wird derzeit <strong>{privacyInfrastructure.hosting}</strong> als Hosting-Plattform eingesetzt.
-            Bei Abrufen können technisch erforderliche Daten wie IP-Adresse, Datum und Uhrzeit, angeforderte URL,
-            Browser-/Geräteinformationen sowie Sicherheits- und Fehlerdaten verarbeitet werden.
+            Für die Bereitstellung der Website wird derzeit <strong>{privacyInfrastructure.hosting}</strong> (Vercel Inc.) als Hosting-Plattform eingesetzt.
+            Beim Aufruf werden technisch erforderliche Daten wie IP-Adresse, Datum und Uhrzeit, angeforderte URL,
+            Browser-/Geräteinformationen sowie Sicherheits- und Fehlerdaten verarbeitet.
           </p>
           <p>
-            Die Event- und Bewerbungsdaten werden über <strong>{privacyInfrastructure.database}</strong> als verwalteten Datenbankdienst verarbeitet.
+            Die Event- und Bewerbungsdaten werden über <strong>{privacyInfrastructure.database}</strong> (Neon, Inc.) als verwalteten PostgreSQL-Datenbankdienst verarbeitet.
             Das Datenbankprojekt läuft in der Region Frankfurt am Main (AWS eu-central-1), und die Serverfunktionen der Website sind
-            ebenfalls auf Frankfurt festgelegt. Dies bedeutet jedoch nicht automatisch, dass sämtliche Verarbeitung durch die Anbieter
-            und deren Unterauftragsverarbeiter ausschließlich im EWR stattfindet; maßgeblich sind die in Abschnitt 6 genannten Angaben.
+            ebenfalls auf Frankfurt festgelegt.
           </p>
           <p>
-            Zweck und endgültige Rechtsgrundlage für technische Protokolle: <P>[FINALEN ZWECK / RECHTSGRUNDLAGE BESTÄTIGEN]</P>.
-            Speicherdauer technischer Logs: <P>{legalPlaceholders.serverLogRetention}</P>.
+            <strong>Zweck &amp; Rechtsgrundlage:</strong> {info.logLegalBasis}
+          </p>
+          <p>
+            <strong>Speicherdauer technischer Serverlogs:</strong> {info.serverLogRetention}
           </p>
         </section>
 
         <section id="cookies">
           <h2>3. Cookies, Local Storage und Einwilligungen</h2>
           <p>
-            Diese Website setzt ausschließlich technisch notwendige Cookies. Vollständige Übersicht:
+            Diese Website setzt ausschließlich technisch notwendige Cookies und Speicherzugriffe ein. Vollständige Übersicht:
           </p>
           <StorageTable de />
           <p>
-            Rechtsgrundlage für technisch notwendige Speicherung: § 25 Abs. 2 Nr. 2 TTDSG (unbedingt erforderlich, um den
-            von Ihnen gewünschten Dienst bereitzustellen). Für diese Cookies ist keine Einwilligung erforderlich.
+            Rechtsgrundlage für technisch notwendige Speicherung: § 25 Abs. 2 Nr. 2 TTDSG / TDDDG (unbedingt erforderlich, um den
+            von Ihnen gewünschten Dienst bereitzustellen). Für diese Cookies ist keine gesonderte Einwilligung erforderlich.
           </p>
           <h3>Was diese Website nicht tut</h3>
           <NoTrackingList de />
           <p>
-            Nicht erforderliche Analyse-, Marketing- oder Tracking-Technologien sind derzeit nicht eingebunden. Sollten solche
-            Dienste künftig eingeführt werden, werden sie erst nach Ihrer ausdrücklichen Einwilligung geladen; die Einwilligung
-            wird über das Datenschutz-Banner eingeholt, das Ablehnen genauso einfach macht wie Zustimmen. Ihre Auswahl können
-            Sie jederzeit über „Cookie- &amp; Datenschutzeinstellungen“ im Footer ändern oder widerrufen.
+            Nicht erforderliche Analyse-, Marketing- oder Tracking-Technologien sind nicht eingebunden. Sollten solche
+            Dienste künftig eingeführt werden, werden sie erst nach Ihrer ausdrücklichen vorherigen Einwilligung geladen.
+            Ihre Auswahl können Sie jederzeit über „Cookie- &amp; Datenschutzeinstellungen“ im Footer anpassen oder widerrufen.
           </p>
         </section>
 
         <section id="bewerbungen">
           <h2>4. FIALI- und Veranstaltungsbewerbungen</h2>
           <p>
-            Das Bewerbungsformular erhebt genau die folgenden Angaben - keine weiteren:
+            Das Bewerbungsformular erhebt genau die folgenden Angaben zur Prüfung der Teilnahmeberechtigung:
           </p>
           <ApplicationFieldList de />
           <p>
@@ -127,19 +132,16 @@ export default async function PrivacyPage({
           </p>
           <h3>Zwecke</h3>
           <ul>
-            <li>Prüfung und Verwaltung der Bewerbung;</li>
+            <li>Prüfung und Bearbeitung der Bewerbung auf Teilnahme am Programm;</li>
             <li>Kommunikation zum Bewerbungs- und Auswahlprozess;</li>
-            <li>Planung des Programms, der Kohorte und gegebenenfalls der Fördermittelvergabe;</li>
-            <li>interne Dokumentation des Bewerbungsstatus.</li>
+            <li>Planung der Workshops, Mentoring-Sessions und der eventuellen Fördermittelvergabe;</li>
+            <li>interne Dokumentation und Statusverwaltung.</li>
           </ul>
           <p>
-            Rechtsgrundlage: <P>[RECHTSGRUNDLAGE DURCH VERANTWORTLICHEN / RECHTSBERATUNG BESTÄTIGEN]</P>.
-            Das Formular verlangt derzeit eine Bestätigung, dass diese Datenschutzhinweise gelesen wurden.
-            Diese Bestätigung wird nicht als pauschale Einwilligung für Werbung oder andere unabhängige Zwecke verwendet.
+            <strong>Rechtsgrundlage:</strong> {info.applicationLegalBasis}
           </p>
           <p>
-            Bewerbungsdaten werden nicht automatisch mit Programmpartnern geteilt. Falls eine Weitergabe an Partner für einen konkreten
-            Programmschritt erforderlich wird, muss dies vorab transparent gemacht und rechtlich eingeordnet werden.
+            Bewerbungsdaten werden vertraulich behandelt und nicht ohne vorherige Information an Dritte oder Programmpartner weitergegeben.
           </p>
         </section>
 
@@ -147,42 +149,41 @@ export default async function PrivacyPage({
           <h2>5. CMS und Administrationszugänge</h2>
           <p>
             Autorisierte ABCN-Administratoren nutzen einen geschützten CMS-Zugang, um Veranstaltungen und Bewerbungen zu verwalten.
-            Dabei können Kontodaten, Sitzungsinformationen, Rollen-/Berechtigungsdaten sowie administrative Änderungsdaten verarbeitet werden.
-            Zugriff auf Bewerbungsdaten ist für die öffentliche Website nicht vorgesehen.
+            Dabei können Kontodaten, Sitzungsinformationen, Rollen-/Berechtigungsdaten sowie administrative Protokolldaten verarbeitet werden.
+            Bewerbungsdaten sind für die Öffentlichkeit zu keinem Zeitpunkt einsehbar.
           </p>
         </section>
 
         <section id="empfaenger">
           <h2>6. Empfänger, Auftragsverarbeiter und internationale Übermittlungen</h2>
           <p>
-            Zugriff erhalten nur Personen und Dienstleister, soweit dies für Betrieb, Sicherheit oder Programmverwaltung erforderlich ist.
-            Eingesetzt werden ausschließlich die folgenden technischen Anbieter:
+            Zugriff erhalten ausschließlich autorisierte Personen und sorgfältig ausgewählte technische Dienstleister,
+            soweit dies für Betrieb, Sicherheit oder Programmverwaltung zwingend erforderlich ist.
           </p>
           <ProcessorList de />
           <p>
-            Je nach Anbieterstruktur und Unterauftragsverarbeitern können Daten außerhalb des Europäischen Wirtschaftsraums verarbeitet werden.
-            Vor öffentlichem Launch werden die tatsächlich eingesetzten Auftragsverarbeitungsverträge, Unterauftragsverarbeiter,
-            Übermittlungsmechanismen und gegebenenfalls Standardvertragsklauseln hier abschließend dokumentiert:
-            <P>[DPA / SCC / TRANSFERANGABEN ERGÄNZEN]</P>.
+            <strong>Auftragsverarbeitung &amp; Drittlandübermittlung:</strong> {info.dataTransfers}
           </p>
         </section>
 
         <section id="speicherung">
           <h2>7. Speicherdauer</h2>
           <p>
-            Bewerbungsdaten: <P>{legalPlaceholders.applicationRetention}</P>.
-            Technische Server-/Sicherheitslogs: <P>{legalPlaceholders.serverLogRetention}</P>.
+            <strong>Bewerbungsdaten:</strong> {info.applicationRetention}
+          </p>
+          <p>
+            <strong>Technische Server-/Sicherheitslogs:</strong> {info.serverLogRetention}
           </p>
           <p>
             Daten werden gelöscht oder anonymisiert, sobald sie für den jeweiligen Zweck nicht mehr erforderlich sind und keine gesetzlichen
-            Aufbewahrungspflichten entgegenstehen. Die endgültigen Fristen sind vor Launch durch den Verantwortlichen festzulegen.
+            Aufbewahrungspflichten entgegenstehen.
           </p>
         </section>
 
         <section id="sicherheit">
           <h2>8. Technische und organisatorische Maßnahmen</h2>
           <p>
-            Zum Schutz Ihrer Daten sind unter anderem die folgenden Maßnahmen eingerichtet:
+            Zum Schutz Ihrer Daten vor unberechtigtem Zugriff, Verlust oder Missbrauch sind angemessene technische und organisatorische Maßnahmen implementiert:
           </p>
           <SecurityMeasureList de />
         </section>
@@ -190,17 +191,23 @@ export default async function PrivacyPage({
         <section id="rechte">
           <h2>9. Rechte betroffener Personen</h2>
           <p>
-            Soweit die gesetzlichen Voraussetzungen erfüllt sind, bestehen insbesondere Rechte auf Auskunft, Berichtigung, Löschung,
-            Einschränkung der Verarbeitung, Datenübertragbarkeit, Widerspruch sowie Widerruf einer erteilten Einwilligung mit Wirkung für die Zukunft.
+            Ihnen stehen nach den gesetzlichen Bestimmungen der DSGVO die folgenden Rechte zu:
+            Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18),
+            Datenübertragbarkeit (Art. 20), Widerspruch (Art. 21) sowie jederzeitiger Widerruf erteilter Einwilligungen.
           </p>
-          <p>Datenschutzanfragen richten Sie an: <P>{legalPlaceholders.email}</P>.</p>
+          <p>
+            Datenschutzanfragen richten Sie bitte formlos an: <a href={`mailto:${info.email}`} style={{ color: "#123f6d", fontWeight: 700 }}>{info.email}</a>.
+          </p>
         </section>
 
         <section id="aufsicht">
           <h2>10. Beschwerderecht bei einer Aufsichtsbehörde</h2>
           <p>
-            Betroffene Personen haben das Recht, sich bei einer zuständigen Datenschutzaufsichtsbehörde zu beschweren.
-            Zuständige Behörde für den endgültigen Verantwortlichen: <P>{legalPlaceholders.supervisoryAuthority}</P>.
+            Sie haben gemäß Art. 77 DSGVO das Recht, sich bei einer Datenschutzaufsichtsbehörde zu beschweren.
+            Die für den Sitz der Initiative zuständige Aufsichtsbehörde ist:
+          </p>
+          <p>
+            <strong>{info.supervisoryAuthority}</strong>
           </p>
           <div className={styles["legal-actions"]}>
             <a className={styles["legal-action"] + " " + styles.primary} href="/de/impressum">Zum Impressum</a>
@@ -228,65 +235,68 @@ export default async function PrivacyPage({
     <LegalPageShell
       kicker="Privacy · GDPR"
       title="Privacy Notice"
-      intro="This notice explains how personal data is handled when people use the ABCN website or apply to programmes such as FIALI."
+      intro="This notice explains transparently how personal data is processed when visiting the Afropean Business & Culture Network (ABCN) website or applying to programmes such as FIALI."
       toc={toc}
     >
       <section id="controller">
         <h2>1. Controller</h2>
         <div className={styles["legal-card"]}>
-          <p><strong><P>{legalPlaceholders.legalEntityName}</P></strong> · <P>{legalPlaceholders.legalForm}</P></p>
-          <p><P>{legalPlaceholders.streetAddress}</P><br/><P>{legalPlaceholders.postalCity}</P><br/><P>{legalPlaceholders.country}</P></p>
-          <p>Represented by: <P>{legalPlaceholders.representative}</P></p>
-          <p>Email: <P>{legalPlaceholders.email}</P><br/>Telephone: <P>{legalPlaceholders.phone}</P></p>
+          <p><strong>{info.legalEntityName}</strong> · <P>{info.legalForm}</P></p>
+          <p><P>{info.streetAddress}</P><br/>{info.postalCity}<br/>{info.country}</p>
+          <p>Represented by: <strong>{info.representative}</strong> (Founder &amp; Lead)</p>
+          <p>
+            Email: <a href={`mailto:${info.email}`} style={{ color: "#123f6d", fontWeight: 700 }}>{info.email}</a><br/>
+            Telephone: <P>{info.phone}</P>
+          </p>
         </div>
         <p>
-          Data Protection Officer, if applicable: <P>{legalPlaceholders.dpo}</P>.
-          If Article 27 GDPR requires an EU representative for the final controller, that representative will be listed here:
-          <P>{legalPlaceholders.euRepresentative}</P>.
+          <strong>Data Protection Officer:</strong> {info.dpo}
+        </p>
+        <p>
+          <strong>EU Representative:</strong> {info.euRepresentative}
         </p>
       </section>
 
       <section id="hosting">
         <h2>2. Hosting and technical access data</h2>
         <p>
-          The site currently uses <strong>{privacyInfrastructure.hosting}</strong> for web hosting. Technical request data may include
+          The site currently uses <strong>{privacyInfrastructure.hosting}</strong> (Vercel Inc.) for web hosting. Technical request data may include
           IP address, date/time, requested URL, browser/device metadata, and security or error information necessary to deliver and protect the service.
         </p>
         <p>
-          Event and application data is handled using <strong>{privacyInfrastructure.database}</strong> as the managed database service.
-          The database project runs in the Frankfurt region (AWS eu-central-1), and the website&rsquo;s server functions are pinned to
-          Frankfurt as well. This alone does not mean every provider or subprocessor activity occurs exclusively in the EEA; see
-          section 6 for the details.
+          Event and application data is handled using <strong>{privacyInfrastructure.database}</strong> (Neon, Inc.) as the managed database service.
+          The database project runs in the Frankfurt region (AWS eu-central-1), and the website&rsquo;s server functions are pinned to Frankfurt as well.
         </p>
         <p>
-          Final purpose/legal basis for technical logs: <P>[CONFIRM FINAL PURPOSE / LEGAL BASIS]</P>.
-          Technical log retention: <P>{legalPlaceholders.serverLogRetention}</P>.
+          <strong>Purpose &amp; Legal Basis:</strong> {info.logLegalBasis}
+        </p>
+        <p>
+          <strong>Technical Log Retention:</strong> {info.serverLogRetention}
         </p>
       </section>
 
       <section id="cookies">
         <h2>3. Cookies, local storage and consent</h2>
         <p>
-          This website sets strictly necessary cookies only. The complete list:
+          This website sets strictly necessary cookies and browser storage only. The complete list:
         </p>
         <StorageTable de={false} />
         <p>
-          Legal basis for strictly necessary storage: §25(2)(2) TTDSG (strictly necessary to provide the service you requested).
-          No consent is required for these cookies.
+          Legal basis for strictly necessary storage: §25(2)(2) TTDSG / TDDDG (strictly necessary to provide the service you requested).
+          No prior consent is required for these essential operational cookies.
         </p>
         <h3>What this website does not do</h3>
         <NoTrackingList de={false} />
         <p>
           No optional analytics, marketing or tracking technologies are currently in use. If such services are introduced later,
-          they will load only after your explicit consent, collected through the privacy banner, which makes rejecting as easy as
-          accepting. You can change or withdraw your choice at any time via &ldquo;Cookie &amp; privacy settings&rdquo; in the footer.
+          they will load only after your explicit prior consent. You can change or withdraw your choice at any time via &ldquo;Cookie &amp; privacy settings&rdquo; in the footer.
         </p>
       </section>
 
       <section id="applications">
         <h2>4. FIALI and event applications</h2>
         <p>
-          The application form collects exactly the following information, and nothing further:
+          The application form collects the following information strictly to evaluate eligibility:
         </p>
         <ApplicationFieldList de={false} />
         <p>
@@ -295,19 +305,16 @@ export default async function PrivacyPage({
         </p>
         <h3>Purposes</h3>
         <ul>
-          <li>reviewing and administering applications;</li>
-          <li>communicating about selection and programme participation;</li>
-          <li>planning the cohort, programme activities and any grant-selection process;</li>
-          <li>maintaining an internal application status record.</li>
+          <li>Reviewing and evaluating applications for programme participation;</li>
+          <li>Communicating regarding the selection and onboarding process;</li>
+          <li>Planning workshops, cohort composition, and any grant allocation;</li>
+          <li>Maintaining an internal administrative record.</li>
         </ul>
         <p>
-          Legal basis: <P>[TO BE CONFIRMED BY THE CONTROLLER / LEGAL REVIEW]</P>.
-          The form currently requires acknowledgement that this privacy notice has been read.
-          That acknowledgement is not intended to bundle unrelated marketing consent.
+          <strong>Legal Basis:</strong> {info.applicationLegalBasis}
         </p>
         <p>
-          The current implementation does not automatically disclose application records to programme partners.
-          If partner sharing becomes necessary for a specific programme step, the relevant disclosure and legal basis must be documented before it occurs.
+          Application data is treated in strict confidence and is not automatically shared with third-party partners.
         </p>
       </section>
 
@@ -315,57 +322,60 @@ export default async function PrivacyPage({
         <h2>5. CMS and administration</h2>
         <p>
           Authorised ABCN administrators use a protected CMS to manage events and applications.
-          Account details, session data, role/permission data and administrative changes may be processed for security and administration.
-          Application data is not intended to be publicly accessible.
+          Account details, session data, role/permission data and administrative changes are processed for security and administration.
+          Application data is not publicly accessible.
         </p>
       </section>
 
       <section id="recipients">
         <h2>6. Recipients, processors and international transfers</h2>
         <p>
-          Access is limited to people and service providers that require it for operation, security or programme administration.
-          The following technical providers are the only ones in use:
+          Access is limited to authorised personnel and technical service providers necessary for operation, security, and programme administration.
         </p>
         <ProcessorList de={false} />
         <p>
-          Depending on provider and subprocessor arrangements, processing outside the EEA may occur.
-          Before public launch, the final controller should document applicable processor agreements, subprocessors,
-          transfer mechanisms and any Standard Contractual Clauses here: <P>[ADD DPA / SCC / TRANSFER DETAILS]</P>.
+          <strong>Data Processing &amp; International Transfers:</strong> {info.dataTransfers}
         </p>
       </section>
 
       <section id="retention">
         <h2>7. Retention</h2>
         <p>
-          Application data: <P>{legalPlaceholders.applicationRetention}</P>.
-          Technical/security logs: <P>{legalPlaceholders.serverLogRetention}</P>.
+          <strong>Application Data:</strong> {info.applicationRetention}
         </p>
         <p>
-          Data will be deleted or anonymised when it is no longer required for the relevant purpose unless a legal retention obligation applies.
-          The final retention periods must be approved by the controller before launch.
+          <strong>Technical / Security Logs:</strong> {info.serverLogRetention}
+        </p>
+        <p>
+          Data is deleted or anonymised when it is no longer required for the relevant purpose unless a statutory retention obligation applies.
         </p>
       </section>
 
       <section id="security">
         <h2>8. Technical and organisational measures</h2>
-        <p>The following measures are in place to protect your data:</p>
+        <p>Appropriate technical and organisational measures are in place to safeguard your data:</p>
         <SecurityMeasureList de={false} />
       </section>
 
       <section id="rights">
         <h2>9. Your rights</h2>
         <p>
-          Subject to the applicable legal conditions, individuals may have rights of access, rectification, erasure,
-          restriction, data portability, objection and withdrawal of consent for the future where processing is based on consent.
+          Under the GDPR, individuals have rights of access (Art. 15), rectification (Art. 16), erasure (Art. 17),
+          restriction of processing (Art. 18), data portability (Art. 20), objection (Art. 21), and withdrawal of consent where applicable.
         </p>
-        <p>Privacy requests: <P>{legalPlaceholders.email}</P>.</p>
+        <p>
+          For privacy inquiries or rights requests, contact: <a href={`mailto:${info.email}`} style={{ color: "#123f6d", fontWeight: 700 }}>{info.email}</a>.
+        </p>
       </section>
 
       <section id="authority">
         <h2>10. Supervisory authority</h2>
         <p>
-          Individuals may lodge a complaint with a competent data protection supervisory authority.
-          Authority applicable to the final controller: <P>{legalPlaceholders.supervisoryAuthority}</P>.
+          Individuals have the right to lodge a complaint with a data protection supervisory authority (Art. 77 GDPR).
+          The competent supervisory authority for the initiative&rsquo;s location is:
+        </p>
+        <p>
+          <strong>{info.supervisoryAuthority}</strong>
         </p>
         <div className={styles["legal-actions"]}>
           <a className={styles["legal-action"] + " " + styles.primary} href="/impressum">Legal notice</a>
