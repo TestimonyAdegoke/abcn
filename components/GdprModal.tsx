@@ -128,7 +128,7 @@ export default function GdprModal() {
               <button type="button" onClick={() => setIsOpen(false)} className="gdpr-btn-dismiss">
                 {labels.close}
               </button>
-              <Link href={de ? "/datenschutz" : "/privacy"} className="gdpr-btn-accept" onClick={() => setIsOpen(false)}>
+              <Link href="/privacy" className="gdpr-btn-accept" onClick={() => setIsOpen(false)}>
                 {labels.full}
               </Link>
             </div>

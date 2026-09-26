@@ -1,7 +1,9 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
+import { openConsentPreferences } from "@/lib/consent";
+import { FIALI_SLUG } from "@/lib/events";
 
 const instagram = "https://www.instagram.com/afropeanbusinessnetwork/";
 
@@ -20,7 +22,6 @@ function Arrow() {
  */
 export default function SiteFooter() {
   const t = useTranslations("footer");
-  const locale = useLocale();
 
   return (
     <footer>
@@ -39,23 +40,23 @@ export default function SiteFooter() {
           <div className="footer-col">
             <h4>{t("network")}</h4>
             <Link href="/about">{t("ourStory")}</Link>
-            <Link href="/#network">{t("whatWeDo")}</Link>
-            <Link href="/#founder">{t("ourFounder")}</Link>
+            <Link href={{ pathname: "/", hash: "network" }}>{t("whatWeDo")}</Link>
+            <Link href={{ pathname: "/", hash: "founder" }}>{t("ourFounder")}</Link>
           </div>
           <div className="footer-col">
             <h4>{t("programmes")}</h4>
             <Link href="/events">{t("allEvents")}</Link>
-            <Link href="/events/fiali-frankfurt-2026">{t("fiali")}</Link>
-            <Link href="/events/fiali-frankfurt-2026">{t("apply")}</Link>
+            <Link href={{ pathname: "/events/[slug]", params: { slug: FIALI_SLUG } }}>{t("fiali")}</Link>
+            <Link href={{ pathname: "/events/[slug]", params: { slug: FIALI_SLUG }, hash: "apply" }}>{t("apply")}</Link>
           </div>
           <div className="footer-col">
             <h4>{t("legal")}</h4>
-            <Link href={locale === "de" ? "/datenschutz" : "/privacy"}>{t("privacy")}</Link>
+            <Link href="/privacy">{t("privacy")}</Link>
             <Link href="/impressum">{t("impressum")}</Link>
             <button
               type="button"
               className="footer-linkbtn"
-              onClick={() => window.dispatchEvent(new CustomEvent("open-cookies"))}
+              onClick={openConsentPreferences}
             >
               {t("cookies")}
             </button>

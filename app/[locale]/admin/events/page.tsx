@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { neon } from "@/lib/neon";
 import { EventRecord, EventStage, EventPartner, FIALI_FALLBACK, normaliseEvent } from "@/lib/events";
 

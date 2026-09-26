@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { neon } from "@/lib/neon";
+import { getPathname, type Locale } from "@/i18n/routing";
 
 type Props = {
   eventId?: string;
@@ -54,7 +55,8 @@ export default function MultiStepApplication({
 }: Props) {
   const locale = useLocale();
   const t = useTranslations("application");
-  const privacyHref = locale === "de" ? "/de/datenschutz" : "/privacy";
+  // Localized URL for the privacy notice (/privacy or /de/datenschutz).
+  const privacyHref = getPathname({ href: "/privacy", locale: locale as Locale });
   const [step, setStep] = useState<number>(1);
   const [formData, setFormData] = useState<FormData>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});

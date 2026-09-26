@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import LogoMarquee from "@/components/LogoMarquee";
 import { neon } from "@/lib/neon";
 import { EventRecord, FIALI_FALLBACK, fallbackEvent, normaliseEvent } from "@/lib/events";
+import Img from "@/components/Img";
 
 export default function EventsPage() {
   const locale = useLocale();
@@ -29,7 +30,7 @@ export default function EventsPage() {
           <Link href="/">Home</Link>
           <Link href="/about">About</Link>
           <Link href="/events">Events</Link>
-          <Link href="/#join">Join network</Link>
+          <Link href={{ pathname: "/", hash: "join" }}>Join network</Link>
         </nav>
       </header>
 
@@ -48,14 +49,21 @@ export default function EventsPage() {
         <div className="event-grid">
           {events.map((event, index) => (
             <article key={event.id || event.slug} className={"event-card " + ((event.featured || index === 0) ? "featured" : "")}>
-              <div className="event-image" style={{ backgroundImage: `url("${event.card_image_url || event.hero_image_url || FIALI_FALLBACK.card_image_url}")` }}>
+              <div className="event-image">
+                <Img
+                  src={event.card_image_url || event.hero_image_url || FIALI_FALLBACK.card_image_url || ""}
+                  alt={event.title}
+                  fill
+                  priority={index === 0}
+                  sizes="(max-width: 900px) 100vw, 50vw"
+                />
                 {event.featured && <span className="event-badge">Featured</span>}
               </div>
               <div className="event-body">
                 <span className="event-meta">{event.eyebrow || event.date_label || "ABCN event"}</span>
                 <h3>{event.title}</h3>
                 <p>{event.short_description}</p>
-                <Link className="event-link" href={"/events/" + event.slug}>Event details →</Link>
+                <Link className="event-link" href={{ pathname: "/events/[slug]", params: { slug: event.slug } }}>Event details →</Link>
               </div>
             </article>
           ))}

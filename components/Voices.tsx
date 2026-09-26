@@ -1,5 +1,7 @@
 "use client";
 
+import Img from "@/components/Img";
+
 /**
  * Member voices / social proof.
  *
@@ -54,7 +56,7 @@ export default function Voices() {
             <blockquote>{voice.quote}</blockquote>
             <figcaption>
               {voice.photo && (
-                <img src={voice.photo} alt="" aria-hidden="true" className="voice-photo" />
+                <Img src={voice.photo} alt="" aria-hidden="true" className="voice-photo" sizes="64px" />
               )}
               <span>
                 <strong>{voice.name}</strong>

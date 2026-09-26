@@ -1,9 +1,11 @@
 import { createClient } from "@neondatabase/neon-js";
 
 const AUTH_URL =
-  "https://ep-damp-resonance-b19qplov.neonauth.c-5.eu-central-1.aws.neon.tech/abcn/auth";
+  process.env.NEXT_PUBLIC_NEON_AUTH_URL ||
+  "https://ep-round-king-b126bwc2.neonauth.c-5.eu-central-1.aws.neon.tech/neondb/auth";
 const DATA_API_URL =
-  "https://ep-damp-resonance-b19qplov.apirest.c-5.eu-central-1.aws.neon.tech/abcn/rest/v1";
+  process.env.NEXT_PUBLIC_NEON_DATA_API_URL ||
+  "https://ep-round-king-b126bwc2.apirest.c-5.eu-central-1.aws.neon.tech/neondb/rest/v1";
 
 export const neon = createClient({
   auth: {

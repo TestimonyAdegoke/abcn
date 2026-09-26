@@ -3,8 +3,11 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Plus_Jakarta_Sans, Newsreader } from "next/font/google";
-import { routing } from "@/i18n/routing";
+import { routing, type Locale } from "@/i18n/routing";
 import { siteUrl } from "@/lib/legal";
+import { alternatesFor } from "@/lib/seo";
+import { buildOrganizationJsonLd, buildWebSiteJsonLd } from "@/lib/structured-data";
+import JsonLd from "@/components/JsonLd";
 import "../globals.css";
 import "../benchmark-components.css";
 import GdprModal from "@/components/GdprModal";
@@ -69,14 +72,7 @@ export async function generateMetadata({
       title: t("title"),
       description: t("ogDescription"),
     },
-    alternates: {
-      canonical: locale === "de" ? "/de" : "/",
-      languages: {
-        en: "/",
-        de: "/de",
-        "x-default": "/",
-      },
-    },
+    alternates: alternatesFor("/", locale as Locale),
     verification: googleVerification ? { google: googleVerification } : undefined,
   };
 }
@@ -94,22 +90,11 @@ export default async function LocaleLayout({
   // Required for static rendering of the locale segment.
   setRequestLocale(locale);
 
-  const organizationJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Afropean Business & Culture Network",
-    alternateName: "ABCN",
-    url: siteUrl,
-    sameAs: ["https://www.instagram.com/afropeanbusinessnetwork/"],
-  };
-
   return (
     <html lang={locale} className={`${plusJakartaSans.variable} ${newsreader.variable}`}>
       <body>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
+        <JsonLd data={buildOrganizationJsonLd(locale as Locale)} />
+        <JsonLd data={buildWebSiteJsonLd(locale as Locale)} />
         <NextIntlClientProvider>
           {children}
           <GdprModal />

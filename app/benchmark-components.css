@@ -384,6 +384,134 @@
   }
 }
 
+
+/* Consent manager: first layer + expanded settings panel.
+   Accept and reject share one .cookie-btn-choice class so neither can drift
+   into being more prominent than the other - that equivalence is a compliance
+   requirement, not a stylistic preference. */
+.cookie-float-bar.cookie-expanded {
+  display: block;
+  max-width: 560px;
+  padding: 18px 20px;
+  max-height: min(80vh, 640px);
+  overflow-y: auto;
+}
+
+.cookie-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.cookie-expanded .cookie-main {
+  display: block;
+}
+
+.cookie-text strong {
+  display: block;
+  font-size: 0.86rem;
+  margin-bottom: 4px;
+}
+
+.cookie-text p {
+  margin: 0;
+}
+
+.cookie-links {
+  margin-top: 6px !important;
+  font-size: 0.72rem;
+}
+
+.cookie-links a {
+  color: #E09000;
+  text-decoration: underline;
+}
+
+.cookie-btn-choice {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.cookie-btn-choice:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cookie-btn-choice:focus-visible,
+.cookie-btn-info:focus-visible,
+.cookie-category-head input:focus-visible {
+  outline: 2px solid #E09000;
+  outline-offset: 2px;
+}
+
+.cookie-details {
+  margin-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 14px;
+}
+
+.cookie-category {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.cookie-category-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.cookie-category-head input[disabled] {
+  cursor: not-allowed;
+}
+
+.cookie-category-hint {
+  margin-left: auto;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: #7f8fa0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cookie-category-desc {
+  margin: 5px 0 0 26px;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: #b9c7d4;
+}
+
+.cookie-btns-details {
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .cookie-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .cookie-btns-details .cookie-btn-choice,
+  .cookie-btns-details .cookie-btn-info {
+    flex: 1 1 auto;
+  }
+}
+
 /* --- 4. MultiStepApplication Wizard (Vanilla CSS) --- */
 .wizard-box {
   background: #080d15;
@@ -667,4 +795,15 @@
 .cms-section-head strong {
   font-size: 0.95rem;
   letter-spacing: -.01em;
+}
+
+/* Link-styled button inside the consent banner's link row. */
+.cookie-linkbtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #E09000;
+  text-decoration: underline;
+  cursor: pointer;
 }

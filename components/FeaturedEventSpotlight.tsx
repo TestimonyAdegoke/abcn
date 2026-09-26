@@ -94,13 +94,13 @@ export default function FeaturedEventSpotlight() {
           <p>{event.short_description}</p>
           <div className={styles.actions}>
             {event.application_open ? (
-              <Link className={styles.primary} href={"/events/" + event.slug + "#apply"}>
+              <Link className={styles.primary} href={{ pathname: "/events/[slug]", params: { slug: event.slug }, hash: "apply" }}>
                 {event.application_cta || t("applyNow")} →
               </Link>
             ) : (
-              <Link className={styles.primary} href={"/events/" + event.slug}>{t("exploreGeneric")} →</Link>
+              <Link className={styles.primary} href={{ pathname: "/events/[slug]", params: { slug: event.slug } }}>{t("exploreGeneric")} →</Link>
             )}
-            <Link className={styles.secondary} href={"/events/" + event.slug}>{t("programmeDetails")}</Link>
+            <Link className={styles.secondary} href={{ pathname: "/events/[slug]", params: { slug: event.slug } }}>{t("programmeDetails")}</Link>
           </div>
           {event.application_deadline && <div className={styles.urgency}>{event.application_deadline}</div>}
         </div>

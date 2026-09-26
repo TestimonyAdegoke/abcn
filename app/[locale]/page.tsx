@@ -7,6 +7,8 @@ import FeaturedEventSpotlight from "@/components/FeaturedEventSpotlight";
 import NavExtras from "@/components/NavExtras";
 import SiteFooter from "@/components/SiteFooter";
 import Voices from "@/components/Voices";
+import { FIALI_SLUG } from "@/lib/events";
+import Img from "@/components/Img";
 
 const instagram = "https://www.instagram.com/afropeanbusinessnetwork/";
 const founderInstagram = "https://www.instagram.com/harmonieessome/";
@@ -18,6 +20,9 @@ const formatKeys = [
   { id: "format3", image: "/assets/abcn/community-connection.jpg" },
   { id: "format4", image: null },
 ];
+
+// Three equal columns inside a centred measure; two columns below 760px.
+const HERO_STRIP_SIZES = "(max-width: 760px) 50vw, 380px";
 
 const images = {
   hero: "/assets/abcn/innovators-summit.jpg",
@@ -65,7 +70,13 @@ export default function Home() {
 
       <header className={"nav " + (scroll > 24 ? "nav-scrolled" : "")}>
         <a href="#top" className="brand" aria-label={tn("home")}>
-          <img src="/assets/abcn/abcn-logo.png" alt="ABCN Logo" className="brand-logo-img" />
+          <Img
+            src="/assets/abcn/abcn-logo.png"
+            alt="ABCN Logo"
+            className="brand-logo-img"
+            sizes="110px"
+            priority
+          />
           <span className="brand-long">
             Afropean Business
             <br />& Culture Network
@@ -137,9 +148,15 @@ export default function Home() {
         </div>
 
         <div className="hero-strip">
-          <figure><img src={images.hero} alt={t("heroAlt1")} /></figure>
-          <figure><img src={images.community} alt={t("heroAlt2")} /></figure>
-          <figure><img src={images.business} alt={t("heroAlt3")} /></figure>
+          <figure>
+            <Img src={images.hero} alt={t("heroAlt1")} sizes={HERO_STRIP_SIZES} priority />
+          </figure>
+          <figure>
+            <Img src={images.community} alt={t("heroAlt2")} sizes={HERO_STRIP_SIZES} />
+          </figure>
+          <figure>
+            <Img src={images.business} alt={t("heroAlt3")} sizes={HERO_STRIP_SIZES} />
+          </figure>
         </div>
       </section>
 
@@ -169,10 +186,11 @@ export default function Home() {
           {/* Left: Mission Statement & Emblem Showcase */}
           <div className="about-quote-card">
             <div className="about-quote-top">
-              <img
+              <Img
                 src="/assets/abcn/abcn-emblem.png"
                 alt="ABCN Official Emblem"
                 className="about-emblem-micro"
+                sizes="48px"
               />
               <span className="about-origin-tag">{t("origin")}</span>
             </div>
@@ -253,7 +271,13 @@ export default function Home() {
               key={item.id}
             >
               {item.image && (
-                <img src={item.image} alt="" aria-hidden="true" className="wwd-img" />
+                <Img
+                  src={item.image}
+                  alt=""
+                  aria-hidden="true"
+                  className="wwd-img"
+                  sizes="(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 380px"
+                />
               )}
               <div className="wwd-body">
                 <span className="wwd-tag">{t(`${item.id}Tag`)}</span>
@@ -268,10 +292,11 @@ export default function Home() {
       <section id="founder" className="section founder">
         <div className="founder-visual">
           <div className="founder-portrait-frame">
-            <img
+            <Img
               src="/assets/abcn/harmonie-essome-official.jpg"
               alt={t("founderPhotoAlt")}
               className="founder-photo"
+              sizes="(max-width: 900px) 100vw, 520px"
             />
           </div>
         </div>
@@ -327,7 +352,7 @@ export default function Home() {
               {t("joinCommunity")} ↗
             </a>
             <Link
-              href="/events/fiali-frankfurt-2026"
+              href={{ pathname: "/events/[slug]", params: { slug: FIALI_SLUG } }}
               className="join-btn-glass"
             >
               {t("applyFiali")} →
@@ -342,10 +367,11 @@ export default function Home() {
             See CONTENT-SOURCES.md - this still needs mixed-gender ABCN-owned
             photography to stop the inclusive homepage reading as women-only. */}
         <div className="join-visual-frame">
-          <img
+          <Img
             src={images.community}
             alt={t("joinVisualAlt")}
             className="join-visual-img"
+            sizes="(max-width: 900px) 100vw, 620px"
           />
           <div className="join-visual-overlay">
             <span className="join-floating-badge">{t("joinBadge")}</span>

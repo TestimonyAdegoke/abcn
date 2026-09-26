@@ -84,8 +84,11 @@ export type EventRecord = {
   benefits_de?: EventContentCard[] | null;
 };
 
+/** Slug of the seeded flagship programme. */
+export const FIALI_SLUG = "fiali-frankfurt-2026";
+
 export const FIALI_FALLBACK: EventRecord = {
-  slug: "fiali-frankfurt-2026",
+  slug: FIALI_SLUG,
   title: "Female Innovation Afropean Leadership Initiative",
   eyebrow: "FIALI · FRANKFURT 2026",
   short_description:
