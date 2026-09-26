@@ -26,7 +26,3 @@ export const privacyInfrastructure = {
 export const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://abcn.network";
 
-export const legalReviewNotice = {
-  en: "Draft with placeholders — complete the organisation details and obtain final legal review before public launch.",
-  de: "Entwurf mit Platzhaltern — Organisationsdaten ergänzen und vor dem öffentlichen Launch rechtlich prüfen lassen.",
-};

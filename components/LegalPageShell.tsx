@@ -15,7 +15,7 @@ export default function LegalPageShell({
   title: string;
   kicker: string;
   intro: string;
-  draftNotice: string;
+  draftNotice?: string;
   toc: TocItem[];
   children: ReactNode;
 }) {
@@ -34,7 +34,7 @@ export default function LegalPageShell({
         <span className={styles["legal-kicker"]}>{kicker}</span>
         <h1>{title}</h1>
         <p>{intro}</p>
-        <div className={styles["legal-draft"]}>{draftNotice}</div>
+        {draftNotice ? <div className={styles["legal-draft"]}>{draftNotice}</div> : null}
       </section>
 
       <div className={styles["legal-layout"]}>

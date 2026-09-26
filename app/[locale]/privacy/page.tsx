@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LegalPageShell, { styles } from "@/components/LegalPageShell";
 import type { Locale } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/seo";
-import { legalPlaceholders, legalReviewNotice, privacyInfrastructure } from "@/lib/legal";
+import { legalPlaceholders, privacyInfrastructure } from "@/lib/legal";
 import {
   ApplicationFieldList,
   NoTrackingList,
@@ -59,7 +59,6 @@ export default async function PrivacyPage({
         kicker="Datenschutz · DSGVO"
         title="Datenschutzerklärung"
         intro="Diese Seite beschreibt transparent, welche personenbezogenen Daten beim Besuch der ABCN-Website und bei Bewerbungen für Programme wie FIALI verarbeitet werden."
-        draftNotice={legalReviewNotice.de}
         toc={toc}
       >
         <section id="verantwortlicher">
@@ -113,10 +112,6 @@ export default async function PrivacyPage({
             Dienste künftig eingeführt werden, werden sie erst nach Ihrer ausdrücklichen Einwilligung geladen; die Einwilligung
             wird über das Datenschutz-Banner eingeholt, das Ablehnen genauso einfach macht wie Zustimmen. Ihre Auswahl können
             Sie jederzeit über „Cookie- &amp; Datenschutzeinstellungen“ im Footer ändern oder widerrufen.
-          </p>
-          <p className={styles["legal-note"]}>
-            Vor Aktivierung von Google Analytics, Meta Pixel, eingebetteten Marketingtools oder vergleichbaren Diensten muss diese Erklärung
-            um Anbieter, Zwecke, Speicherdauer, Rechtsgrundlage und Widerrufsmöglichkeit ergänzt werden.
           </p>
         </section>
 
@@ -234,7 +229,6 @@ export default async function PrivacyPage({
       kicker="Privacy · GDPR"
       title="Privacy Notice"
       intro="This notice explains how personal data is handled when people use the ABCN website or apply to programmes such as FIALI."
-      draftNotice={legalReviewNotice.en}
       toc={toc}
     >
       <section id="controller">
@@ -286,10 +280,6 @@ export default async function PrivacyPage({
           No optional analytics, marketing or tracking technologies are currently in use. If such services are introduced later,
           they will load only after your explicit consent, collected through the privacy banner, which makes rejecting as easy as
           accepting. You can change or withdraw your choice at any time via &ldquo;Cookie &amp; privacy settings&rdquo; in the footer.
-        </p>
-        <p className={styles["legal-note"]}>
-          Before Google Analytics, Meta Pixel, marketing embeds or similar tools are enabled, this notice must be updated with the provider,
-          purpose, storage duration, legal basis and withdrawal controls.
         </p>
       </section>
 

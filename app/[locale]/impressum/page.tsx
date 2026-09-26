@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LegalPageShell, { styles } from "@/components/LegalPageShell";
 import type { Locale } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/seo";
-import { legalPlaceholders, legalReviewNotice } from "@/lib/legal";
+import { legalPlaceholders } from "@/lib/legal";
 
 const P = ({ children }: { children: React.ReactNode }) => (
   <span className={styles["legal-placeholder"]}>{children}</span>
@@ -57,7 +57,6 @@ export default async function ImpressumPage({
         kicker="Rechtliches · § 5 DDG"
         title="Impressum"
         intro="Anbieterkennzeichnung für die ABCN-Website. Die Pflichtangaben werden ergänzt, sobald die endgültigen Organisationsdaten vorliegen."
-        draftNotice={legalReviewNotice.de}
         toc={toc}
       >
         <section id="anbieter">
@@ -118,7 +117,6 @@ export default async function ImpressumPage({
       kicker="Legal notice · German provider disclosure"
       title="Legal Notice / Impressum"
       intro="Provider information for the ABCN website. Mandatory legal details will be completed when the final operating entity is confirmed."
-      draftNotice={legalReviewNotice.en}
       toc={toc}
     >
       <section id="provider">
