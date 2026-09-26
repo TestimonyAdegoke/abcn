@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import LegalPageShell, { styles } from "@/components/LegalPageShell";
+import type { Locale } from "@/i18n/routing";
+import { alternatesFor } from "@/lib/seo";
 import { legalPlaceholders, legalReviewNotice } from "@/lib/legal";
 
 const P = ({ children }: { children: React.ReactNode }) => (
@@ -19,10 +21,7 @@ export async function generateMetadata({
       ? "Anbieterkennzeichnung und rechtliche Angaben zu ABCN."
       : "Legal provider information for ABCN.",
     robots: { index: true, follow: true },
-    alternates: {
-      canonical: de ? "/de/impressum" : "/impressum",
-      languages: { en: "/impressum", de: "/de/impressum" },
-    },
+    alternates: alternatesFor("/impressum", locale as Locale),
   };
 }
 

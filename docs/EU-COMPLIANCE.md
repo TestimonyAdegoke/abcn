@@ -141,6 +141,24 @@ visit to `http://` is answered in the clear before any redirect.
   [`vercel.json`](../vercel.json)
 - Image optimization and fonts are served from the app itself, not a third party
 
+### What the notice now states factually
+
+[`lib/privacy-facts.ts`](../lib/privacy-facts.ts) holds the verifiable inventory
+— cookies, application-form fields, named processors, what the site does *not*
+load, and the configured security measures. Both language versions of the
+notice render from it via
+[`components/PrivacyDetails.tsx`](../components/PrivacyDetails.tsx), so the
+German and English texts cannot drift apart or describe different systems.
+
+**Keep it in sync.** Adding a cookie, a form field or a third-party request
+means updating that file in the same change — the notice is only accurate
+because those lists are.
+
+Of note, the notice now discloses that event listings and application
+submissions go from the visitor's browser **directly** to the Neon database
+interface in Frankfurt, so that service receives the visitor's IP address. That
+is a real data flow and it was previously undocumented.
+
 ### Still to do — needs ABCN
 
 1. **Fill the Impressum placeholders** in [`lib/legal.ts`](../lib/legal.ts):

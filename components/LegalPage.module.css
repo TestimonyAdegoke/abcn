@@ -53,9 +53,14 @@
 .legal-hero h1{
   margin:0;
   max-width:1000px;
-  font-size:clamp(3.8rem,7vw,7.5rem);
+  font-size:clamp(2.6rem,7vw,7.5rem);
   line-height:.88;
   letter-spacing:-.07em;
+  /* German legal headings are long unbreakable compounds -
+     "Datenschutzerklaerung" alone overran a phone viewport and put the whole
+     page into horizontal scroll. Hyphenation uses the lang on <html>. */
+  overflow-wrap:break-word;
+  hyphens:auto;
 }
 .legal-hero p{
   max-width:760px;
@@ -100,6 +105,10 @@
 .legal-toc a:hover{color:#123f6d}
 .legal-content{
   max-width:920px;
+  /* Without this, the grid item refuses to shrink below the widest thing it
+     contains - the inventory table - which drags the page into horizontal
+     scroll on phones instead of letting the table scroll inside its wrapper. */
+  min-width:0;
 }
 .legal-content section{
   scroll-margin-top:110px;
@@ -110,9 +119,13 @@
 .legal-content section:last-child{border-bottom:0}
 .legal-content h2{
   margin:0 0 18px;
-  font-size:clamp(1.8rem,3vw,3rem);
-  line-height:1;
+  font-size:clamp(1.5rem,3vw,3rem);
+  line-height:1.05;
   letter-spacing:-.045em;
+  /* Same reason as the hero heading: long German compounds such as
+     "Auftragsverarbeiter" must wrap rather than widen the page. */
+  overflow-wrap:break-word;
+  hyphens:auto;
 }
 .legal-content h3{
   margin:28px 0 10px;
@@ -122,6 +135,7 @@
   color:rgba(18,20,17,.69);
   line-height:1.72;
   font-size:.93rem;
+  overflow-wrap:break-word;
 }
 .legal-content ul{
   padding-left:20px;
@@ -176,4 +190,59 @@
 @media(max-width:600px){
   .legal-nav{padding:0 20px}
   .legal-navlinks a:first-child{display:none}
+}
+
+/* Factual inventory tables (cookies, processors) in the privacy notice.
+   Wrapped so a narrow screen scrolls the table rather than the whole page. */
+.legal-tablewrap{
+  margin:18px 0;
+  overflow-x:auto;
+  min-width:0;
+}
+.legal-table{
+  width:100%;
+  min-width:400px;
+  border-collapse:collapse;
+  background:white;
+  border:1px solid rgba(18,20,17,.12);
+}
+.legal-table th,.legal-table td{
+  padding:12px 14px;
+  text-align:left;
+  vertical-align:top;
+  border-bottom:1px solid rgba(18,20,17,.1);
+  color:rgba(18,20,17,.69);
+  line-height:1.6;
+  font-size:.87rem;
+}
+.legal-table th{
+  background:#f6f4ef;
+  color:rgba(18,20,17,.9);
+  font-weight:800;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  font-size:.72rem;
+}
+.legal-table tr:last-child td{border-bottom:0}
+.legal-table code{
+  font-size:.82rem;
+  color:#123f6d;
+  word-break:break-word;
+}
+.legal-table em{
+  color:rgba(18,20,17,.5);
+  font-size:.8rem;
+}
+.legal-table a{color:#123f6d}
+.legal-tag{
+  display:inline-block;
+  margin-top:6px;
+  padding:2px 7px;
+  border-radius:3px;
+  background:#e4efe6;
+  color:#2f5c3d;
+  font-size:.66rem;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
 }
