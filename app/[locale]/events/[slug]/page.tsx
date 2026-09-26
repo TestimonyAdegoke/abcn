@@ -218,15 +218,6 @@ export default function EventDetailPage() {
         </div>
       </section>
 
-      {/* Infinite Scrolling Logo Marquee for Verified Partner Ecosystem */}
-      <LogoMarquee
-        logos={event.partners && event.partners.length > 0 ? event.partners : undefined}
-        theme="light"
-        speed="normal"
-        label={event.eyebrow || "Partner Ecosystem & Collaborators"}
-        tagline={event.venue || event.city || "Frankfurt 2026"}
-      />
-
       {/* About Section */}
       <section id="about" className="benchmark-section benchmark-about">
         <div className="benchmark-section-intro">
@@ -427,37 +418,7 @@ export default function EventDetailPage() {
             </p>
           </div>
 
-          <div className="partner-cards-grid">
-            {event.partners.map((partner) => (
-              <div key={partner.name} className="partner-card-item">
-                <div className="partner-card-logo-wrap">
-                  {partner.logo ? (
-                    <Img
-                      src={partner.logo}
-                      alt={partner.name}
-                      className="partner-card-logo"
-                      style={{ width: "auto", height: "auto", maxHeight: "56px", maxWidth: "160px", objectFit: "contain" }}
-                    />
-                  ) : (
-                    <strong>{partner.name}</strong>
-                  )}
-                </div>
-                <h4 className="partner-card-name">{partner.name}</h4>
-                {partner.website && (
-                  <a
-                    href={partner.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="partner-card-link"
-                  >
-                    Website ↗
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div style={{ marginTop: "48px" }}>
+          <div className="partner-scroller-wrap" style={{ marginTop: "28px" }}>
             <LogoMarquee
               logos={event.partners}
               theme="light"
