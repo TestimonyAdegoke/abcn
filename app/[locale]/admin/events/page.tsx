@@ -1534,7 +1534,7 @@ export default function EventsAdminPage() {
                     className={`cms-sub-tab ${editorTab === sec.id ? "active" : ""}`}
                     onClick={() => setEditorTab(sec.id)}
                   >
-                    <span style={{ opacity: 0.6, fontSize: "0.7rem" }}>{sec.num}</span>
+                    <span className="cms-sub-tab-num">{sec.num}</span>
                     <span>{sec.label}</span>
                     {sec.id === "applicants" && applications.length > 0 && (
                       <span className="cms-sub-tab-badge">{applications.length}</span>

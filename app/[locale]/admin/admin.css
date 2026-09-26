@@ -5,7 +5,9 @@
 
 :root,
 .cms[data-theme="dark"],
-.cms-dashboard[data-theme="dark"] {
+.cms-dashboard[data-theme="dark"],
+[data-theme="dark"] .cms,
+[data-theme="dark"] .cms-dashboard {
   --cms-bg: #070B10;
   --cms-surface: #0E1520;
   --cms-surface-elevated: #141E2D;
@@ -27,18 +29,40 @@
   --cms-radius-lg: 16px;
   --cms-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --cms-sidebar-bg: #080D14;
+  --cms-top-bg: rgba(14, 21, 32, 0.94);
+  --cms-input-bg: #070B10;
+  --cms-btn-secondary-bg: rgba(255, 255, 255, 0.08);
+  --cms-btn-secondary-hover: rgba(255, 255, 255, 0.14);
+  --cms-subtab-container-bg: rgba(0, 0, 0, 0.35);
+  --cms-subtab-bg: rgba(255, 255, 255, 0.04);
+  --cms-subtab-hover: #1A2638;
+  --cms-subtab-active-bg: rgba(88, 172, 140, 0.16);
+  --cms-subtab-active-color: #58AC8C;
+  --cms-subtab-active-border: #58AC8C;
+  --cms-subtab-num-color: #64748B;
+  --cms-pill-bg: rgba(255, 255, 255, 0.08);
+  --cms-card-bg-subtle: rgba(0, 0, 0, 0.22);
+  --cms-nav-tabs-bg: rgba(7, 11, 16, 0.6);
+  --cms-search-box-bg: rgba(0, 0, 0, 0.15);
+  --cms-filter-pills-bg: rgba(0, 0, 0, 0.1);
+  --cms-switch-bg: rgba(255, 255, 255, 0.02);
+  --cms-slider-bg: rgba(255, 255, 255, 0.15);
+  --cms-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.25);
+  --cms-shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .cms[data-theme="light"],
-.cms-dashboard[data-theme="light"] {
+.cms-dashboard[data-theme="light"],
+[data-theme="light"] .cms,
+[data-theme="light"] .cms-dashboard {
   --cms-bg: #F1F5F9;
   --cms-surface: #FFFFFF;
   --cms-surface-elevated: #F8FAFC;
-  --cms-surface-hover: #E2E8F0;
+  --cms-surface-hover: #F1F5F9;
   --cms-border: rgba(15, 23, 42, 0.12);
   --cms-border-focus: rgba(13, 148, 136, 0.5);
   --cms-text-primary: #0F172A;
-  --cms-text-secondary: #475569;
+  --cms-text-secondary: #334155;
   --cms-text-muted: #64748B;
   --cms-accent: #0D9488;
   --cms-accent-hover: #0F766E;
@@ -52,6 +76,26 @@
   --cms-radius-lg: 16px;
   --cms-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --cms-sidebar-bg: #FFFFFF;
+  --cms-top-bg: rgba(255, 255, 255, 0.95);
+  --cms-input-bg: #FFFFFF;
+  --cms-btn-secondary-bg: #FFFFFF;
+  --cms-btn-secondary-hover: #F8FAFC;
+  --cms-subtab-container-bg: #F8FAFC;
+  --cms-subtab-bg: #FFFFFF;
+  --cms-subtab-hover: #F1F5F9;
+  --cms-subtab-active-bg: #ECFDF5;
+  --cms-subtab-active-color: #047857;
+  --cms-subtab-active-border: #10B981;
+  --cms-subtab-num-color: #64748B;
+  --cms-pill-bg: rgba(15, 23, 42, 0.06);
+  --cms-card-bg-subtle: #F8FAFC;
+  --cms-nav-tabs-bg: #E2E8F0;
+  --cms-search-box-bg: #F8FAFC;
+  --cms-filter-pills-bg: #F1F5F9;
+  --cms-switch-bg: #F8FAFC;
+  --cms-slider-bg: #CBD5E1;
+  --cms-shadow-card: 0 4px 16px rgba(15, 23, 42, 0.06);
+  --cms-shadow-subtle: 0 1px 3px rgba(15, 23, 42, 0.06);
 }
 
 .cms {
@@ -70,7 +114,7 @@
   z-index: 50;
   height: 70px;
   padding: 0 2rem;
-  background: rgba(14, 21, 32, 0.92);
+  background: var(--cms-top-bg);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--cms-border);
@@ -121,7 +165,7 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  background: rgba(7, 11, 16, 0.6);
+  background: var(--cms-nav-tabs-bg);
   padding: 4px;
   border-radius: var(--cms-radius-md);
   border: 1px solid var(--cms-border);
@@ -150,7 +194,7 @@
 .cms-nav-btn.active {
   background: var(--cms-surface-elevated);
   color: var(--cms-text-primary);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--cms-shadow-subtle);
 }
 
 .cms-counter-pill {
@@ -158,13 +202,13 @@
   font-weight: 700;
   padding: 1px 7px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--cms-pill-bg);
   color: var(--cms-text-secondary);
 }
 
 .cms-nav-btn.active .cms-counter-pill {
   background: var(--cms-accent);
-  color: #070B10;
+  color: #FFFFFF;
 }
 
 .cms-top-actions {
@@ -179,7 +223,7 @@
   gap: 10px;
   padding: 5px 12px;
   border-radius: var(--cms-radius-sm);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--cms-btn-secondary-bg);
   border: 1px solid var(--cms-border);
   font-size: 0.78rem;
 }
@@ -235,7 +279,7 @@
 }
 
 .cms-kpi-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--cms-border-focus);
   transform: translateY(-2px);
 }
 
@@ -300,13 +344,13 @@
 .cms-search-box {
   padding: 0.75rem 1.25rem;
   border-bottom: 1px solid var(--cms-border);
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--cms-search-box-bg);
 }
 
 .cms-search-box input {
   width: 100%;
   padding: 8px 12px;
-  background: var(--cms-bg);
+  background: var(--cms-input-bg);
   border: 1px solid var(--cms-border);
   border-radius: var(--cms-radius-sm);
   color: var(--cms-text-primary);
@@ -324,7 +368,7 @@
   padding: 0.6rem 1.25rem;
   gap: 6px;
   border-bottom: 1px solid var(--cms-border);
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--cms-filter-pills-bg);
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -343,6 +387,7 @@
   border-radius: 999px;
   cursor: pointer;
   white-space: nowrap;
+  transition: all 0.15s ease;
 }
 
 .cms-filter-btn:hover {
@@ -350,9 +395,10 @@
 }
 
 .cms-filter-btn.active {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--cms-surface);
+  border-color: var(--cms-border);
   color: var(--cms-text-primary);
+  box-shadow: var(--cms-shadow-subtle);
 }
 
 .cms-event-cards {
@@ -484,7 +530,7 @@
   border: 1px solid var(--cms-border);
   border-radius: var(--cms-radius-lg);
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--cms-shadow-card);
 }
 
 .cms-editor-top {
@@ -524,9 +570,9 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.45rem;
-  padding: 0.85rem 1.5rem;
-  background: rgba(0, 0, 0, 0.25);
+  gap: 0.5rem;
+  padding: 0.9rem 1.5rem;
+  background: var(--cms-subtab-container-bg);
   border-bottom: 1px solid var(--cms-border);
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -537,40 +583,54 @@
 }
 
 .cms-sub-tab {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--cms-subtab-bg);
   border: 1px solid var(--cms-border);
   border-radius: var(--cms-radius-sm);
   color: var(--cms-text-secondary);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  padding: 8px 13px;
+  padding: 8px 14px;
   cursor: pointer;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   transition: all 0.15s ease;
+  box-shadow: var(--cms-shadow-subtle);
 }
 
 .cms-sub-tab:hover {
-  background: var(--cms-surface-hover);
+  background: var(--cms-subtab-hover);
   color: var(--cms-text-primary);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--cms-border-focus);
 }
 
 .cms-sub-tab.active {
-  background: rgba(88, 172, 140, 0.14);
-  color: var(--cms-accent);
-  border-color: var(--cms-accent);
-  box-shadow: 0 1px 6px rgba(88, 172, 140, 0.15);
+  background: var(--cms-subtab-active-bg);
+  color: var(--cms-subtab-active-color);
+  border-color: var(--cms-subtab-active-border);
+  box-shadow: 0 2px 8px rgba(88, 172, 140, 0.2);
+  font-weight: 700;
+}
+
+.cms-sub-tab-num {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--cms-subtab-num-color);
+  opacity: 0.85;
+}
+
+.cms-sub-tab.active .cms-sub-tab-num {
+  color: var(--cms-subtab-active-color);
+  opacity: 1;
 }
 
 .cms-sub-tab-badge {
   font-size: 0.65rem;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: 999px;
-  background: rgba(88, 172, 140, 0.25);
-  color: var(--cms-accent);
+  background: var(--cms-accent);
+  color: #FFFFFF;
   font-weight: 800;
 }
 
@@ -605,7 +665,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--cms-border);
   transition: all 0.2s ease;
 }
 
@@ -695,7 +755,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--cms-switch-bg);
   border: 1px solid var(--cms-border);
   border-radius: var(--cms-radius-sm);
   margin-top: 4px;
@@ -733,7 +793,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: var(--cms-slider-bg);
   transition: 0.2s;
   border-radius: 999px;
 }
@@ -799,7 +859,7 @@
 
 .cms-add-row-btn {
   align-self: flex-start;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--cms-btn-secondary-bg);
   border: 1px dashed var(--cms-border);
   color: var(--cms-text-secondary);
   font-size: 0.78rem;
@@ -825,7 +885,7 @@
   border-radius: var(--cms-radius-md);
   padding: 2rem;
   text-align: center;
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--cms-card-bg-subtle);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -906,13 +966,13 @@
 }
 
 .cms-btn-secondary {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--cms-btn-secondary-bg);
   color: var(--cms-text-primary);
   border: 1px solid var(--cms-border);
 }
 
 .cms-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--cms-btn-secondary-hover);
 }
 
 .cms-btn-gold {
@@ -962,7 +1022,7 @@
 
 .cms-pipeline-toolbar {
   padding: 1rem 2rem;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--cms-surface-elevated);
   border-bottom: 1px solid var(--cms-border);
   display: flex;
   align-items: center;
@@ -998,7 +1058,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--cms-text-secondary);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--cms-surface-elevated);
   border-bottom: 1px solid var(--cms-border);
 }
 
@@ -1143,7 +1203,7 @@
 
 /* ---------------- Visual Programme Stage Cards ---------------- */
 .cms-stage-card {
-  background: rgba(0, 0, 0, 0.22);
+  background: var(--cms-card-bg-subtle);
   border: 1px solid var(--cms-border);
   border-radius: var(--cms-radius-md);
   padding: 1.5rem;
@@ -1152,7 +1212,7 @@
 }
 
 .cms-stage-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--cms-border-focus);
 }
 
 .cms-stage-card-head {
@@ -1199,7 +1259,7 @@
 }
 
 .cms-partner-card {
-  background: rgba(0, 0, 0, 0.22);
+  background: var(--cms-card-bg-subtle);
   border: 1px solid var(--cms-border);
   border-radius: var(--cms-radius-md);
   padding: 1.25rem;
@@ -1210,7 +1270,7 @@
 }
 
 .cms-partner-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--cms-border-focus);
 }
 
 .cms-partner-card-head {
@@ -1225,7 +1285,7 @@
 .cms-partner-logo-box {
   width: 100%;
   height: 90px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--cms-surface);
   border: 1px dashed var(--cms-border);
   border-radius: var(--cms-radius-sm);
   display: flex;
@@ -1654,7 +1714,7 @@
   width: 70px;
   height: 70px;
   border-radius: var(--cms-radius-sm);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--cms-surface);
   border: 1px solid var(--cms-border);
   display: flex;
   align-items: center;
