@@ -7,7 +7,13 @@ const intlMiddleware = createMiddleware(routing);
 const CANONICAL_HOST = "www.afropeanbusiness.com";
 
 export default function middleware(request: NextRequest) {
-  const host = (request.headers.get("host") || "").toLowerCase().replace(/:\d+$/, "");
+  const host = (
+    request.headers.get("x-forwarded-host") ||
+    request.nextUrl.hostname ||
+    request.headers.get("host") ||
+    ""
+  ).toLowerCase().replace(/:\d+$/, "");
+
   const { pathname, search } = request.nextUrl;
 
   // Skip API routes, Next internal assets, and static files
@@ -25,19 +31,19 @@ export default function middleware(request: NextRequest) {
     if (pathname === "/" || pathname === "") {
       return NextResponse.redirect(
         new URL(`/de${search}`, `https://${CANONICAL_HOST}`),
-        308
+        301
       );
     }
     if (!pathname.startsWith("/de")) {
       return NextResponse.redirect(
         new URL(`/de${pathname}${search}`, `https://${CANONICAL_HOST}`),
-        308
+        301
       );
     }
     // Already has /de prefix but came via the .de domain host
     return NextResponse.redirect(
       new URL(`${pathname}${search}`, `https://${CANONICAL_HOST}`),
-      308
+      301
     );
   }
 
@@ -46,14 +52,13 @@ export default function middleware(request: NextRequest) {
   const isExcludedHost =
     !host ||
     host === CANONICAL_HOST ||
-    host === "afropeanbusiness.com" ||
     host === "localhost" ||
     host.endsWith(".vercel.app");
 
   if (!isExcludedHost) {
     return NextResponse.redirect(
       new URL(`${pathname}${search}`, `https://${CANONICAL_HOST}`),
-      308
+      301
     );
   }
 

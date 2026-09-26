@@ -17,11 +17,17 @@ export default function HeroScene() {
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
     camera.position.z = 210;
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-    container.appendChild(renderer.domElement);
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+      container.appendChild(renderer.domElement);
+    } catch {
+      // Gracefully fall back to CSS background if WebGL is unavailable
+      return;
+    }
 
     // Group to hold all ambient revolving elements
     const worldGroup = new THREE.Group();
