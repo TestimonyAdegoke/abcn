@@ -110,25 +110,25 @@
   width: auto;
   height: auto;
   object-fit: contain;
-  filter: grayscale(80%) brightness(90%) contrast(105%);
-  opacity: 0.82;
+  filter: contrast(105%);
+  opacity: 0.88;
   transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
   image-rendering: -webkit-optimize-contrast;
 }
 
 .marqueeWrap.dark .logoImage {
-  filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
-  opacity: 0.78;
+  filter: brightness(1.1) contrast(1.05);
+  opacity: 0.9;
 }
 
 .marqueeWrap.dark .logoCard:hover .logoImage {
-  filter: none drop-shadow(0 4px 16px rgba(163, 231, 216, 0.35));
+  filter: brightness(1.2) contrast(1.1) drop-shadow(0 4px 16px rgba(163, 231, 216, 0.35));
   opacity: 1;
   transform: scale(1.08);
 }
 
 .marqueeWrap.light .logoCard:hover .logoImage {
-  filter: grayscale(0%) contrast(105%) brightness(100%);
+  filter: contrast(110%);
   opacity: 1;
   transform: scale(1.08);
 }

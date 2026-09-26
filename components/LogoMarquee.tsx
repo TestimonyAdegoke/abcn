@@ -34,7 +34,6 @@ export default function LogoMarquee({
   const [fetchedLogos, setFetchedLogos] = useState<EventPartner[]>([]);
 
   useEffect(() => {
-    if (logos && logos.length > 0) return;
     let live = true;
     fetch("/api/partners")
       .then((res) => res.json())
@@ -43,8 +42,8 @@ export default function LogoMarquee({
           setFetchedLogos(
             json.data.map((p: any) => ({
               name: p.name,
-              logo: p.logo_url || "",
-              website: p.website_url || "",
+              logo: p.logo_url || p.logo || "",
+              website: p.website_url || p.website || "",
             }))
           );
         }
@@ -53,14 +52,19 @@ export default function LogoMarquee({
     return () => {
       live = false;
     };
-  }, [logos]);
+  }, []);
 
-  const activeLogos =
-    logos && logos.length > 0
-      ? logos
-      : fetchedLogos.length > 0
-      ? fetchedLogos
-      : DEFAULT_FIALI_PARTNERS;
+  const activeLogos = useMemo(() => {
+    if (logos && logos.length > 0) {
+      const withLogos = logos.filter((p) => p && Boolean(p.logo));
+      if (withLogos.length > 0) return withLogos;
+    }
+    if (fetchedLogos && fetchedLogos.length > 0) {
+      const withLogos = fetchedLogos.filter((p) => p && Boolean(p.logo));
+      if (withLogos.length > 0) return withLogos;
+    }
+    return DEFAULT_FIALI_PARTNERS;
+  }, [logos, fetchedLogos]);
 
   // Duplicate items to ensure seamless continuous CSS infinite scroll
   const duplicatedLogos = useMemo(() => {

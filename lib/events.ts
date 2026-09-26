@@ -377,7 +377,24 @@ export function normaliseEvent(
     highlights: pick(r, "highlights", locale, base.highlights || [], seeded),
     stages: pick(r, "stages", locale, base.stages || [], seeded),
     eligibility: pick(r, "eligibility", locale, base.eligibility || [], seeded),
-    partners: Array.isArray(row.partners) ? row.partners : [],
+    partners: (() => {
+      const raw =
+        Array.isArray(row.partners) && row.partners.length > 0
+          ? row.partners
+          : seeded
+          ? FIALI_FALLBACK.partners
+          : [];
+      if (!Array.isArray(raw)) return [];
+      const hasAnyLogo = raw.some((p: any) => p && (p.logo || p.logo_url));
+      if (!hasAnyLogo && seeded && FIALI_FALLBACK.partners) {
+        return FIALI_FALLBACK.partners;
+      }
+      return raw.map((p: any) => ({
+        name: p.name || "",
+        logo: p.logo || p.logo_url || "",
+        website: p.website || p.website_url || "",
+      }));
+    })(),
     grants: pick(r, "grants", locale, base.grants, seeded),
     gallery: (() => {
       const raw =

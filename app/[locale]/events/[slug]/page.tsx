@@ -219,15 +219,13 @@ export default function EventDetailPage() {
       </section>
 
       {/* Infinite Scrolling Logo Marquee for Verified Partner Ecosystem */}
-      {event.partners && event.partners.length > 0 && (
-        <LogoMarquee
-          logos={event.partners}
-          theme="light"
-          speed="normal"
-          label={event.eyebrow || "Partner Ecosystem & Collaborators"}
-          tagline={event.venue || event.city || "Frankfurt 2026"}
-        />
-      )}
+      <LogoMarquee
+        logos={event.partners && event.partners.length > 0 ? event.partners : undefined}
+        theme="light"
+        speed="normal"
+        label={event.eyebrow || "Partner Ecosystem & Collaborators"}
+        tagline={event.venue || event.city || "Frankfurt 2026"}
+      />
 
       {/* About Section */}
       <section id="about" className="benchmark-section benchmark-about">
@@ -438,6 +436,7 @@ export default function EventDetailPage() {
                       src={partner.logo}
                       alt={partner.name}
                       className="partner-card-logo"
+                      style={{ width: "auto", height: "auto", maxHeight: "56px", maxWidth: "160px", objectFit: "contain" }}
                     />
                   ) : (
                     <strong>{partner.name}</strong>

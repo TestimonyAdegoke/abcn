@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import NavExtras from "@/components/NavExtras";
 import SiteFooter from "@/components/SiteFooter";
+import LogoMarquee from "@/components/LogoMarquee";
 import "./about.css";
 import Img from "@/components/Img";
 
@@ -161,6 +162,16 @@ export default function AboutPage() {
             {tf("founderBody")}
           </p>
         </div>
+      </section>
+
+      {/* Partner Ecosystem & Institutional Collaborators */}
+      <section style={{ background: "#ffffff", padding: "40px 0 20px" }}>
+        <LogoMarquee
+          theme="light"
+          speed="normal"
+          label="Ecosystem & Institutional Partners"
+          tagline="Frankfurt · Diaspora Network"
+        />
       </section>
 
       {/* Close */}

@@ -122,17 +122,16 @@ export default function FeaturedEventSpotlight() {
           {event.application_deadline && <div className={styles.urgency}>{event.application_deadline}</div>}
         </div>
       </div>
-      {event.partners && event.partners.length > 0 && (
-        <div style={{ marginTop: "44px", position: "relative", zIndex: 2 }}>
-          <LogoMarquee
-            logos={event.partners}
-            theme="dark"
-            speed="normal"
-            label={t("partnerLabel")}
-            tagline={event.venue || event.city || t("partnerTagline")}
-          />
-        </div>
-      )}
+      {/* Transparent Scrolling Logo Marquee */}
+      <div style={{ marginTop: "44px", position: "relative", zIndex: 2 }}>
+        <LogoMarquee
+          logos={event.partners && event.partners.length > 0 ? event.partners : undefined}
+          theme="dark"
+          speed="normal"
+          label={t("partnerLabel")}
+          tagline={event.venue || event.city || t("partnerTagline")}
+        />
+      </div>
       {factItems.length > 0 && (
         <div className={styles.facts}>
           {factItems.map(([value, label]) => (
