@@ -499,8 +499,8 @@ export default function EventDetailPage() {
         </section>
       )}
 
-      {/* Dedicated FIALI Cohort in Motion Photo Gallery */}
-      {isFiali && (
+      {/* Event Atmosphere & Visual Media Gallery */}
+      {event.gallery && event.gallery.length > 0 && (
         <section id="gallery" className="fiali-gallery-section">
           <div className="gallery-head">
             <div>
@@ -511,65 +511,32 @@ export default function EventDetailPage() {
               </h2>
             </div>
             <p>
-              Moments from the FIALI initiative, ABCN founder growth labs, and international summits bridging diaspora enterprise with Frankfurt’s innovation economy.
+              {isFiali
+                ? "Moments from the FIALI initiative, ABCN founder growth labs, and international summits bridging diaspora enterprise with Frankfurt’s innovation economy."
+                : `Atmosphere, workshops, and ecosystem highlights from ${event.title}.`}
             </p>
           </div>
 
           <div className="fiali-gallery-grid">
-            <div className="fiali-gallery-card featured">
-              <Img
-                src="/assets/fiali/female-founders-summit.jpg"
-                alt="Female Founders Networking Summit in Frankfurt"
-              />
-              <div className="fiali-gallery-info">
-                <span>{te("g1")}</span>
-                <strong>{te("g1b")}</strong>
-              </div>
-            </div>
-
-            <div className="fiali-gallery-card">
-              <Img
-                src="/assets/fiali/growth-lab-session.jpg"
-                alt="Female Innovation Growth Lab Session"
-              />
-              <div className="fiali-gallery-info">
-                <span>{te("g2")}</span>
-                <strong>{te("g2b")}</strong>
-              </div>
-            </div>
-
-            <div className="fiali-gallery-card">
-              <Img
-                src="/assets/fiali/female-founder-workshop.jpg"
-                alt="Digitalization & Prototype Scaling"
-              />
-              <div className="fiali-gallery-info">
-                <span>{te("g3")}</span>
-                <strong>{te("g3b")}</strong>
-              </div>
-            </div>
-
-            <div className="fiali-gallery-card">
-              <Img
-                src="/assets/fiali/female-founder-vision.jpg"
-                alt="Vision & Market Positioning Session"
-              />
-              <div className="fiali-gallery-info">
-                <span>{te("g4")}</span>
-                <strong>{te("g4b")}</strong>
-              </div>
-            </div>
-
-            <div className="fiali-gallery-card">
-              <Img
-                src="/assets/abcn/collaborators.png"
-                alt="Frankfurt Founder Peer Collaboration"
-              />
-              <div className="fiali-gallery-info">
-                <span>{te("g5")}</span>
-                <strong>{te("g5b")}</strong>
-              </div>
-            </div>
+            {event.gallery.map((item, idx) => {
+              const isWide = item.size === "wide" || idx === 0;
+              const category = item.category || (isFiali && idx < 5 ? te(`g${idx + 1}` as any) : "Atmosphere");
+              const caption = item.caption || (isFiali && idx < 5 ? te(`g${idx + 1}b` as any) : "");
+              return (
+                <div key={idx} className={`fiali-gallery-card ${isWide ? "featured" : ""}`}>
+                  <Img
+                    src={item.url}
+                    alt={item.alt || item.caption || `${event.title} gallery photo ${idx + 1}`}
+                  />
+                  {(category || caption) && (
+                    <div className="fiali-gallery-info">
+                      {category && <span>{category}</span>}
+                      {caption && <strong>{caption}</strong>}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
       )}

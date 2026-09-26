@@ -23,6 +23,14 @@ export type EventContentCard = {
   description: string;
 };
 
+export type EventGalleryItem = {
+  url: string;
+  caption?: string;
+  alt?: string;
+  category?: string;
+  size?: "standard" | "wide" | "tall";
+};
+
 export type EventRecord = {
   id?: string;
   slug: string;
@@ -55,7 +63,7 @@ export type EventRecord = {
   eligibility: string[];
   partners: EventPartner[];
   grants: EventGrant;
-  gallery: string[];
+  gallery: EventGalleryItem[];
   application_open?: boolean;
   application_deadline?: string | null;
   application_cta?: string | null;
@@ -174,12 +182,12 @@ export const FIALI_FALLBACK: EventRecord = {
       "Two grants of €500 each support early-stage founders developing digital or technical solutions, including prototyping, product development, branding, market entry, initial marketing and sales, and eligible incorporation expenses.",
   },
   gallery: [
-    "/assets/fiali/female-founders-summit.jpg",
-    "/assets/fiali/growth-lab-session.jpg",
-    "/assets/fiali/female-founder-workshop.jpg",
-    "/assets/fiali/female-founder-vision.jpg",
-    "/assets/abcn/collaborators.png",
-    "/assets/abcn/harmonie-essome.png",
+    { url: "/assets/fiali/female-founders-summit.jpg", caption: "Keynote & Founder Spotlight", category: "Summit", size: "wide" },
+    { url: "/assets/fiali/growth-lab-session.jpg", caption: "Intensive Growth Lab Workshop", category: "Workshops", size: "standard" },
+    { url: "/assets/fiali/female-founder-workshop.jpg", caption: "Collaborative Ideation", category: "Workshops", size: "standard" },
+    { url: "/assets/fiali/female-founder-vision.jpg", caption: "Strategic Vision Presentation", category: "Pitch", size: "tall" },
+    { url: "/assets/abcn/collaborators.png", caption: "Ecosystem Matchmaking", category: "Networking", size: "standard" },
+    { url: "/assets/abcn/harmonie-essome.png", caption: "Harmonie Essome · ABCN Leadership", category: "Leadership", size: "standard" },
   ],
   application_open: true,
   application_deadline: "Applications reviewed on a rolling basis · limited cohort of 10-15 founders",
@@ -372,10 +380,33 @@ export function normaliseEvent(
     partners: Array.isArray(row.partners) ? row.partners : [],
     grants: pick(r, "grants", locale, base.grants, seeded),
     gallery: (() => {
-      if (!Array.isArray(row.gallery)) return [];
-      const curated = row.gallery.filter((src) => !REMOTE_STOCK.test(src));
-      // Don't leave the gallery empty just because every CMS entry was stock.
-      return curated.length > 0 ? curated : FIALI_FALLBACK.gallery;
+      const raw =
+        Array.isArray(row.gallery) && row.gallery.length > 0
+          ? row.gallery
+          : seeded
+          ? FIALI_FALLBACK.gallery
+          : [];
+      if (!Array.isArray(raw)) return [];
+      return raw
+        .map((item: any) => {
+          if (typeof item === "string") {
+            return {
+              url: item,
+              caption: "",
+              alt: "",
+              category: "Atmosphere",
+              size: "standard" as const,
+            };
+          }
+          return {
+            url: item.url || "",
+            caption: item.caption || "",
+            alt: item.alt || item.caption || "",
+            category: item.category || "Atmosphere",
+            size: (item.size || "standard") as "standard" | "wide" | "tall",
+          };
+        })
+        .filter((item) => item.url && !REMOTE_STOCK.test(item.url));
     })(),
     application_open: Boolean(row.application_open),
     application_deadline: pick(r, "application_deadline", locale, base.application_deadline, seeded),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import { EventPartner } from "@/lib/events";
 import styles from "./LogoMarquee.module.css";
@@ -24,14 +24,43 @@ interface LogoMarqueeProps {
 }
 
 export default function LogoMarquee({
-  logos = DEFAULT_FIALI_PARTNERS,
+  logos,
   label = "Partner Ecosystem & Collaborators",
   tagline = "FIALI · Frankfurt 2026",
   theme = "light",
   speed = "normal",
   className = "",
 }: LogoMarqueeProps) {
-  const activeLogos = logos && logos.length > 0 ? logos : DEFAULT_FIALI_PARTNERS;
+  const [fetchedLogos, setFetchedLogos] = useState<EventPartner[]>([]);
+
+  useEffect(() => {
+    if (logos && logos.length > 0) return;
+    let live = true;
+    fetch("/api/partners")
+      .then((res) => res.json())
+      .then((json) => {
+        if (live && json?.data?.length) {
+          setFetchedLogos(
+            json.data.map((p: any) => ({
+              name: p.name,
+              logo: p.logo_url || "",
+              website: p.website_url || "",
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [logos]);
+
+  const activeLogos =
+    logos && logos.length > 0
+      ? logos
+      : fetchedLogos.length > 0
+      ? fetchedLogos
+      : DEFAULT_FIALI_PARTNERS;
 
   // Duplicate items to ensure seamless continuous CSS infinite scroll
   const duplicatedLogos = useMemo(() => {

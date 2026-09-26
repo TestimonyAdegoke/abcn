@@ -7,15 +7,29 @@ import {
   EventRecord,
   EventStage,
   EventPartner,
+  EventGalleryItem,
   FIALI_FALLBACK,
   normaliseEvent,
 } from "@/lib/events";
 import "@/app/[locale]/admin/admin.css";
 
 type Mode = "checking" | "signed-out" | "needs-admin" | "admin";
-type MainTab = "events" | "pipeline";
+type MainTab = "events" | "pipeline" | "partners" | "media";
 type EditorTab = "core" | "location" | "content" | "media" | "stages" | "partners" | "german" | "applicants";
 type Editable = EventRecord & { id?: string };
+type AdminTheme = "dark" | "light";
+
+export type SitePartner = {
+  id?: string;
+  name: string;
+  logo_url?: string;
+  website_url?: string;
+  category?: string;
+  description?: string;
+  tier?: number;
+  priority?: number;
+  active?: boolean;
+};
 
 type ApplicationRow = {
   id: string;
@@ -45,7 +59,7 @@ const SECTIONS: { id: EditorTab; label: string; shortLabel: string; num: string 
   { id: "core", label: "Core & Publishing", shortLabel: "Core", num: "01" },
   { id: "location", label: "Date & Location", shortLabel: "Schedule", num: "02" },
   { id: "content", label: "Narrative & Editorial", shortLabel: "Editorial", num: "03" },
-  { id: "media", label: "Media & Aesthetics", shortLabel: "Media", num: "04" },
+  { id: "media", label: "Media, Card & Atmosphere Gallery", shortLabel: "Media & Gallery", num: "04" },
   { id: "stages", label: "Programme Stages & Grants", shortLabel: "Stages", num: "05" },
   { id: "partners", label: "Partners & Logo Manager", shortLabel: "Partners", num: "06" },
   { id: "german", label: "German Translation", shortLabel: "German (DE)", num: "07" },
@@ -177,10 +191,45 @@ export default function EventsAdminPage() {
   const [selectedApplicant, setSelectedApplicant] = useState<ApplicationRow | null>(null);
   const [showEmailModal, setShowEmailModal] = useState(false);
 
+  // Admin Theme State (Dark / Light)
+  const [adminTheme, setAdminTheme] = useState<AdminTheme>("dark");
+
+  // Website Partners State (Global Site Partners)
+  const [sitePartners, setSitePartners] = useState<SitePartner[]>([]);
+  const [sitePartnersLoading, setSitePartnersLoading] = useState(false);
+  const [partnerModalOpen, setPartnerModalOpen] = useState(false);
+  const [partnerForm, setPartnerForm] = useState<SitePartner>({
+    name: "",
+    logo_url: "",
+    website_url: "",
+    category: "Strategic Partner",
+    description: "",
+    priority: 10,
+    active: true,
+  });
+
+  // Media Library state
+  const [copiedAsset, setCopiedAsset] = useState<string | null>(null);
+  const [mediaUploadPreview, setMediaUploadPreview] = useState<string | null>(null);
+
   // Deletion Confirm Modal State
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const [rawJsonMode, setRawJsonMode] = useState(false);
+
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? (localStorage.getItem("abcn-admin-theme") as AdminTheme | null) : null;
+    if (saved === "light" || saved === "dark") {
+      setAdminTheme(saved);
+    }
+  }, []);
+
+  function toggleAdminTheme(t: AdminTheme) {
+    setAdminTheme(t);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("abcn-admin-theme", t);
+    }
+  }
 
   const stagesText = useMemo(() => JSON.stringify(form.stages || [], null, 2), [form.stages]);
   const grantsText = useMemo(() => JSON.stringify(form.grants || {}, null, 2), [form.grants]);
@@ -218,7 +267,7 @@ export default function EventsAdminPage() {
       const role = String(user.role || "");
       if (role.includes("admin")) {
         setMode("admin");
-        await Promise.all([loadEvents(), loadAllApplications()]);
+        await Promise.all([loadEvents(), loadAllApplications(), loadSitePartners()]);
       } else {
         setMode("needs-admin");
       }
@@ -648,6 +697,133 @@ export default function EventsAdminPage() {
     }
   }
 
+  async function handleCardImage(file?: File) {
+    if (!file) return;
+    try {
+      showToast("Compressing and preparing card thumbnail...");
+      const compressed = await compressImage(file);
+      update("card_image_url", compressed);
+      showToast("Card thumbnail uploaded & ready to save to database.");
+    } catch (err: any) {
+      showToast(err.message || "Failed to process thumbnail", "error");
+    }
+  }
+
+  // Global Website Partners Handlers
+  async function loadSitePartners() {
+    setSitePartnersLoading(true);
+    try {
+      const res = await fetch("/api/admin/partners");
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) setSitePartners(json.data);
+      }
+    } catch {
+      showToast("Failed to load website partners", "error");
+    } finally {
+      setSitePartnersLoading(false);
+    }
+  }
+
+  async function saveSitePartner(partner: SitePartner) {
+    try {
+      const isNew = !partner.id;
+      const res = await fetch("/api/admin/partners", {
+        method: isNew ? "POST" : "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(partner),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || "Save failed");
+      showToast(isNew ? "Website partner created!" : "Website partner updated!");
+      setPartnerModalOpen(false);
+      await loadSitePartners();
+    } catch (err: any) {
+      showToast(err.message || "Failed to save partner", "error");
+    }
+  }
+
+  async function deleteSitePartner(id: string) {
+    if (!confirm("Permanently delete this website partner?")) return;
+    try {
+      const res = await fetch(`/api/admin/partners?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || "Delete failed");
+      showToast("Website partner deleted.");
+      setSitePartners((prev) => prev.filter((p) => p.id !== id));
+    } catch (err: any) {
+      showToast(err.message || "Failed to delete partner", "error");
+    }
+  }
+
+  async function togglePartnerActive(partner: SitePartner) {
+    const updated = { ...partner, active: !partner.active };
+    await saveSitePartner(updated);
+  }
+
+  // Interactive Configurable Event Gallery Helpers
+  function addGalleryItem() {
+    const current = (form.gallery as EventGalleryItem[]) || [];
+    const newItem: EventGalleryItem = {
+      url: "",
+      caption: "",
+      alt: "",
+      category: "Summit",
+      size: "standard",
+    };
+    update("gallery", [...current, newItem]);
+    showToast("Added photo to gallery.");
+  }
+
+  function updateGalleryItem(index: number, partial: Partial<EventGalleryItem>) {
+    const current = [...((form.gallery as EventGalleryItem[]) || [])];
+    current[index] = { ...current[index], ...partial };
+    update("gallery", current);
+  }
+
+  function removeGalleryItem(index: number) {
+    const current = [...((form.gallery as EventGalleryItem[]) || [])];
+    current.splice(index, 1);
+    update("gallery", current);
+    showToast("Gallery item removed.");
+  }
+
+  function moveGalleryItem(index: number, direction: "up" | "down") {
+    const current = [...((form.gallery as EventGalleryItem[]) || [])];
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (target < 0 || target >= current.length) return;
+    const temp = current[index];
+    current[index] = current[target];
+    current[target] = temp;
+    update("gallery", current);
+  }
+
+  async function handleGalleryImageUpload(index: number, file?: File) {
+    if (!file) return;
+    try {
+      showToast("Optimizing gallery photo...");
+      const compressed = await compressImage(file);
+      updateGalleryItem(index, { url: compressed });
+      showToast("Photo attached to gallery card!");
+    } catch (err: any) {
+      showToast(err.message || "Failed to process photo", "error");
+    }
+  }
+
+  function loadRecommendedGallery() {
+    update("gallery", [
+      { url: "/assets/fiali/female-founders-summit.jpg", caption: "Keynote & Founder Spotlight", category: "Summit", size: "wide" },
+      { url: "/assets/fiali/growth-lab-session.jpg", caption: "Intensive Growth Lab Workshop", category: "Workshops", size: "standard" },
+      { url: "/assets/fiali/female-founder-workshop.jpg", caption: "Collaborative Ideation", category: "Workshops", size: "standard" },
+      { url: "/assets/fiali/female-founder-vision.jpg", caption: "Strategic Vision Presentation", category: "Pitch", size: "tall" },
+      { url: "/assets/abcn/collaborators.png", caption: "Ecosystem Matchmaking", category: "Networking", size: "standard" },
+      { url: "/assets/abcn/harmonie-essome.png", caption: "Harmonie Essome · ABCN Leadership", category: "Leadership", size: "standard" },
+    ]);
+    showToast("Loaded recommended summit atmosphere gallery!");
+  }
+
   // Interactive array helpers
   function addListItem(key: "highlights" | "eligibility" | "highlights_de" | "eligibility_de") {
     const current = (form[key] as string[]) || [];
@@ -1007,111 +1183,230 @@ export default function EventsAdminPage() {
   }
 
   return (
-    <main className="cms">
-      {/* ---------------- Top Sticky Header ---------------- */}
-      <header className="cms-top">
-        <div className="cms-brand">
-          <span className="cms-logo-badge">A</span>
-          <div className="cms-brand-text">
-            <h1>ABCN Executive Control Room</h1>
-            <span>Events & Pipeline Intelligence</span>
+    <div className="cms-dashboard" data-theme={adminTheme}>
+      {/* ---------------- Primary App Sidebar Menu ---------------- */}
+      <aside className="cms-sidebar">
+        <div className="cms-sidebar-header">
+          <div className="cms-sidebar-brand">
+            <span className="cms-logo-badge">A</span>
+            <div>
+              <h2>ABCN Portal</h2>
+              <span className="cms-sidebar-sub">Executive Suite</span>
+            </div>
           </div>
         </div>
 
-        {/* View Tabs Switcher */}
-        <div className="cms-nav-tabs">
+        {/* Primary Navigation Menu */}
+        <nav className="cms-sidebar-nav">
+          <div className="cms-sidebar-group-label">WORKSPACE</div>
           <button
-            className={`cms-nav-btn ${mainTab === "events" ? "active" : ""}`}
+            type="button"
+            className={`cms-sidebar-item ${mainTab === "events" ? "active" : ""}`}
             onClick={() => setMainTab("events")}
           >
-            Events Manager
-            <span className="cms-counter-pill">{totalEventsCount}</span>
+            <span className="cms-nav-icon">📅</span>
+            <span className="cms-nav-text">Events Manager</span>
+            <span className="cms-nav-badge">{totalEventsCount}</span>
           </button>
+
           <button
-            className={`cms-nav-btn ${mainTab === "pipeline" ? "active" : ""}`}
+            type="button"
+            className={`cms-sidebar-item ${mainTab === "pipeline" ? "active" : ""}`}
             onClick={() => setMainTab("pipeline")}
           >
-            Founder Pipeline
-            <span className="cms-counter-pill">{totalApplicantsCount}</span>
+            <span className="cms-nav-icon">👥</span>
+            <span className="cms-nav-text">Founder Pipeline</span>
+            <span className="cms-nav-badge">{totalApplicantsCount}</span>
           </button>
-        </div>
 
-        {/* Actions & User Badge */}
-        <div className="cms-top-actions">
-          <div className="cms-user-badge">
+          <button
+            type="button"
+            className={`cms-sidebar-item ${mainTab === "partners" ? "active" : ""}`}
+            onClick={() => setMainTab("partners")}
+          >
+            <span className="cms-nav-icon">🤝</span>
+            <span className="cms-nav-text">Website Partners</span>
+            <span className="cms-nav-badge">{sitePartners.length}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`cms-sidebar-item ${mainTab === "media" ? "active" : ""}`}
+            onClick={() => setMainTab("media")}
+          >
+            <span className="cms-nav-icon">🖼️</span>
+            <span className="cms-nav-text">Media & Assets</span>
+          </button>
+
+          {/* Contextual in-sidebar navigator when editing an event */}
+          {mainTab === "events" && selectedId && (
+            <div className="cms-sidebar-subnav">
+              <div className="cms-sidebar-group-label">EVENT SECTIONS</div>
+              {SECTIONS.map((sec, idx) => (
+                <button
+                  key={sec.id}
+                  type="button"
+                  className={`cms-sidebar-subitem ${editorTab === sec.id ? "active" : ""}`}
+                  onClick={() => {
+                    setEditorTab(sec.id);
+                    window.scrollTo({ top: 180, behavior: "smooth" });
+                  }}
+                >
+                  <span className="cms-subitem-num">0{idx + 1}</span>
+                  <span className="cms-subitem-title">{sec.shortLabel}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </nav>
+
+        {/* Sidebar Footer with Theme Switcher and User Profile */}
+        <div className="cms-sidebar-footer">
+          <div className="cms-theme-toggle-box">
+            <span className="cms-theme-label">Appearance</span>
+            <div className="cms-theme-switcher">
+              <button
+                type="button"
+                className={`cms-theme-btn ${adminTheme === "dark" ? "active" : ""}`}
+                onClick={() => toggleAdminTheme("dark")}
+                title="Obsidian Dark Mode"
+              >
+                🌙 Dark
+              </button>
+              <button
+                type="button"
+                className={`cms-theme-btn ${adminTheme === "light" ? "active" : ""}`}
+                onClick={() => toggleAdminTheme("light")}
+                title="Slate Light Mode"
+              >
+                ☀️ Light
+              </button>
+            </div>
+          </div>
+
+          <div className="cms-sidebar-user">
             <div className="cms-user-avatar">
               {(currentUser?.name || currentUser?.email || "A").charAt(0).toUpperCase()}
             </div>
-            <span>{currentUser?.email || "Admin"}</span>
-            <span className="cms-user-role">Admin</span>
-          </div>
-
-          <Link href="/events" target="_blank" className="cms-btn cms-btn-secondary">
-            Public Site ↗
-          </Link>
-          <button onClick={signOut} className="cms-btn cms-btn-secondary">
-            Sign out
-          </button>
-        </div>
-      </header>
-
-      <div className="cms-wrap">
-        {/* ---------------- KPI Stat Cards ---------------- */}
-        <div className="cms-kpis">
-          <div className="cms-kpi-card">
-            <div className="cms-kpi-head">
-              <span>Total Events</span>
-              <span>All Statuses</span>
+            <div className="cms-sidebar-user-info">
+              <strong>{currentUser?.name || currentUser?.email?.split('@')[0] || "Administrator"}</strong>
+              <small>{currentUser?.email || "admin@abcn.network"}</small>
             </div>
-            <div className="cms-kpi-value">{totalEventsCount}</div>
-            <span className="cms-kpi-sub">{publishedEventsCount} currently published & visible</span>
-          </div>
-
-          <div className="cms-kpi-card">
-            <div className="cms-kpi-head">
-              <span>Published Live</span>
-              <span className="cms-pill published">Live</span>
-            </div>
-            <div className="cms-kpi-value" style={{ color: "var(--cms-accent)" }}>
-              {publishedEventsCount}
-            </div>
-            <span className="cms-kpi-sub">Serving public traffic across EN & DE routes</span>
-          </div>
-
-          <div className="cms-kpi-card">
-            <div className="cms-kpi-head">
-              <span>Total Applicants</span>
-              <span>Founder Pipeline</span>
-            </div>
-            <div className="cms-kpi-value">{totalApplicantsCount}</div>
-            <span className="cms-kpi-sub">Submissions received across all programmes</span>
-          </div>
-
-          <div className="cms-kpi-card">
-            <div className="cms-kpi-head">
-              <span>Active Candidates</span>
-              <span className="cms-pill featured">Pipeline</span>
-            </div>
-            <div className="cms-kpi-value" style={{ color: "var(--cms-gold)" }}>
-              {shortlistedApplicantsCount}
-            </div>
-            <span className="cms-kpi-sub">In Review, Shortlisted, or Accepted</span>
+            <button onClick={signOut} className="cms-sidebar-logout" title="Sign out">
+              ⏻
+            </button>
           </div>
         </div>
+      </aside>
 
-        {/* =========================================================================
-            VIEW 1: EVENTS MANAGER (FULL CRUD)
-            ========================================================================= */}
-        {mainTab === "events" && (
-          <div className="cms-main-grid">
-            {/* Sidebar: Event List */}
-            <aside className="cms-sidebar">
-              <div className="cms-sidebar-header">
-                <h2>Events Index</h2>
-                <button onClick={newEvent} className="cms-btn cms-btn-primary" style={{ padding: "6px 12px" }}>
-                  + New Event
-                </button>
+      <div className="cms-main-area">
+        {/* ---------------- Top Sticky Header ---------------- */}
+        <header className="cms-top">
+          <div className="cms-brand">
+            <div className="cms-brand-text">
+              <h1 style={{ fontSize: "1.1rem" }}>
+                {mainTab === "events" && "Events & Summit Management"}
+                {mainTab === "pipeline" && "Founder Application CRM"}
+                {mainTab === "partners" && "Website Partners & Collaborator Network"}
+                {mainTab === "media" && "Media & Global Asset Manager"}
+              </h1>
+              <span>Executive Control Room · ABCN</span>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="cms-top-actions">
+            <Link href="/" target="_blank" className="cms-btn cms-btn-secondary" style={{ fontSize: "0.78rem" }}>
+              Public Home ↗
+            </Link>
+            <Link href="/events" target="_blank" className="cms-btn cms-btn-secondary" style={{ fontSize: "0.78rem" }}>
+              Public Events ↗
+            </Link>
+            {mainTab === "events" && (
+              <button onClick={newEvent} className="cms-btn cms-btn-primary" style={{ fontSize: "0.82rem" }}>
+                + New Event
+              </button>
+            )}
+            {mainTab === "partners" && (
+              <button
+                onClick={() => {
+                  setPartnerForm({
+                    name: "",
+                    logo_url: "",
+                    website_url: "",
+                    category: "Strategic Partner",
+                    description: "",
+                    priority: 10,
+                    active: true,
+                  });
+                  setPartnerModalOpen(true);
+                }}
+                className="cms-btn cms-btn-primary"
+                style={{ fontSize: "0.82rem" }}
+              >
+                + Add Website Partner
+              </button>
+            )}
+          </div>
+        </header>
+
+        <div className="cms-wrap">
+          {/* ---------------- KPI Stat Cards ---------------- */}
+          <div className="cms-kpis">
+            <div className="cms-kpi-card">
+              <div className="cms-kpi-head">
+                <span>Total Events</span>
+                <span>All Statuses</span>
               </div>
+              <div className="cms-kpi-value">{totalEventsCount}</div>
+              <span className="cms-kpi-sub">{publishedEventsCount} currently published & visible</span>
+            </div>
+
+            <div className="cms-kpi-card">
+              <div className="cms-kpi-head">
+                <span>Published Live</span>
+                <span className="cms-pill published">Live</span>
+              </div>
+              <div className="cms-kpi-value" style={{ color: "var(--cms-accent)" }}>
+                {publishedEventsCount}
+              </div>
+              <span className="cms-kpi-sub">Serving public traffic across EN & DE routes</span>
+            </div>
+
+            <div className="cms-kpi-card">
+              <div className="cms-kpi-head">
+                <span>Total Applicants</span>
+                <span>Founder Pipeline</span>
+              </div>
+              <div className="cms-kpi-value">{totalApplicantsCount}</div>
+              <span className="cms-kpi-sub">Submissions received across all programmes</span>
+            </div>
+
+            <div className="cms-kpi-card">
+              <div className="cms-kpi-head">
+                <span>Active Candidates</span>
+                <span className="cms-pill featured">Pipeline</span>
+              </div>
+              <div className="cms-kpi-value" style={{ color: "var(--cms-gold)" }}>
+                {shortlistedApplicantsCount}
+              </div>
+              <span className="cms-kpi-sub">In Review, Shortlisted, or Accepted</span>
+            </div>
+          </div>
+
+          {/* =========================================================================
+              VIEW 1: EVENTS MANAGER (FULL CRUD)
+              ========================================================================= */}
+          {mainTab === "events" && (
+            <div className="cms-main-grid">
+              {/* Event List Panel */}
+              <aside className="cms-events-list-panel">
+                <div className="cms-events-list-header">
+                  <h2>Events Index</h2>
+                  <button onClick={newEvent} className="cms-btn cms-btn-primary" style={{ padding: "6px 12px" }}>
+                    + New Event
+                  </button>
+                </div>
 
               <div className="cms-search-box">
                 <input
@@ -1685,14 +1980,42 @@ export default function EventsAdminPage() {
                       </div>
                     </div>
 
+                    {/* Card Thumbnail Image Uploader (Displayed on /events page) */}
                     <div className="cms-field cms-col-full">
-                      <label>Card Thumbnail Image URL</label>
-                      <input
-                        type="text"
-                        value={form.card_image_url || ""}
-                        onChange={(e) => update("card_image_url", e.target.value)}
-                        placeholder="/assets/fiali/female-founders-summit.jpg"
-                      />
+                      <label>Event Card Thumbnail Image (Displayed on /events directory & cards)</label>
+                      <div
+                        className="cms-image-upload-zone"
+                        onClick={() => document.getElementById("card-file")?.click()}
+                      >
+                        <input
+                          id="card-file"
+                          type="file"
+                          accept="image/*"
+                          style={{ display: "none" }}
+                          onChange={(e) => handleCardImage(e.target.files?.[0])}
+                        />
+                        <div style={{ fontSize: "1.8rem", marginBottom: "0.5rem" }}>📇</div>
+                        <strong>Click or drag to upload Card Thumbnail from your device</strong>
+                        <p className="cms-hint" style={{ marginTop: "4px" }}>
+                          Used in the /events grid card, search results, and event teasers.
+                        </p>
+                      </div>
+
+                      {form.card_image_url && (
+                        <div className="cms-image-preview-box" style={{ maxHeight: "200px" }}>
+                          <img src={form.card_image_url} alt="Card thumbnail preview" />
+                        </div>
+                      )}
+
+                      <div style={{ marginTop: "0.75rem" }}>
+                        <label>Or Direct Card Thumbnail Image URL / Asset Path</label>
+                        <input
+                          type="text"
+                          value={form.card_image_url || ""}
+                          onChange={(e) => update("card_image_url", e.target.value)}
+                          placeholder="/assets/fiali/female-founders-summit.jpg"
+                        />
+                      </div>
                     </div>
 
                     {/* Brand Palette Customizer */}
@@ -1746,6 +2069,196 @@ export default function EventsAdminPage() {
                           {form.accent_color} / {form.deep_color}
                         </span>
                       </div>
+                    </div>
+
+                    {/* ---------------- Configurable Event Atmosphere & Media Gallery ---------------- */}
+                    <div className="cms-col-full" style={{ marginTop: "1.5rem" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          flexWrap: "wrap",
+                          gap: "1rem",
+                          paddingBottom: "0.75rem",
+                          borderBottom: "1px solid var(--cms-border)",
+                        }}
+                      >
+                        <div>
+                          <strong style={{ fontSize: "1.05rem", color: "var(--cms-text-primary)" }}>
+                            📸 Event Atmosphere & Recap Gallery
+                          </strong>
+                          <p className="cms-hint" style={{ margin: "2px 0 0" }}>
+                            Curate moments, workshops, and speaker photos shown on the public event page.
+                          </p>
+                        </div>
+                        <div style={{ display: "flex", gap: "0.5rem" }}>
+                          <button
+                            type="button"
+                            className="cms-btn cms-btn-secondary"
+                            onClick={loadRecommendedGallery}
+                            style={{ fontSize: "0.78rem" }}
+                          >
+                            ⚡ Load Recommended Gallery
+                          </button>
+                          <button
+                            type="button"
+                            className="cms-btn cms-btn-primary"
+                            onClick={addGalleryItem}
+                            style={{ fontSize: "0.78rem" }}
+                          >
+                            + Add Gallery Photo
+                          </button>
+                        </div>
+                      </div>
+
+                      {(!form.gallery || form.gallery.length === 0) ? (
+                        <div
+                          style={{
+                            padding: "2.5rem 1rem",
+                            textAlign: "center",
+                            background: "var(--cms-surface)",
+                            border: "1px dashed var(--cms-border)",
+                            borderRadius: "var(--cms-radius-md)",
+                            marginTop: "1rem",
+                          }}
+                        >
+                          <span style={{ fontSize: "2rem", display: "block", marginBottom: "0.5rem" }}>
+                            🖼️
+                          </span>
+                          <strong style={{ color: "var(--cms-text-primary)" }}>No gallery photos added yet</strong>
+                          <p className="cms-hint" style={{ marginTop: "4px" }}>
+                            Add photos to showcase the summit atmosphere, networking, workshops, or pitch stages.
+                          </p>
+                          <button
+                            type="button"
+                            className="cms-btn cms-btn-secondary"
+                            onClick={loadRecommendedGallery}
+                            style={{ marginTop: "0.85rem", fontSize: "0.82rem" }}
+                          >
+                            Load 6 Curated Summit Photos
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="cms-gallery-grid" style={{ marginTop: "1rem" }}>
+                          {form.gallery.map((item, idx) => (
+                            <div className="cms-gallery-card" key={idx}>
+                              <div className="cms-gallery-card-head">
+                                <span className="cms-pill featured" style={{ fontSize: "0.68rem" }}>
+                                  Photo 0{idx + 1} · {item.category || "Atmosphere"}
+                                </span>
+                                <div style={{ display: "flex", gap: "3px" }}>
+                                  <button
+                                    type="button"
+                                    className="cms-icon-btn"
+                                    title="Move earlier"
+                                    disabled={idx === 0}
+                                    onClick={() => moveGalleryItem(idx, "up")}
+                                  >
+                                    ▲
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="cms-icon-btn"
+                                    title="Move later"
+                                    disabled={idx === (form.gallery?.length || 0) - 1}
+                                    onClick={() => moveGalleryItem(idx, "down")}
+                                  >
+                                    ▼
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="cms-icon-btn danger"
+                                    title="Remove photo"
+                                    onClick={() => removeGalleryItem(idx)}
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Photo Preview / Upload Dropzone */}
+                              <div
+                                className="cms-gallery-preview-box"
+                                onClick={() => document.getElementById(`gallery-file-${idx}`)?.click()}
+                                title="Click to upload a replacement photo"
+                              >
+                                <input
+                                  id={`gallery-file-${idx}`}
+                                  type="file"
+                                  accept="image/*"
+                                  style={{ display: "none" }}
+                                  onChange={(e) => handleGalleryImageUpload(idx, e.target.files?.[0])}
+                                />
+                                {item.url ? (
+                                  <img src={item.url} alt={item.caption || `Gallery photo ${idx + 1}`} />
+                                ) : (
+                                  <div style={{ textAlign: "center", padding: "1rem" }}>
+                                    <div style={{ fontSize: "1.5rem" }}>📤</div>
+                                    <span style={{ fontSize: "0.76rem", color: "var(--cms-accent)" }}>
+                                      Click to upload image
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Fields */}
+                              <div className="cms-field">
+                                <label style={{ fontSize: "0.72rem" }}>Image URL / Local Asset Path</label>
+                                <input
+                                  type="text"
+                                  value={item.url || ""}
+                                  placeholder="/assets/fiali/... or https://..."
+                                  onChange={(e) => updateGalleryItem(idx, { url: e.target.value })}
+                                  style={{ fontSize: "0.78rem", padding: "6px 8px" }}
+                                />
+                              </div>
+
+                              <div className="cms-field">
+                                <label style={{ fontSize: "0.72rem" }}>Caption / Title</label>
+                                <input
+                                  type="text"
+                                  value={item.caption || ""}
+                                  placeholder="e.g. Intensive Growth Lab Workshop"
+                                  onChange={(e) => updateGalleryItem(idx, { caption: e.target.value })}
+                                  style={{ fontSize: "0.78rem", padding: "6px 8px" }}
+                                />
+                              </div>
+
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                                <div className="cms-field">
+                                  <label style={{ fontSize: "0.72rem" }}>Category Tag</label>
+                                  <select
+                                    value={item.category || "Summit"}
+                                    onChange={(e) => updateGalleryItem(idx, { category: e.target.value })}
+                                    style={{ fontSize: "0.78rem", padding: "6px 8px" }}
+                                  >
+                                    <option value="Summit">Summit</option>
+                                    <option value="Workshops">Workshops</option>
+                                    <option value="Networking">Networking</option>
+                                    <option value="Pitch">Pitch Stage</option>
+                                    <option value="Keynote">Keynote</option>
+                                    <option value="Atmosphere">Atmosphere</option>
+                                  </select>
+                                </div>
+
+                                <div className="cms-field">
+                                  <label style={{ fontSize: "0.72rem" }}>Layout Span</label>
+                                  <select
+                                    value={item.size || "standard"}
+                                    onChange={(e) => updateGalleryItem(idx, { size: e.target.value as any })}
+                                    style={{ fontSize: "0.78rem", padding: "6px 8px" }}
+                                  >
+                                    <option value="standard">Standard (1 col)</option>
+                                    <option value="wide">Wide (Spans 2 cols)</option>
+                                    <option value="tall">Tall Portrait</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -2831,10 +3344,396 @@ export default function EventsAdminPage() {
             </div>
           </div>
         )}
+
+        {/* =========================================================================
+            VIEW 3: WEBSITE PARTNERS MANAGER (GLOBAL ABCN PARTNERS)
+            ========================================================================= */}
+        {mainTab === "partners" && (
+          <div className="cms-panel" style={{ padding: "1.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "1rem",
+                paddingBottom: "1rem",
+                borderBottom: "1px solid var(--cms-border)",
+              }}
+            >
+              <div>
+                <h2 style={{ margin: 0, fontSize: "1.3rem" }}>Website Partners & Ecosystem</h2>
+                <p className="cms-hint" style={{ margin: "4px 0 0" }}>
+                  Manage the verified partners, logos, and ecosystem collaborators displayed across the public ABCN website and ticker.
+                </p>
+              </div>
+              <button
+                className="cms-btn cms-btn-primary"
+                onClick={() => {
+                  setPartnerForm({
+                    name: "",
+                    logo_url: "",
+                    website_url: "",
+                    category: "Strategic Partner",
+                    description: "",
+                    priority: 10,
+                    active: true,
+                  });
+                  setPartnerModalOpen(true);
+                }}
+              >
+                + Add Website Partner
+              </button>
+            </div>
+
+            {sitePartnersLoading ? (
+              <div style={{ padding: "3rem", textAlign: "center", color: "var(--cms-text-muted)" }}>
+                Loading website partners…
+              </div>
+            ) : sitePartners.length === 0 ? (
+              <div style={{ padding: "3rem", textAlign: "center" }}>
+                <p>No website partners configured yet.</p>
+              </div>
+            ) : (
+              <div className="cms-site-partners-grid">
+                {sitePartners.map((partner) => (
+                  <div className="cms-site-partner-card" key={partner.id || partner.name}>
+                    <div className="cms-site-partner-top">
+                      <div className="cms-site-partner-logo">
+                        {partner.logo_url ? (
+                          <img src={partner.logo_url} alt={partner.name} />
+                        ) : (
+                          <span style={{ fontSize: "1.2rem", fontWeight: 800 }}>
+                            {partner.name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="cms-site-partner-info">
+                        <h3>{partner.name}</h3>
+                        <span className="cms-site-partner-category">{partner.category || "Partner"}</span>
+                      </div>
+                      <span className={`cms-pill ${partner.active ? "published" : "draft"}`}>
+                        {partner.active ? "Active" : "Hidden"}
+                      </span>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.82rem" }}>
+                      {partner.website_url && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <span style={{ color: "var(--cms-text-muted)" }}>Link:</span>
+                          <a
+                            href={partner.website_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ color: "var(--cms-accent)", textDecoration: "underline" }}
+                          >
+                            {partner.website_url.replace(/^https?:\/\//, '')} ↗
+                          </a>
+                        </div>
+                      )}
+                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span style={{ color: "var(--cms-text-muted)" }}>Priority Order:</span>
+                        <strong>{partner.priority ?? 0}</strong>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "0.5rem", marginTop: "auto", paddingTop: "0.75rem", borderTop: "1px solid var(--cms-border)" }}>
+                      <button
+                        className="cms-btn cms-btn-secondary"
+                        style={{ flex: 1, fontSize: "0.75rem", padding: "6px" }}
+                        onClick={() => togglePartnerActive(partner)}
+                      >
+                        {partner.active ? "Hide on Site" : "Show on Site"}
+                      </button>
+                      <button
+                        className="cms-btn cms-btn-secondary"
+                        style={{ flex: 1, fontSize: "0.75rem", padding: "6px" }}
+                        onClick={() => {
+                          setPartnerForm({ ...partner });
+                          setPartnerModalOpen(true);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="cms-icon-btn danger"
+                        title="Delete partner"
+                        onClick={() => partner.id && deleteSitePartner(partner.id)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* =========================================================================
+            VIEW 4: MEDIA & GLOBAL ASSET LIBRARY
+            ========================================================================= */}
+        {mainTab === "media" && (
+          <div className="cms-panel" style={{ padding: "1.5rem" }}>
+            <div style={{ paddingBottom: "1rem", borderBottom: "1px solid var(--cms-border)" }}>
+              <h2 style={{ margin: 0, fontSize: "1.3rem" }}>Media & Global Asset Manager</h2>
+              <p className="cms-hint" style={{ margin: "4px 0 0" }}>
+                Upload, compress, and inspect media assets for your events, spotlight banners, and website sections.
+              </p>
+            </div>
+
+            {/* Quick Upload Dropzone */}
+            <div style={{ marginTop: "1.5rem" }}>
+              <div
+                className="cms-image-upload-zone"
+                onClick={() => document.getElementById("asset-upload-file")?.click()}
+                style={{ padding: "2.5rem 1.5rem" }}
+              >
+                <input
+                  id="asset-upload-file"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    showToast("Compressing image...");
+                    try {
+                      const c = await compressImage(f);
+                      setMediaUploadPreview(c);
+                      navigator.clipboard.writeText(c);
+                      showToast("Image compressed & data copied to clipboard! Paste directly into any event image field.");
+                    } catch (err: any) {
+                      showToast(err.message || "Compression error", "error");
+                    }
+                  }}
+                />
+                <div style={{ fontSize: "2.2rem", marginBottom: "0.5rem" }}>⚡</div>
+                <strong style={{ fontSize: "1.05rem" }}>Upload Any Image to Compress & Copy Data URL</strong>
+                <p className="cms-hint" style={{ marginTop: "4px" }}>
+                  Optimizes PNG/JPEG photos automatically for ultra-fast database storage or instant usage.
+                </p>
+              </div>
+
+              {mediaUploadPreview && (
+                <div style={{ marginTop: "1rem", padding: "1rem", background: "var(--cms-surface)", border: "1px solid var(--cms-border)", borderRadius: "var(--cms-radius-md)" }}>
+                  <strong>Uploaded Image Preview:</strong>
+                  <div style={{ maxHeight: "240px", overflow: "hidden", borderRadius: "var(--cms-radius-sm)", marginTop: "0.5rem" }}>
+                    <img src={mediaUploadPreview} alt="Uploaded asset preview" style={{ maxWidth: "100%", maxHeight: "240px", objectFit: "contain" }} />
+                  </div>
+                  <button
+                    className="cms-btn cms-btn-primary"
+                    style={{ marginTop: "0.75rem", fontSize: "0.8rem" }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(mediaUploadPreview);
+                      showToast("Copied image data URL to clipboard!");
+                    }}
+                  >
+                    📋 Copy Image Data URL Again
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Curated Pre-Loaded ABCN & FIALI Assets */}
+            <div style={{ marginTop: "2rem" }}>
+              <h3 style={{ fontSize: "1.1rem", marginBottom: "0.5rem" }}>Curated Site & Event Image Assets</h3>
+              <p className="cms-hint" style={{ marginBottom: "1rem" }}>
+                Click "Copy Path" on any verified asset to paste directly into your Hero, Card, or Gallery fields.
+              </p>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "1rem" }}>
+                {[
+                  { name: "Female Founders Summit", path: "/assets/fiali/female-founders-summit.jpg", category: "Summit" },
+                  { name: "Growth Lab Session", path: "/assets/fiali/growth-lab-session.jpg", category: "Workshops" },
+                  { name: "Prototype & Digitalization", path: "/assets/fiali/female-founder-workshop.jpg", category: "Workshops" },
+                  { name: "Vision & Positioning", path: "/assets/fiali/female-founder-vision.jpg", category: "Pitch" },
+                  { name: "Founder Peer Collaborators", path: "/assets/abcn/collaborators.png", category: "Networking" },
+                  { name: "Harmonie Essome (Founder)", path: "/assets/abcn/harmonie-essome.png", category: "Leadership" },
+                  { name: "Ecosystem Network", path: "/assets/abcn/ecosystem-network.png", category: "Ecosystem" },
+                  { name: "Innovators Summit", path: "/assets/abcn/innovators-summit.jpg", category: "Summit" },
+                  { name: "ABCN Official Logo", path: "/assets/abcn/abcn-logo.png", category: "Brand" },
+                ].map((asset) => (
+                  <div key={asset.path} className="cms-gallery-card">
+                    <div style={{ height: "130px", overflow: "hidden", borderRadius: "var(--cms-radius-sm)", background: "rgba(0,0,0,0.2)" }}>
+                      <img src={asset.path} alt={asset.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    </div>
+                    <div>
+                      <strong style={{ fontSize: "0.85rem", display: "block" }}>{asset.name}</strong>
+                      <code style={{ fontSize: "0.72rem", color: "var(--cms-accent)" }}>{asset.path}</code>
+                    </div>
+                    <button
+                      className="cms-btn cms-btn-secondary"
+                      style={{ fontSize: "0.75rem", padding: "5px 8px", marginTop: "auto" }}
+                      onClick={() => {
+                        navigator.clipboard.writeText(asset.path);
+                        showToast(`Copied ${asset.path} to clipboard!`);
+                      }}
+                    >
+                      📋 Copy Asset Path
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* ---------------- Website Partner Modal ---------------- */}
+      {partnerModalOpen && (
+        <div className="cms-email-modal-overlay" onClick={() => setPartnerModalOpen(false)}>
+          <div className="cms-email-modal-card" style={{ maxWidth: "540px" }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+              <h3 style={{ margin: 0, fontSize: "1.2rem" }}>
+                {partnerForm.id ? "Edit Website Partner" : "Add Website Partner"}
+              </h3>
+              <button className="cms-icon-btn" onClick={() => setPartnerModalOpen(false)}>✕</button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div className="cms-field">
+                <label>Partner Organization Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Mountain Hub"
+                  value={partnerForm.name}
+                  onChange={(e) => setPartnerForm({ ...partnerForm, name: e.target.value })}
+                />
+              </div>
+
+              <div className="cms-field">
+                <label>Category / Partnership Tier</label>
+                <select
+                  value={partnerForm.category || "Strategic Partner"}
+                  onChange={(e) => setPartnerForm({ ...partnerForm, category: e.target.value })}
+                >
+                  <option value="Technology Partner">Technology Partner</option>
+                  <option value="Strategic Partner">Strategic Partner</option>
+                  <option value="Institutional Partner">Institutional Partner</option>
+                  <option value="Community Partner">Community Partner</option>
+                  <option value="Ecosystem Partner">Ecosystem Partner</option>
+                  <option value="Media Partner">Media Partner</option>
+                </select>
+              </div>
+
+              <div className="cms-field">
+                <label>Partner Logo (Upload or URL)</label>
+                <div
+                  className="cms-image-upload-zone"
+                  onClick={() => document.getElementById("partner-logo-file")?.click()}
+                  style={{ padding: "1.25rem 1rem" }}
+                >
+                  <input
+                    id="partner-logo-file"
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={async (e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      showToast("Compressing partner logo...");
+                      try {
+                        const c = await compressImage(f);
+                        setPartnerForm({ ...partnerForm, logo_url: c });
+                        showToast("Logo attached!");
+                      } catch (err: any) {
+                        showToast(err.message || "Logo upload failed", "error");
+                      }
+                    }}
+                  />
+                  <span>📤 Click to upload logo image</span>
+                </div>
+                {partnerForm.logo_url && (
+                  <div style={{ height: "60px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--cms-border)", borderRadius: "var(--cms-radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", marginTop: "0.5rem" }}>
+                    <img src={partnerForm.logo_url} alt="Logo preview" style={{ maxHeight: "50px", maxWidth: "90%", objectFit: "contain" }} />
+                  </div>
+                )}
+                <input
+                  type="text"
+                  placeholder="Or enter image URL / asset path: /assets/fiali/logos/..."
+                  value={partnerForm.logo_url || ""}
+                  onChange={(e) => setPartnerForm({ ...partnerForm, logo_url: e.target.value })}
+                  style={{ marginTop: "0.5rem" }}
+                />
+              </div>
+
+              <div className="cms-field">
+                <label>Website URL (Optional)</label>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <input
+                    type="url"
+                    placeholder="https://..."
+                    value={partnerForm.website_url || ""}
+                    onChange={(e) => setPartnerForm({ ...partnerForm, website_url: e.target.value })}
+                    style={{ flex: 1 }}
+                  />
+                  {partnerForm.website_url && (
+                    <a
+                      href={partnerForm.website_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="cms-btn cms-btn-secondary"
+                      style={{ fontSize: "0.75rem", whiteSpace: "nowrap" }}
+                    >
+                      Test Link ↗
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div className="cms-field">
+                  <label>Display Priority</label>
+                  <input
+                    type="number"
+                    value={partnerForm.priority ?? 10}
+                    onChange={(e) => setPartnerForm({ ...partnerForm, priority: Number(e.target.value) || 0 })}
+                  />
+                  <span className="cms-hint">Higher number displays first</span>
+                </div>
+
+                <div className="cms-switch-row" style={{ marginTop: "1.2rem" }}>
+                  <div className="cms-switch-info">
+                    <strong>Active on Website</strong>
+                  </div>
+                  <label className="cms-switch-control">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(partnerForm.active)}
+                      onChange={(e) => setPartnerForm({ ...partnerForm, active: e.target.checked })}
+                    />
+                    <span className="cms-slider" />
+                  </label>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem" }}>
+                <button
+                  type="button"
+                  className="cms-btn cms-btn-secondary"
+                  style={{ flex: 1 }}
+                  onClick={() => setPartnerModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="cms-btn cms-btn-primary"
+                  style={{ flex: 1 }}
+                  onClick={() => saveSitePartner(partnerForm)}
+                >
+                  Save Partner
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Floating Status Toast */}
       {toast && <div className={`cms-toast ${toast.type}`}>{toast.text}</div>}
-    </main>
+      </div>
+    </div>
   );
 }
