@@ -15,11 +15,36 @@ export default function EventsPage() {
   useEffect(() => {
     let live = true;
     setEvents([fallbackEvent(locale)]);
-    neon.from("events").select("*").eq("status", "published").order("priority", { ascending: false })
-      .then(({ data }) => {
-        if (live && data?.length) setEvents(data.map((row) => normaliseEvent(row as Partial<EventRecord>, locale)));
-      }, () => {});
-    return () => { live = false; };
+
+    // Fetch directly from /api/events for instant Postgres reads
+    fetch("/api/events")
+      .then((res) => res.json())
+      .then((json) => {
+        if (live && json?.data?.length) {
+          setEvents(json.data.map((row: any) => normaliseEvent(row, locale)));
+          return;
+        }
+        throw new Error("No events from API");
+      })
+      .catch(() => {
+        // Fallback to neon client
+        neon
+          .from("events")
+          .select("*")
+          .eq("status", "published")
+          .order("priority", { ascending: false })
+          .then(
+            ({ data }) => {
+              if (live && data?.length)
+                setEvents(data.map((row) => normaliseEvent(row as Partial<EventRecord>, locale)));
+            },
+            () => {}
+          );
+      });
+
+    return () => {
+      live = false;
+    };
   }, [locale]);
 
   return (

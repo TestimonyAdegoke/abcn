@@ -47,20 +47,37 @@ export default function FeaturedEventSpotlight() {
   useEffect(() => {
     let live = true;
     setEvent(fallbackEvent(locale));
-    neon
-      .from("events")
-      .select("*")
-      .eq("status", "published")
-      .eq("show_on_home", true)
-      .order("priority", { ascending: false })
-      .limit(1)
-      .then(
-        ({ data }) => {
-          if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>, locale));
-        },
-        () => {}
-      );
-    return () => { live = false; };
+
+    // Fetch directly from /api/events for instant Postgres reads
+    fetch("/api/events?show_on_home=true&limit=1")
+      .then((res) => res.json())
+      .then((json) => {
+        if (live && json?.data?.[0]) {
+          setEvent(normaliseEvent(json.data[0], locale));
+          return;
+        }
+        throw new Error("No homepage event from API");
+      })
+      .catch(() => {
+        // Fallback to neon client
+        neon
+          .from("events")
+          .select("*")
+          .eq("status", "published")
+          .eq("show_on_home", true)
+          .order("priority", { ascending: false })
+          .limit(1)
+          .then(
+            ({ data }) => {
+              if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>, locale));
+            },
+            () => {}
+          );
+      });
+
+    return () => {
+      live = false;
+    };
   }, [locale]);
 
   const isFiali = event.slug === FIALI_FALLBACK.slug;

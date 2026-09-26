@@ -71,18 +71,32 @@ export default function EventDetailPage() {
         ? fallbackEvent(locale)
         : { ...fallbackEvent(locale), slug, title: "ABCN Event" }
     );
-    neon
-      .from("events")
-      .select("*")
-      .eq("slug", slug)
-      .eq("status", "published")
-      .limit(1)
-      .then(
-        ({ data }) => {
-          if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>, locale));
-        },
-        () => {}
-      );
+    // Fetch directly from /api/events for instant Postgres reads
+    fetch(`/api/events?slug=${encodeURIComponent(slug)}&limit=1`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (live && json?.data?.[0]) {
+          setEvent(normaliseEvent(json.data[0], locale));
+          return;
+        }
+        throw new Error("No event from API");
+      })
+      .catch(() => {
+        // Fallback to neon client
+        neon
+          .from("events")
+          .select("*")
+          .eq("slug", slug)
+          .eq("status", "published")
+          .limit(1)
+          .then(
+            ({ data }) => {
+              if (live && data?.[0]) setEvent(normaliseEvent(data[0] as Partial<EventRecord>, locale));
+            },
+            () => {}
+          );
+      });
+
     return () => {
       live = false;
     };

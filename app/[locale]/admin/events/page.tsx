@@ -14,7 +14,7 @@ import "@/app/[locale]/admin/admin.css";
 
 type Mode = "checking" | "signed-out" | "needs-admin" | "admin";
 type MainTab = "events" | "pipeline";
-type EditorTab = "core" | "location" | "content" | "media" | "stages" | "german" | "applicants";
+type EditorTab = "core" | "location" | "content" | "media" | "stages" | "partners" | "german" | "applicants";
 type Editable = EventRecord & { id?: string };
 
 type ApplicationRow = {
@@ -46,9 +46,10 @@ const SECTIONS: { id: EditorTab; label: string; shortLabel: string; num: string 
   { id: "location", label: "Date & Location", shortLabel: "Schedule", num: "02" },
   { id: "content", label: "Narrative & Editorial", shortLabel: "Editorial", num: "03" },
   { id: "media", label: "Media & Aesthetics", shortLabel: "Media", num: "04" },
-  { id: "stages", label: "Programme & Grants", shortLabel: "Stages", num: "05" },
-  { id: "german", label: "German Translation", shortLabel: "German (DE)", num: "06" },
-  { id: "applicants", label: "Event Applicants", shortLabel: "Applicants", num: "07" },
+  { id: "stages", label: "Programme Stages & Grants", shortLabel: "Stages", num: "05" },
+  { id: "partners", label: "Partners & Logo Manager", shortLabel: "Partners", num: "06" },
+  { id: "german", label: "German Translation", shortLabel: "German (DE)", num: "07" },
+  { id: "applicants", label: "Event Applicants", shortLabel: "Applicants", num: "08" },
 ];
 
 const blankEvent = (): Editable => ({
@@ -670,6 +671,124 @@ export default function EventsAdminPage() {
     const current = [...((form[key] as string[]) || [])];
     current.splice(index, 1);
     update(key, current);
+  }
+
+  // Visual Programme Stages Helpers (User-friendly, no JSON needed)
+  function addStage() {
+    const current = form.stages || [];
+    const nextNum = current.length + 1;
+    const newStage: EventStage = {
+      stage: `Stage ${nextNum}`,
+      title: "",
+      description: "",
+      items: [],
+    };
+    update("stages", [...current, newStage]);
+    showToast(`Added Stage ${nextNum}.`);
+  }
+
+  function updateStage(index: number, updated: Partial<EventStage>) {
+    const current = [...(form.stages || [])];
+    current[index] = { ...current[index], ...updated };
+    update("stages", current);
+  }
+
+  function removeStage(index: number) {
+    const current = [...(form.stages || [])];
+    current.splice(index, 1);
+    update("stages", current);
+    showToast("Stage removed.");
+  }
+
+  function moveStage(index: number, direction: "up" | "down") {
+    const current = [...(form.stages || [])];
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (target < 0 || target >= current.length) return;
+    const temp = current[index];
+    current[index] = current[target];
+    current[target] = temp;
+    update("stages", current);
+  }
+
+  function addStageItem(stageIndex: number) {
+    const current = [...(form.stages || [])];
+    const stage = current[stageIndex];
+    stage.items = [...(stage.items || []), ""];
+    update("stages", current);
+  }
+
+  function updateStageItem(stageIndex: number, itemIndex: number, text: string) {
+    const current = [...(form.stages || [])];
+    const stage = current[stageIndex];
+    stage.items[itemIndex] = text;
+    update("stages", current);
+  }
+
+  function removeStageItem(stageIndex: number, itemIndex: number) {
+    const current = [...(form.stages || [])];
+    const stage = current[stageIndex];
+    stage.items.splice(itemIndex, 1);
+    update("stages", current);
+  }
+
+  // Partners & Logo Manager Helpers
+  function addPartner() {
+    const current = form.partners || [];
+    const newPartner: EventPartner = {
+      name: "",
+      logo: "",
+      website: "",
+    };
+    update("partners", [...current, newPartner]);
+    showToast("Added new partner card.");
+  }
+
+  function updatePartner(index: number, updated: Partial<EventPartner>) {
+    const current = [...(form.partners || [])];
+    current[index] = { ...current[index], ...updated };
+    update("partners", current);
+  }
+
+  function removePartner(index: number) {
+    const current = [...(form.partners || [])];
+    current.splice(index, 1);
+    update("partners", current);
+    showToast("Partner removed.");
+  }
+
+  function movePartner(index: number, direction: "up" | "down") {
+    const current = [...(form.partners || [])];
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (target < 0 || target >= current.length) return;
+    const temp = current[index];
+    current[index] = current[target];
+    current[target] = temp;
+    update("partners", current);
+  }
+
+  async function handlePartnerLogoUpload(index: number, file?: File) {
+    if (!file) return;
+    try {
+      showToast("Compressing partner logo...");
+      const compressed = await compressImage(file);
+      updatePartner(index, { logo: compressed });
+      showToast("Partner logo uploaded & attached!");
+    } catch (err: any) {
+      showToast(err.message || "Failed to process logo", "error");
+    }
+  }
+
+  function loadDefaultPartners() {
+    const defaults: EventPartner[] = [
+      { name: "SoftXcloud GmbH", logo: "/assets/partners/softxcloud.png", website: "https://softxcloud.net" },
+      { name: "Mountain Hub", logo: "/assets/partners/mountain-hub.png", website: "https://mountainhub.org" },
+      { name: "Kompass Frankfurt", logo: "/assets/fiali/logos/kompass-frankfurt.png", website: "https://kompassfrankfurt.de" },
+      { name: "DIVOC Rising", logo: "/assets/fiali/logos/divoc-rising.png", website: "https://divocrising.com" },
+      { name: "Black Women in Tech DACH", logo: "/assets/fiali/logos/black-women-in-tech-dach.png", website: "https://bwt-dach.org" },
+      { name: "Flourish & Prosper", logo: "/assets/fiali/logos/flourish-prosper.png", website: "https://flourishprosper.com" },
+    ];
+    update("partners", defaults);
+    showToast("Loaded 6 verified partner ecosystem logos.");
   }
 
   // Next / Previous Section Navigators
@@ -1631,62 +1750,390 @@ export default function EventsAdminPage() {
                   </div>
                 )}
 
-                {/* TAB 5: PROGRAMME STAGES & GRANTS */}
+                {/* TAB 5: PROGRAMME STAGES & GRANTS (USER-FRIENDLY VISUAL BUILDER) */}
                 {editorTab === "stages" && (
                   <div className="cms-form-grid">
-                    <div className="cms-col-full" style={{ display: "flex", justifyContent: "flex-end" }}>
-                      <button
-                        type="button"
-                        className="cms-btn cms-btn-secondary"
-                        onClick={() => setRawJsonMode(!rawJsonMode)}
-                      >
-                        {rawJsonMode ? "Switch to Visual Mode" : "Switch to Raw JSON Editor"}
-                      </button>
+                    <div className="cms-col-full" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                      <div>
+                        <strong style={{ fontSize: "1.1rem" }}>Programme Stages & Curriculum</strong>
+                        <span className="cms-hint" style={{ display: "block" }}>
+                          Build structured multi-part phases, workshops, and milestones visually without writing raw JSON.
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          type="button"
+                          className="cms-btn cms-btn-secondary"
+                          onClick={() => setRawJsonMode(!rawJsonMode)}
+                        >
+                          {rawJsonMode ? "Switch to Visual Cards" : "Advanced JSON Editor"}
+                        </button>
+                        <button
+                          type="button"
+                          className="cms-btn cms-btn-primary"
+                          onClick={addStage}
+                        >
+                          + Add New Stage
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="cms-field cms-col-full">
-                      <label>Programme Stages ({form.stages?.length || 0} Stages)</label>
-                      <textarea
-                        rows={8}
-                        style={{ fontFamily: "monospace", fontSize: "0.82rem" }}
-                        value={stagesText}
-                        onChange={(e) => {
-                          try {
-                            update("stages", JSON.parse(e.target.value) as EventStage[]);
-                          } catch {
-                            // Syntax error will resolve as user types
-                          }
-                        }}
-                      />
-                      <span className="cms-hint">JSON format matching the FIALI two-part programme structure.</span>
+                    {rawJsonMode ? (
+                      <>
+                        <div className="cms-field cms-col-full">
+                          <label>Programme Stages ({form.stages?.length || 0} Stages) — Raw JSON</label>
+                          <textarea
+                            rows={8}
+                            style={{ fontFamily: "monospace", fontSize: "0.82rem" }}
+                            value={stagesText}
+                            onChange={(e) => {
+                              try {
+                                update("stages", JSON.parse(e.target.value) as EventStage[]);
+                              } catch {
+                                // Syntax error will resolve as user types
+                              }
+                            }}
+                          />
+                        </div>
+
+                        <div className="cms-field cms-col-full">
+                          <label>Grants & Support Package — Raw JSON</label>
+                          <textarea
+                            rows={5}
+                            style={{ fontFamily: "monospace", fontSize: "0.82rem" }}
+                            value={grantsText}
+                            onChange={(e) => {
+                              try {
+                                update("grants", JSON.parse(e.target.value));
+                              } catch {
+                                // Syntax error will resolve as user types
+                              }
+                            }}
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {/* Visual Stage Cards List */}
+                        <div className="cms-col-full">
+                          {(!form.stages || form.stages.length === 0) ? (
+                            <div style={{ padding: "2.5rem", textAlign: "center", background: "rgba(0,0,0,0.15)", border: "1px dashed var(--cms-border)", borderRadius: "var(--cms-radius-md)" }}>
+                              <p style={{ color: "var(--cms-text-secondary)", margin: "0 0 1rem" }}>
+                                No programme stages defined for this event yet.
+                              </p>
+                              <button type="button" onClick={addStage} className="cms-btn cms-btn-primary">
+                                + Create First Programme Stage
+                              </button>
+                            </div>
+                          ) : (
+                            form.stages.map((stg, sIdx) => (
+                              <div className="cms-stage-card" key={sIdx}>
+                                <div className="cms-stage-card-head">
+                                  <div className="cms-stage-card-title">
+                                    <span className="cms-stage-badge">{stg.stage || `Stage ${sIdx + 1}`}</span>
+                                    <strong style={{ fontSize: "1rem" }}>{stg.title || "Untitled Stage"}</strong>
+                                  </div>
+                                  <div className="cms-stage-card-actions">
+                                    <button
+                                      type="button"
+                                      onClick={() => moveStage(sIdx, "up")}
+                                      disabled={sIdx === 0}
+                                      className="cms-icon-btn"
+                                      title="Move Stage Up"
+                                    >
+                                      ▲
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => moveStage(sIdx, "down")}
+                                      disabled={sIdx === form.stages.length - 1}
+                                      className="cms-icon-btn"
+                                      title="Move Stage Down"
+                                    >
+                                      ▼
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => removeStage(sIdx)}
+                                      className="cms-icon-btn"
+                                      title="Delete Stage"
+                                      style={{ color: "var(--cms-danger)" }}
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="cms-form-grid">
+                                  <div className="cms-field">
+                                    <label>Stage Phase / Number</label>
+                                    <input
+                                      type="text"
+                                      value={stg.stage || ""}
+                                      onChange={(e) => updateStage(sIdx, { stage: e.target.value })}
+                                      placeholder="e.g. Stage 1 or Phase 01"
+                                    />
+                                  </div>
+
+                                  <div className="cms-field">
+                                    <label>Stage Title</label>
+                                    <input
+                                      type="text"
+                                      value={stg.title || ""}
+                                      onChange={(e) => updateStage(sIdx, { title: e.target.value })}
+                                      placeholder="e.g. Female Innovation Growth Lab"
+                                    />
+                                  </div>
+
+                                  <div className="cms-field cms-col-full">
+                                    <label>Stage Overview & Deliverables</label>
+                                    <textarea
+                                      rows={3}
+                                      value={stg.description || ""}
+                                      onChange={(e) => updateStage(sIdx, { description: e.target.value })}
+                                      placeholder="A full-day intensive workshop supported by an external AI expert..."
+                                    />
+                                  </div>
+
+                                  {/* Stage Key Curriculum Items */}
+                                  <div className="cms-field cms-col-full">
+                                    <label>Curriculum Topics & Key Modules</label>
+                                    <div className="cms-list-builder">
+                                      {(stg.items || []).map((itm, iIdx) => (
+                                        <div className="cms-list-row" key={iIdx}>
+                                          <input
+                                            type="text"
+                                            value={itm}
+                                            placeholder="e.g. Business Model Development or AI Automation"
+                                            onChange={(e) => updateStageItem(sIdx, iIdx, e.target.value)}
+                                          />
+                                          <button
+                                            type="button"
+                                            className="cms-icon-btn"
+                                            onClick={() => removeStageItem(sIdx, iIdx)}
+                                          >
+                                            ✕
+                                          </button>
+                                        </div>
+                                      ))}
+                                      <button
+                                        type="button"
+                                        className="cms-add-row-btn"
+                                        onClick={() => addStageItem(sIdx)}
+                                      >
+                                        + Add Topic / Module
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+
+                        {/* User-Friendly Grants Builder */}
+                        <div className="cms-col-full" style={{ marginTop: "1.5rem", borderTop: "1px solid var(--cms-border)", paddingTop: "1.5rem" }}>
+                          <strong style={{ fontSize: "1.1rem", display: "block", marginBottom: "4px" }}>
+                            Financial Grants & Stipend Package
+                          </strong>
+                          <span className="cms-hint">Configure micro-grants and support provided to founders.</span>
+                        </div>
+
+                        <div className="cms-field">
+                          <label>Grant Title</label>
+                          <input
+                            type="text"
+                            value={form.grants?.title || ""}
+                            onChange={(e) => update("grants", { ...form.grants, title: e.target.value })}
+                            placeholder="e.g. Micro-Grant & Growth Support"
+                          />
+                        </div>
+
+                        <div className="cms-field">
+                          <label>Grant Amount Each</label>
+                          <input
+                            type="text"
+                            value={form.grants?.amount_each || ""}
+                            onChange={(e) => update("grants", { ...form.grants, amount_each: e.target.value })}
+                            placeholder="e.g. €1,000"
+                          />
+                        </div>
+
+                        <div className="cms-field">
+                          <label>Number of Grants Available</label>
+                          <input
+                            type="number"
+                            value={form.grants?.count || 0}
+                            onChange={(e) => update("grants", { ...form.grants, count: Number(e.target.value) })}
+                            placeholder="5"
+                          />
+                        </div>
+
+                        <div className="cms-field cms-col-full">
+                          <label>Grant Conditions & Details</label>
+                          <textarea
+                            rows={3}
+                            value={form.grants?.description || ""}
+                            onChange={(e) => update("grants", { ...form.grants, description: e.target.value })}
+                            placeholder="Details of financial support, disbursement schedule, or eligibility conditions..."
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* TAB 6: PARTNERS & LOGO MANAGER MODULE */}
+                {editorTab === "partners" && (
+                  <div className="cms-form-grid">
+                    <div className="cms-col-full" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                      <div>
+                        <strong style={{ fontSize: "1.1rem" }}>Partners & Logo Manager</strong>
+                        <span className="cms-hint" style={{ display: "block" }}>
+                          Manage ecosystem collaborators, sponsors, and corporate logos displayed on event banners and tickers.
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          type="button"
+                          onClick={loadDefaultPartners}
+                          className="cms-btn cms-btn-secondary"
+                        >
+                          Load Verified ABCN Partners
+                        </button>
+                        <button
+                          type="button"
+                          onClick={addPartner}
+                          className="cms-btn cms-btn-primary"
+                        >
+                          + Add Partner
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="cms-field cms-col-full">
-                      <label>Grants & Support Package</label>
-                      <textarea
-                        rows={6}
-                        style={{ fontFamily: "monospace", fontSize: "0.82rem" }}
-                        value={grantsText}
-                        onChange={(e) => {
-                          try {
-                            update("grants", JSON.parse(e.target.value));
-                          } catch {
-                            // Syntax error will resolve as user types
-                          }
-                        }}
-                      />
-                      <span className="cms-hint">JSON details for micro-grants, travel support, and stipends.</span>
-                    </div>
+                    {(!form.partners || form.partners.length === 0) ? (
+                      <div className="cms-col-full" style={{ padding: "3rem", textAlign: "center", background: "rgba(0,0,0,0.15)", border: "1px dashed var(--cms-border)", borderRadius: "var(--cms-radius-md)" }}>
+                        <p style={{ color: "var(--cms-text-secondary)", margin: "0 0 1rem" }}>
+                          No partner logos attached to this event yet.
+                        </p>
+                        <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+                          <button type="button" onClick={addPartner} className="cms-btn cms-btn-primary">
+                            + Add Custom Partner
+                          </button>
+                          <button type="button" onClick={loadDefaultPartners} className="cms-btn cms-btn-secondary">
+                            Load Verified ABCN Ecosystem
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="cms-col-full cms-partner-grid">
+                        {form.partners.map((partner, pIdx) => (
+                          <div className="cms-partner-card" key={pIdx}>
+                            <div className="cms-partner-card-head">
+                              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--cms-text-secondary)" }}>
+                                Partner #{pIdx + 1}
+                              </span>
+                              <div style={{ display: "flex", gap: "4px" }}>
+                                <button
+                                  type="button"
+                                  onClick={() => movePartner(pIdx, "up")}
+                                  disabled={pIdx === 0}
+                                  className="cms-icon-btn"
+                                  style={{ width: "26px", height: "26px" }}
+                                  title="Move Left/Up"
+                                >
+                                  ◀
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => movePartner(pIdx, "down")}
+                                  disabled={pIdx === form.partners.length - 1}
+                                  className="cms-icon-btn"
+                                  style={{ width: "26px", height: "26px" }}
+                                  title="Move Right/Down"
+                                >
+                                  ▶
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => removePartner(pIdx)}
+                                  className="cms-icon-btn"
+                                  style={{ width: "26px", height: "26px", color: "var(--cms-danger)" }}
+                                  title="Remove Partner"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            </div>
 
-                    <div className="cms-field cms-col-full">
-                      <label>Partners (Name | Logo URL | Website)</label>
-                      <textarea
-                        rows={4}
-                        value={partnersText}
-                        onChange={(e) => update("partners", partnersFromText(e.target.value))}
-                        placeholder="SoftXcloud GmbH | /assets/partners/softxcloud.png | https://softxcloud.net&#10;Mountain Hub | /assets/partners/mountain-hub.png | https://mountainhub.org"
-                      />
-                    </div>
+                            {/* Logo Box with Live Preview and Click-to-Upload */}
+                            <div
+                              className="cms-partner-logo-box"
+                              onClick={() => document.getElementById(`partner-logo-${pIdx}`)?.click()}
+                              title="Click to upload logo image"
+                            >
+                              <input
+                                id={`partner-logo-${pIdx}`}
+                                type="file"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                onChange={(e) => handlePartnerLogoUpload(pIdx, e.target.files?.[0])}
+                              />
+                              {partner.logo ? (
+                                <img src={partner.logo} alt={partner.name || "Partner Logo"} />
+                              ) : (
+                                <div style={{ textAlign: "center", color: "var(--cms-text-muted)", fontSize: "0.78rem" }}>
+                                  <span style={{ fontSize: "1.2rem", display: "block" }}>🏢</span>
+                                  Click to upload logo
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="cms-field">
+                              <label>Partner / Sponsor Name *</label>
+                              <input
+                                type="text"
+                                value={partner.name}
+                                onChange={(e) => updatePartner(pIdx, { name: e.target.value })}
+                                placeholder="e.g. SoftXcloud GmbH"
+                              />
+                            </div>
+
+                            <div className="cms-field">
+                              <label>Logo URL or Asset Path</label>
+                              <input
+                                type="text"
+                                value={partner.logo || ""}
+                                onChange={(e) => updatePartner(pIdx, { logo: e.target.value })}
+                                placeholder="/assets/partners/softxcloud.png"
+                              />
+                            </div>
+
+                            <div className="cms-field">
+                              <label>
+                                <span>Website URL</span>
+                                {partner.website && (
+                                  <a
+                                    href={partner.website}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: "var(--cms-accent)", textDecoration: "none", fontSize: "0.7rem" }}
+                                  >
+                                    Test Link ↗
+                                  </a>
+                                )}
+                              </label>
+                              <input
+                                type="text"
+                                value={partner.website || ""}
+                                onChange={(e) => updatePartner(pIdx, { website: e.target.value })}
+                                placeholder="https://..."
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
 
